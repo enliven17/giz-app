@@ -260,8 +260,8 @@ export default function GradientWaves({
       program.uniforms.iTime.value = (t - t0) * 0.001
       const tx = enableMouseRef.current ? target[0] : 0.5
       const ty = enableMouseRef.current ? target[1] : 0.5
-      cur[0] += 0.05 * (tx - cur[0])
-      cur[1] += 0.05 * (ty - cur[1])
+      cur[0] += 0.025 * (tx - cur[0])
+      cur[1] += 0.025 * (ty - cur[1])
       program.uniforms.uMouse.value[0] = cur[0]
       program.uniforms.uMouse.value[1] = cur[1]
       renderer.render({ scene: mesh })

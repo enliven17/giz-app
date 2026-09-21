@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import GlitchText from './GlitchText'
-import Scramble from './Scramble'
 import GradientWaves from './GradientWaves'
 import BubbleUpButton from './BubbleUpButton'
 
@@ -13,36 +12,28 @@ export default function Onboarding({ onStart }: { onStart: () => void }) {
           horizonColor="#070d0a"
           waveColor="#2aa471"
           crestColor="#5fe0a6"
-          speed={0.5}
-          amplitude={2.5}
-          waveScale={0.6}
+          speed={0.22}
+          amplitude={1.9}
+          waveScale={0.45}
           waveRatio={0.9}
-          swell={35}
-          turbulence={20}
+          swell={26}
+          turbulence={11}
           tilt={1.11}
           zoom={1}
           height={5.5}
           fogDepth={18}
-          detail="medium"
+          detail="high"
           brightness={1}
           opacity={1}
           mouseInteraction
-          parallaxStrength={0.5}
+          parallaxStrength={0.35}
           grain
-          grainIntensity={0.05}
+          grainIntensity={0.03}
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-ink/25 to-ink" />
       </div>
 
       <div className="pointer-events-none relative flex min-h-0 flex-1 flex-col px-6 pb-10 pt-16">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mx-auto glass-soft rounded-full px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.35em] text-neon/80"
-        >
-          <Scramble text="invite only" />
-        </motion.div>
-
         <div className="mt-auto">
           <motion.h1
             initial={{ opacity: 0, y: 18 }}

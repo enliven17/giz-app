@@ -34,25 +34,35 @@ export default function Onboarding({ onStart }: { onStart: () => void }) {
 
       <div className="relative flex min-h-0 flex-1 flex-col px-6 pb-10 pt-16">
         <div className="mt-auto">
-          <motion.h1
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="text-[60px] font-semibold leading-[0.96] tracking-tighter"
-          >
-            <GlitchText className="text-white">Private</GlitchText>
-            <br />
-            <GlitchText className="text-neon">capital</GlitchText>
-            <br />
-            <span className="text-white/55">without</span>
-            <br />
-            <span className="text-white/55">the gate</span>
-          </motion.h1>
+          <h1 className="text-[46px] font-semibold leading-[1.0] tracking-tighter">
+            <motion.span
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, duration: 0.5 }}
+              className="block"
+            >
+              <GlitchText className="text-white">Private</GlitchText>{' '}
+              <GlitchText className="text-neon">capital</GlitchText>
+            </motion.span>
+            <span className="block text-white/55">
+              {['without', 'the gate'].map((word, i) => (
+                <motion.span
+                  key={word}
+                  initial={{ opacity: 0, y: 10, filter: 'blur(6px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  transition={{ delay: 0.85 + i * 0.3, duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                  className="mr-[0.25em] inline-block"
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </span>
+          </h1>
 
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 1.5 }}
             className="mt-6 max-w-[310px] text-[15px] leading-relaxed text-white/45"
           >
             Curated private vaults, verified managers, settlement in minutes. Your keys stay on your device.
@@ -63,7 +73,7 @@ export default function Onboarding({ onStart }: { onStart: () => void }) {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 1.7 }}
           >
             <BubbleUpButton onClick={onStart}>
               Get started

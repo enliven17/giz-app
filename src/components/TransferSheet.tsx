@@ -1,14 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { X, Check, Fingerprint, Wallet } from 'lucide-react'
+import { X, Check, Fingerprint } from 'lucide-react'
 import Scramble from './Scramble'
 import ParticleDotOrb from './ParticleDotOrb'
 
-const WALLETS = [
-  { id: 'passkey', icon: Fingerprint, label: 'Passkey wallet', note: '0xA4f2 . . . 91c7' },
-  { id: 'metamask', icon: Wallet, label: 'MetaMask', note: '0x7c19 . . . 4d02' },
-  { id: 'ledger', icon: Wallet, label: 'Ledger', note: '0x91be . . . e8a5' },
-]
+
 
 export default function TransferSheet({
   mode,
@@ -18,7 +14,6 @@ export default function TransferSheet({
   onClose: () => void
 }) {
   const [amount, setAmount] = useState('10000')
-  const [wallet, setWallet] = useState('metamask')
   const [state, setState] = useState<'edit' | 'signing' | 'done'>('edit')
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -93,23 +88,13 @@ export default function TransferSheet({
         <div className="mt-5 px-1 font-mono text-[10px] uppercase tracking-[0.22em] text-white/30">
           {mode === 'deposit' ? 'From wallet' : 'To wallet'}
         </div>
-        <div className="mt-3 space-y-2">
-          {WALLETS.map(({ id, icon: Icon, label, note }) => (
-            <button
-              key={id}
-              onClick={() => setWallet(id)}
-              className={`flex w-full items-center gap-4 rounded-2xl px-5 py-4 text-left ${
-                wallet === id ? 'bg-neon/10' : 'glass-soft'
-              }`}
-            >
-              <Icon size={18} className={wallet === id ? 'text-neon' : 'text-white/40'} />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-[14px] text-white/85">{label}</span>
-                <span className="mt-0.5 block font-mono text-[10px] text-white/30">{note}</span>
-              </span>
-              {wallet === id && <span className="h-2 w-2 rounded-full bg-neon" />}
-            </button>
-          ))}
+        <div className="glass-soft mt-3 flex items-center gap-4 rounded-2xl px-5 py-4">
+          <Fingerprint size={18} className="text-neon" />
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-[14px] text-white/85">Passkey wallet</span>
+            <span className="mt-0.5 block font-mono text-[10px] text-white/30">0xA4f2 . . . 91c7</span>
+          </span>
+          <span className="h-2 w-2 rounded-full bg-neon" />
         </div>
 
         <div className="mt-4 space-y-2 px-1 font-mono text-[11px]">

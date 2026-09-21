@@ -261,7 +261,7 @@ export default function ParticleDotOrb({
   }, [size, speed, color, distance, spread]);
 
   return (
-    <div className={`relative flex items-center justify-center cursor-grab active:cursor-grabbing ${className}`}>
+    <div className={`flex items-center justify-center ${className}`}>
       <div ref={containerRef} className="w-full h-full flex items-center justify-center" />
     </div>
   );

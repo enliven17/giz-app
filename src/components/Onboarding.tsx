@@ -8,12 +8,12 @@ import BubbleUpButton from './BubbleUpButton'
 export default function Onboarding({ onStart }: { onStart: () => void }) {
   return (
     <div className="relative flex min-h-0 flex-1 flex-col">
-      <div className="pointer-events-none absolute inset-0">
+      <div className="absolute inset-0">
         <GradientWaves
           horizonColor="#070d0a"
-          waveColor="#1e7a52"
-          crestColor="#31c47e"
-          speed={0.35}
+          waveColor="#2aa471"
+          crestColor="#5fe0a6"
+          speed={0.5}
           amplitude={2.5}
           waveScale={0.6}
           waveRatio={0.9}
@@ -22,19 +22,19 @@ export default function Onboarding({ onStart }: { onStart: () => void }) {
           tilt={1.11}
           zoom={1}
           height={5.5}
-          fogDepth={15}
+          fogDepth={18}
           detail="medium"
-          brightness={0.7}
-          opacity={0.75}
+          brightness={1}
+          opacity={1}
           mouseInteraction
           parallaxStrength={0.5}
           grain
           grainIntensity={0.05}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/80 via-ink/40 to-ink" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-ink/25 to-ink" />
       </div>
 
-      <div className="relative flex min-h-0 flex-1 flex-col px-6 pb-10 pt-16">
+      <div className="pointer-events-none relative flex min-h-0 flex-1 flex-col px-6 pb-10 pt-16">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -69,7 +69,7 @@ export default function Onboarding({ onStart }: { onStart: () => void }) {
           </motion.p>
         </div>
 
-        <div className="mt-10">
+        <div className="pointer-events-auto mt-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

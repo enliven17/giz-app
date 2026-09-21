@@ -17,28 +17,34 @@ const groups = [
   {
     title: 'Security',
     rows: [
-      { icon: Fingerprint, label: 'Passkey wallet', value: 'Active', toggle: false },
-      { icon: ShieldCheck, label: 'Transaction signing', value: 'Biometric', toggle: false },
-      { icon: Bell, label: 'Push alerts', toggle: true },
+      { id: 'passkey-wallet', icon: Fingerprint, label: 'Passkey wallet', value: 'Active', toggle: false },
+      { id: 'transaction-signing', icon: ShieldCheck, label: 'Transaction signing', value: 'Biometric', toggle: false },
+      { id: 'alerts', icon: Bell, label: 'Push alerts', toggle: true },
     ],
   },
   {
     title: 'Preferences',
     rows: [
-      { icon: Globe, label: 'Currency', value: 'USD', toggle: false },
-      { icon: FileText, label: 'Statements', value: 'Monthly', toggle: false },
+      { id: 'currency', icon: Globe, label: 'Currency', value: 'USD', toggle: false },
+      { id: 'statements', icon: FileText, label: 'Statements', value: 'Monthly', toggle: false },
     ],
   },
   {
     title: 'Support',
     rows: [
-      { icon: LifeBuoy, label: 'Contact desk', toggle: false },
-      { icon: FileText, label: 'Terms and disclosures', toggle: false },
+      { id: 'contact-desk', icon: LifeBuoy, label: 'Contact desk', toggle: false },
+      { id: 'terms', icon: FileText, label: 'Terms and disclosures', toggle: false },
     ],
   },
 ] as const
 
-export default function Settings({ onDisconnect }: { onDisconnect: () => void }) {
+export default function Settings({
+  onDisconnect,
+  onOpen,
+}: {
+  onDisconnect: () => void
+  onOpen: (id: string) => void
+}) {
   const [alerts, setAlerts] = useState(true)
 
   return (
@@ -78,7 +84,12 @@ export default function Settings({ onDisconnect }: { onDisconnect: () => void })
             {g.rows.map((r) => {
               const Icon = r.icon
               return (
-                <div key={r.label} className="flex items-center gap-4 px-5 py-4">
+                <div
+                  key={r.label}
+                  role={r.toggle ? undefined : 'button'}
+                  onClick={() => !r.toggle && onOpen(r.id)}
+                  className="flex w-full items-center gap-4 px-5 py-4 text-left active:bg-white/[0.03]"
+                >
                   <Icon size={16} className="shrink-0 text-white/40" />
                   <span className="flex-1 truncate text-[14px] text-white/85">{r.label}</span>
                   {r.toggle ? (

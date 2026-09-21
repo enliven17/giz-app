@@ -10,7 +10,19 @@ const fade = {
   show: (i: number) => ({ opacity: 1, y: 0, transition: { delay: 0.06 * i, duration: 0.45 } }),
 }
 
-export default function Home({ onOpenVault }: { onOpenVault: (v: Vault) => void }) {
+export default function Home({
+  onOpenVault,
+  onNotifications,
+  onSeeAllVaults,
+  onTransfer,
+  onActivity,
+}: {
+  onOpenVault: (v: Vault) => void
+  onNotifications: () => void
+  onSeeAllVaults: () => void
+  onTransfer: (mode: 'deposit' | 'withdraw') => void
+  onActivity: () => void
+}) {
   const total = holdings.reduce((a, h) => a + h.value, 0)
   const [whole, cents] = total.toFixed(2).split('.')
 
@@ -28,7 +40,7 @@ export default function Home({ onOpenVault }: { onOpenVault: (v: Vault) => void 
             <div className="text-[15px] font-medium">Good evening</div>
           </div>
         </div>
-        <button className="glass-soft relative flex h-11 w-11 items-center justify-center rounded-2xl text-white/60">
+        <button onClick={onNotifications} className="glass-soft relative flex h-11 w-11 items-center justify-center rounded-2xl text-white/60">
           <Bell size={17} />
           <span className="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-neon/70" />
         </button>
@@ -63,13 +75,13 @@ export default function Home({ onOpenVault }: { onOpenVault: (v: Vault) => void 
       </motion.section>
 
       <motion.section custom={3} variants={fade} initial="hidden" animate="show" className="mt-6 flex gap-3">
-        <button className="glass flex flex-1 items-center justify-center gap-2 rounded-2xl py-4 text-[14px] font-medium">
+        <button onClick={() => onTransfer('deposit')} className="glass flex flex-1 items-center justify-center gap-2 rounded-2xl py-4 text-[14px] font-medium">
           <ArrowDownLeft size={17} className="text-neon" /> Deposit
         </button>
-        <button className="glass flex flex-1 items-center justify-center gap-2 rounded-2xl py-4 text-[14px] font-medium">
+        <button onClick={() => onTransfer('withdraw')} className="glass flex flex-1 items-center justify-center gap-2 rounded-2xl py-4 text-[14px] font-medium">
           <ArrowUpRight size={17} className="text-neon" /> Withdraw
         </button>
-        <button className="glass-soft flex w-14 items-center justify-center rounded-2xl text-white/50">
+        <button onClick={onActivity} className="glass-soft flex w-14 items-center justify-center rounded-2xl text-white/50">
           <MoreHorizontal size={18} />
         </button>
       </motion.section>
@@ -77,7 +89,7 @@ export default function Home({ onOpenVault }: { onOpenVault: (v: Vault) => void 
       <motion.section custom={4} variants={fade} initial="hidden" animate="show" className="mt-9">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-[17px] font-medium">Private vaults</h3>
-          <button className="font-mono text-[10px] uppercase tracking-widest text-neon/70">see all</button>
+          <button onClick={onSeeAllVaults} className="font-mono text-[10px] uppercase tracking-widest text-neon/70">see all</button>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -90,7 +102,7 @@ export default function Home({ onOpenVault }: { onOpenVault: (v: Vault) => void 
       <motion.section custom={10} variants={fade} initial="hidden" animate="show" className="mt-9">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-[17px] font-medium">Holdings</h3>
-          <span className="font-mono text-[10px] uppercase tracking-widest text-white/25">3 positions</span>
+          <button onClick={onActivity} className="font-mono text-[10px] uppercase tracking-widest text-neon/70">activity</button>
         </div>
         <div className="glass divide-y divide-white/5 rounded-3xl">
           {holdings.map((h) => (

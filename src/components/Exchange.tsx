@@ -1,8 +1,7 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowDown, Check } from 'lucide-react'
-import Scramble from './Scramble'
-import ParticleDotOrb from './ParticleDotOrb'
+import { ArrowDown } from 'lucide-react'
+import SignOverlay, { type SignState } from './SignOverlay'
 import SpotlightCard from './SpotlightCard'
 import { vaults } from '../data'
 
@@ -15,14 +14,24 @@ const RECENT = [
 export default function Exchange() {
   const [vault, setVault] = useState(vaults[0])
   const [amount, setAmount] = useState('5000')
-  const [state, setState] = useState<'edit' | 'signing' | 'done'>('edit')
+  const [state, setState] = useState<'edit' | SignState>('edit')
 
   const units = Number(amount || 0) / vault.price
 
+  const timers = useRef<number[]>([])
+
   const confirm = () => {
     setState('signing')
-    setTimeout(() => setState('done'), 1600)
-    setTimeout(() => setState('edit'), 3400)
+    timers.current = [
+      window.setTimeout(() => setState('done'), 1600),
+      window.setTimeout(() => setState('edit'), 3800),
+    ]
+  }
+
+  const reject = () => {
+    timers.current.forEach(clearTimeout)
+    setState('failed')
+    window.setTimeout(() => setState('edit'), 2200)
   }
 
   return (
@@ -151,37 +160,12 @@ export default function Exchange() {
 
       <AnimatePresence>
         {state !== 'edit' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-ink/90 backdrop-blur-xl"
-          >
-            {state === 'signing' ? (
-              <>
-                <ParticleDotOrb className="h-40 w-40" size={160} speed={1.6} />
-                <div className="mt-8 font-mono text-[11px] uppercase tracking-[0.3em] text-neon/80">
-                  <Scramble text="signing with passkey" />
-                </div>
-              </>
-            ) : (
-              <>
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="glass flex h-20 w-20 items-center justify-center rounded-[28px]"
-                >
-                  <Check size={38} className="text-neon" strokeWidth={2.4} />
-                </motion.div>
-                <div className="mt-8 font-mono text-[11px] uppercase tracking-[0.3em] text-neon/80">
-                  <Scramble text="order filled" />
-                </div>
-                <div className="mt-3 font-mono text-[10px] text-white/25">
-                  {units.toLocaleString('en-US', { maximumFractionDigits: 2 })} {vault.ticker}
-                </div>
-              </>
-            )}
-          </motion.div>
+          <SignOverlay
+            state={state}
+            doneLabel="order filled"
+            detail={`${units.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${vault.ticker}`}
+            onCancel={reject}
+          />
         )}
       </AnimatePresence>
     </div>

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowDown, ChevronDown, X, Check } from 'lucide-react'
+import { ArrowDown, ChevronDown, X } from 'lucide-react'
 import Scramble from './Scramble'
-import ParticleDotOrb from './ParticleDotOrb'
+import SignOverlay, { type SignState } from './SignOverlay'
 import type { Vault } from '../data'
 
 export default function SwapSheet({
@@ -15,7 +15,7 @@ export default function SwapSheet({
   onClose: () => void
 }) {
   const [amount, setAmount] = useState('2500')
-  const [state, setState] = useState<'edit' | 'signing' | 'done'>('edit')
+  const [state, setState] = useState<'edit' | SignState>('edit')
   const inputRef = useRef<HTMLInputElement>(null)
 
   // ponytail: autoFocus arkadaki sayfayi kaydiriyordu, preventScroll ile odaklan
@@ -29,10 +29,20 @@ export default function SwapSheet({
   const payToken = side === 'buy' ? 'USDC' : vault.ticker
   const getToken = side === 'buy' ? vault.ticker : 'USDC'
 
+  const timers = useRef<number[]>([])
+
   const confirm = () => {
     setState('signing')
-    setTimeout(() => setState('done'), 1600)
-    setTimeout(onClose, 3200)
+    timers.current = [
+      window.setTimeout(() => setState('done'), 1600),
+      window.setTimeout(onClose, 3600),
+    ]
+  }
+
+  const reject = () => {
+    timers.current.forEach(clearTimeout)
+    setState('failed')
+    window.setTimeout(() => setState('edit'), 2200)
   }
 
   return (
@@ -140,37 +150,12 @@ export default function SwapSheet({
 
         <AnimatePresence>
           {state !== 'edit' && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-ink/90 backdrop-blur-xl"
-            >
-              {state === 'signing' ? (
-                <>
-                  <ParticleDotOrb className="h-40 w-40" size={160} speed={1.6} />
-                  <div className="mt-8 font-mono text-[11px] uppercase tracking-[0.3em] text-neon/80">
-                    <Scramble text="signing with passkey" />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="glass flex h-20 w-20 items-center justify-center rounded-[28px]"
-                  >
-                    <Check size={38} className="text-neon" strokeWidth={2.4} />
-                  </motion.div>
-                  <div className="mt-8 font-mono text-[11px] uppercase tracking-[0.3em] text-neon/80">
-                    <Scramble text="order filled" />
-                  </div>
-                  <div className="mt-3 font-mono text-[10px] text-white/25">
-                    {units.toLocaleString('en-US', { maximumFractionDigits: 2 })} {getToken}
-                  </div>
-                </>
-              )}
-            </motion.div>
+            <SignOverlay
+              state={state}
+              doneLabel="order filled"
+              detail={`${units.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${getToken}`}
+              onCancel={reject}
+            />
           )}
         </AnimatePresence>
       </motion.div>

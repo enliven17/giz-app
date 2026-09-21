@@ -6,11 +6,15 @@ export interface ParticleDotOrbProps {
   size?: number;
   speed?: number;
   color?: string;
+  /** 0 = sphere, 1 = fully scattered */
+  burst?: boolean;
 }
 
 const particleVertexShader = `
 uniform float uTime;
+uniform float uBurst;
 attribute float aSize;
+attribute vec3 aDir;
 varying float vAlpha;
 
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
@@ -61,13 +65,13 @@ float snoise(vec3 v){
 void main() {
   vec3 norm = normalize(position);
   float n = snoise(norm * 1.6 + vec3(0.0, uTime * 0.4, 0.0)) * 0.05;
-  vec3 displaced = position + norm * n;
-  
+  vec3 displaced = position + norm * n + aDir * uBurst * 5.0;
+
   vec4 mvPosition = modelViewMatrix * vec4(displaced, 1.0);
   gl_Position = projectionMatrix * mvPosition;
-  
-  gl_PointSize = aSize * (13.5 / -mvPosition.z);
-  vAlpha = smoothstep(-1.1, 1.0, norm.z) * 0.72 + 0.28;
+
+  gl_PointSize = aSize * (13.5 / -mvPosition.z) * (1.0 + uBurst * 0.6);
+  vAlpha = (smoothstep(-1.1, 1.0, norm.z) * 0.72 + 0.28) * (1.0 - smoothstep(0.35, 1.0, uBurst));
 }
 `;
 
@@ -90,11 +94,14 @@ export default function ParticleDotOrb({
   size = 42,
   speed = 1.0,
   color = '#31c47e',
+  burst = false,
 }: ParticleDotOrbProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
   const prevPointerRef = useRef({ x: 0, y: 0 });
   const rotationVelocityRef = useRef({ x: 0, y: 0.0035 });
+  const burstRef = useRef(false);
+  burstRef.current = burst;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -119,6 +126,7 @@ export default function ParticleDotOrb({
     const count = 190;
     const positions = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
+    const dirs = new Float32Array(count * 3);
 
     const phi = Math.PI * (3 - Math.sqrt(5));
     const radius = 1.15;
@@ -133,17 +141,30 @@ export default function ParticleDotOrb({
       positions[i * 3 + 2] = Math.sin(theta) * radiusAtY * radius;
 
       sizes[i] = 0.85 + Math.random() * 0.5;
+
+      // ponytail: dagilma yonu = normal + hafif rastgelelik
+      const jitter = 0.45;
+      const dx = positions[i * 3] / radius + (Math.random() - 0.5) * jitter;
+      const dy = positions[i * 3 + 1] / radius + (Math.random() - 0.5) * jitter;
+      const dz = positions[i * 3 + 2] / radius + (Math.random() - 0.5) * jitter;
+      const len = Math.hypot(dx, dy, dz) || 1;
+      const spread = 0.6 + Math.random() * 0.8;
+      dirs[i * 3] = (dx / len) * spread;
+      dirs[i * 3 + 1] = (dy / len) * spread;
+      dirs[i * 3 + 2] = (dz / len) * spread;
     }
 
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
+    geometry.setAttribute('aDir', new THREE.BufferAttribute(dirs, 3));
 
     const material = new THREE.ShaderMaterial({
       vertexShader: particleVertexShader,
       fragmentShader: particleFragmentShader,
       uniforms: {
         uTime: { value: 0 },
+        uBurst: { value: 0 },
         uColor: { value: new THREE.Color(color) },
       },
       transparent: true,
@@ -161,6 +182,11 @@ export default function ParticleDotOrb({
       const elapsedTime = clock.getElapsedTime() * speed;
 
       material.uniforms.uTime.value = elapsedTime * 1.4;
+      material.uniforms.uBurst.value = THREE.MathUtils.lerp(
+        material.uniforms.uBurst.value,
+        burstRef.current ? 1 : 0,
+        burstRef.current ? 0.045 : 0.15,
+      );
 
       if (!isDraggingRef.current) {
         group.rotation.y += rotationVelocityRef.current.y;

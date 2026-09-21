@@ -87,10 +87,14 @@ export default function Auth({ onBack, onDone }: { onBack: () => void; onDone: (
             className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-ink/85 px-8 backdrop-blur-xl"
           >
             <div className="relative flex h-48 w-48 items-center justify-center">
-              {step < 2 ? (
-                <ParticleDotOrb className="h-48 w-48" size={192} speed={1.4} />
-              ) : (
-                <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }}>
+              <ParticleDotOrb className="h-48 w-48" size={192} speed={1.4} burst={step === 2} />
+              {step === 2 && (
+                <motion.span
+                  initial={{ scale: 0.4, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.55, type: 'spring', stiffness: 220, damping: 18 }}
+                  className="absolute"
+                >
                   <Check size={56} strokeWidth={2} className="text-neon" />
                 </motion.span>
               )}

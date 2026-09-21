@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { X, Check, Fingerprint } from 'lucide-react'
+import { X, Fingerprint } from 'lucide-react'
 import Scramble from './Scramble'
-import ParticleDotOrb from './ParticleDotOrb'
+import SignOverlay, { type SignState } from './SignOverlay'
 
 
 
@@ -14,7 +14,7 @@ export default function TransferSheet({
   onClose: () => void
 }) {
   const [amount, setAmount] = useState('10000')
-  const [state, setState] = useState<'edit' | 'signing' | 'done'>('edit')
+  const [state, setState] = useState<'edit' | SignState>('edit')
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -22,10 +22,20 @@ export default function TransferSheet({
     return () => clearTimeout(t)
   }, [])
 
+  const timers = useRef<number[]>([])
+
   const confirm = () => {
     setState('signing')
-    setTimeout(() => setState('done'), 1500)
-    setTimeout(onClose, 3100)
+    timers.current = [
+      window.setTimeout(() => setState('done'), 1500),
+      window.setTimeout(onClose, 3500),
+    ]
+  }
+
+  const reject = () => {
+    timers.current.forEach(clearTimeout)
+    setState('failed')
+    window.setTimeout(() => setState('edit'), 2200)
   }
 
   return (
@@ -120,34 +130,11 @@ export default function TransferSheet({
 
         <AnimatePresence>
           {state !== 'edit' && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-ink/90 backdrop-blur-xl"
-            >
-              {state === 'signing' ? (
-                <>
-                  <ParticleDotOrb className="h-40 w-40" size={160} speed={1.6} />
-                  <div className="mt-8 font-mono text-[11px] uppercase tracking-[0.3em] text-neon/80">
-                    <Scramble text="signing with passkey" />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="glass flex h-20 w-20 items-center justify-center rounded-[28px]"
-                  >
-                    <Check size={38} className="text-neon" strokeWidth={2.4} />
-                  </motion.div>
-                  <div className="mt-8 font-mono text-[11px] uppercase tracking-[0.3em] text-neon/80">
-                    <Scramble text={mode === 'deposit' ? 'deposit queued' : 'withdrawal queued'} />
-                  </div>
-                </>
-              )}
-            </motion.div>
+            <SignOverlay
+              state={state}
+              doneLabel={mode === 'deposit' ? 'deposit queued' : 'withdrawal queued'}
+              onCancel={reject}
+            />
           )}
         </AnimatePresence>
       </motion.div>

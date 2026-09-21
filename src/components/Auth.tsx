@@ -93,25 +93,25 @@ export default function Auth({ onBack, onDone }: { onBack: () => void; onDone: (
               spread={9}
               burst={step === 2}
             />
-            <div className="relative flex h-48 w-48 items-center justify-center">
-              {step === 2 && (
-                <motion.span
-                  initial={{ scale: 0.4, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.55, type: 'spring', stiffness: 220, damping: 18 }}
-                  className="absolute"
-                >
-                  <Check size={56} strokeWidth={2} className="text-neon" />
-                </motion.span>
-              )}
-            </div>
+            {step === 2 && (
+              <motion.span
+                initial={{ scale: 0.4, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.55, type: 'spring', stiffness: 220, damping: 18 }}
+                className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+              >
+                <Check size={56} strokeWidth={2} className="text-neon" />
+              </motion.span>
+            )}
 
-            <div className="mt-10 text-center font-mono text-[11px] uppercase tracking-[0.3em] text-neon/80">
-              {step === 0 && <Scramble text="scanning biometrics" />}
-              {step === 1 && <Scramble text="deriving keypair" />}
-              {step === 2 && <Scramble text="wallet ready" />}
+            <div className="absolute inset-x-0 bottom-24 flex flex-col items-center">
+              <div className="text-center font-mono text-[11px] uppercase tracking-[0.3em] text-neon/80">
+                {step === 0 && <Scramble text="scanning biometrics" />}
+                {step === 1 && <Scramble text="deriving keypair" />}
+                {step === 2 && <Scramble text="wallet ready" />}
+              </div>
+              <div className="mt-3 font-mono text-[10px] text-white/25">0xA4f2 . . . 91c7</div>
             </div>
-            <div className="mt-3 font-mono text-[10px] text-white/25">0xA4f2 . . . 91c7</div>
           </motion.div>
         )}
 

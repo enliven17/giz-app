@@ -130,7 +130,7 @@ export default function Exchange() {
 
       <div className="mt-9">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-[17px] font-medium">Recent</h3>
+          <h3 className="text-[20px] font-medium tracking-tight">Recent</h3>
           <button className="font-mono text-[10px] uppercase tracking-widest text-neon/70">see all</button>
         </div>
         <div className="glass divide-y divide-white/5 rounded-3xl">

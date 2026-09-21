@@ -2,7 +2,6 @@ import { motion } from 'framer-motion'
 import { ChevronLeft, Share2, Lock } from 'lucide-react'
 import Chart from './Chart'
 import SpotlightCard from './SpotlightCard'
-import Scramble from './Scramble'
 import GlitchText from './GlitchText'
 import type { Vault } from '../data'
 
@@ -27,9 +26,6 @@ export default function VaultDetail({
           >
             <ChevronLeft size={18} />
           </button>
-          <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/35">
-            <Scramble text={vault.ticker + ' vault'} />
-          </div>
           <button className="glass-soft flex h-11 w-11 items-center justify-center rounded-2xl text-white/60">
             <Share2 size={16} />
           </button>
@@ -41,7 +37,7 @@ export default function VaultDetail({
               {vault.ticker}
             </div>
             <div>
-              <h2 className="text-[24px] font-semibold leading-tight">
+              <h2 className="text-[28px] font-medium leading-tight tracking-tight">
                 <GlitchText>{vault.name}</GlitchText>
               </h2>
               <div className="mt-1 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-white/30">
@@ -108,7 +104,7 @@ export default function VaultDetail({
         </div>
 
         <div className="mt-7">
-          <h3 className="mb-3 text-[16px] font-medium">Allocation</h3>
+          <h3 className="mb-4 text-[20px] font-medium tracking-tight">Allocation</h3>
           <div className="glass rounded-3xl p-5">
             <div className="flex h-2.5 overflow-hidden rounded-full bg-white/5">
               {vault.allocation.map((a, i) => (
@@ -140,7 +136,7 @@ export default function VaultDetail({
         </div>
 
         <div className="mt-7">
-          <h3 className="mb-3 text-[16px] font-medium">Terms</h3>
+          <h3 className="mb-4 text-[20px] font-medium tracking-tight">Terms</h3>
           <div className="glass divide-y divide-white/5 rounded-3xl">
             {[
               ['Strategy', vault.strategy],

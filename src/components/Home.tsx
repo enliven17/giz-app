@@ -88,7 +88,7 @@ export default function Home({
 
       <motion.section custom={4} variants={fade} initial="hidden" animate="show" className="mt-9">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-[17px] font-medium">Private vaults</h3>
+          <h3 className="text-[20px] font-medium tracking-tight">Private vaults</h3>
           <button onClick={onSeeAllVaults} className="font-mono text-[10px] uppercase tracking-widest text-neon/70">see all</button>
         </div>
 
@@ -101,7 +101,7 @@ export default function Home({
 
       <motion.section custom={10} variants={fade} initial="hidden" animate="show" className="mt-9">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-[17px] font-medium">Holdings</h3>
+          <h3 className="text-[20px] font-medium tracking-tight">Holdings</h3>
           <button onClick={onActivity} className="font-mono text-[10px] uppercase tracking-widest text-neon/70">activity</button>
         </div>
         <div className="glass divide-y divide-white/5 rounded-3xl">

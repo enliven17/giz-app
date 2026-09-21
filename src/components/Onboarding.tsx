@@ -7,7 +7,7 @@ import BubbleUpButton from './BubbleUpButton'
 export default function Onboarding({ onStart }: { onStart: () => void }) {
   return (
     <div className="relative flex min-h-0 flex-1 flex-col">
-      <div className="absolute inset-0">
+      <div className="pointer-events-none absolute inset-0">
         <GradientWaves
           horizonColor="#070d0a"
           waveColor="#2aa471"

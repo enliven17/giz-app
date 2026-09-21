@@ -10,8 +10,6 @@ const WALLETS = [
   { id: 'ledger', icon: Wallet, label: 'Ledger', note: '0x91be . . . e8a5' },
 ]
 
-const NETWORKS = ['Ethereum', 'Base', 'Arbitrum']
-
 export default function TransferSheet({
   mode,
   onClose,
@@ -21,7 +19,6 @@ export default function TransferSheet({
 }) {
   const [amount, setAmount] = useState('10000')
   const [wallet, setWallet] = useState('metamask')
-  const [network, setNetwork] = useState('Base')
   const [state, setState] = useState<'edit' | 'signing' | 'done'>('edit')
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -115,23 +112,9 @@ export default function TransferSheet({
           ))}
         </div>
 
-        <div className="mt-4 flex gap-2">
-          {NETWORKS.map((n) => (
-            <button
-              key={n}
-              onClick={() => setNetwork(n)}
-              className={`flex-1 rounded-xl py-2.5 font-mono text-[11px] ${
-                network === n ? 'bg-neon/10 text-neon' : 'glass-soft text-white/45'
-              }`}
-            >
-              {n}
-            </button>
-          ))}
-        </div>
-
         <div className="mt-4 space-y-2 px-1 font-mono text-[11px]">
           {[
-            ['Network', network],
+            ['Network', 'Monad'],
             ['Settlement', 'Instant on chain'],
             ['Network fee', '$0.42'],
           ].map(([k, v]) => (

@@ -8,11 +8,16 @@ export interface ParticleDotOrbProps {
   color?: string;
   /** 0 = sphere, 1 = fully scattered */
   burst?: boolean;
+  /** camera distance, larger = smaller orb inside its container */
+  distance?: number;
+  /** how far particles fly on burst */
+  spread?: number;
 }
 
 const particleVertexShader = `
 uniform float uTime;
 uniform float uBurst;
+uniform float uSpread;
 attribute float aSize;
 attribute vec3 aDir;
 varying float vAlpha;
@@ -65,13 +70,13 @@ float snoise(vec3 v){
 void main() {
   vec3 norm = normalize(position);
   float n = snoise(norm * 1.6 + vec3(0.0, uTime * 0.4, 0.0)) * 0.05;
-  vec3 displaced = position + norm * n + aDir * uBurst * 5.0;
+  vec3 displaced = position + norm * n + aDir * uBurst * uSpread;
 
   vec4 mvPosition = modelViewMatrix * vec4(displaced, 1.0);
   gl_Position = projectionMatrix * mvPosition;
 
   gl_PointSize = aSize * (13.5 / -mvPosition.z) * (1.0 + uBurst * 0.6);
-  vAlpha = (smoothstep(-1.1, 1.0, norm.z) * 0.72 + 0.28) * (1.0 - smoothstep(0.35, 1.0, uBurst));
+  vAlpha = (smoothstep(-1.1, 1.0, norm.z) * 0.72 + 0.28) * (1.0 - smoothstep(0.6, 1.0, uBurst));
 }
 `;
 
@@ -95,6 +100,8 @@ export default function ParticleDotOrb({
   speed = 1.0,
   color = '#31c47e',
   burst = false,
+  distance = 4.4,
+  spread = 5.0,
 }: ParticleDotOrbProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
@@ -112,7 +119,7 @@ export default function ParticleDotOrb({
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 100);
-    camera.position.set(0, 0, 4.4);
+    camera.position.set(0, 0, distance);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
@@ -165,6 +172,7 @@ export default function ParticleDotOrb({
       uniforms: {
         uTime: { value: 0 },
         uBurst: { value: 0 },
+        uSpread: { value: spread },
         uColor: { value: new THREE.Color(color) },
       },
       transparent: true,
@@ -250,7 +258,7 @@ export default function ParticleDotOrb({
       material.dispose();
       renderer.dispose();
     };
-  }, [size, speed, color]);
+  }, [size, speed, color, distance, spread]);
 
   return (
     <div className={`relative flex items-center justify-center cursor-grab active:cursor-grabbing ${className}`}>

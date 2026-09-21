@@ -21,11 +21,17 @@ export default function SignOverlay({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-ink/90 backdrop-blur-xl"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-ink/95 backdrop-blur-xl"
     >
-      <div className="relative flex h-48 w-48 items-center justify-center">
-        <ParticleDotOrb className="h-48 w-48" size={192} speed={1.4} burst={state !== 'signing'} />
+      <ParticleDotOrb
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        speed={1.4}
+        distance={11}
+        spread={9}
+        burst={state !== 'signing'}
+      />
 
+      <div className="relative flex h-48 w-48 items-center justify-center">
         {state !== 'signing' && (
           <motion.span
             initial={{ scale: 0.4, opacity: 0 }}

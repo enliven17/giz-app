@@ -122,9 +122,16 @@ export default function ParticleDotOrb({
     camera.position.set(0, 0, distance);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height);
+    // ponytail: updateStyle=false -> canvas css ile inset-0, merkez her zaman kabin merkezi
+    renderer.setSize(width, height, false);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.5));
-    container.appendChild(renderer.domElement);
+    const canvasEl = renderer.domElement;
+    canvasEl.style.position = 'absolute';
+    canvasEl.style.inset = '0';
+    canvasEl.style.width = '100%';
+    canvasEl.style.height = '100%';
+    canvasEl.style.display = 'block';
+    container.appendChild(canvasEl);
 
     const group = new THREE.Group();
     scene.add(group);
@@ -215,7 +222,7 @@ export default function ParticleDotOrb({
       if (w === 0 || h === 0) return;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
+      renderer.setSize(w, h, false);
     };
 
     const resizeObserver = new ResizeObserver(handleResize);
@@ -262,7 +269,7 @@ export default function ParticleDotOrb({
 
   return (
     <div className={`flex items-center justify-center ${className}`}>
-      <div ref={containerRef} className="w-full h-full flex items-center justify-center" />
+      <div ref={containerRef} className="relative h-full w-full" />
     </div>
   );
 }

@@ -25,15 +25,14 @@ export default function Onboarding({ onStart }: { onStart: () => void }) {
           detail="high"
           brightness={1}
           opacity={1}
-          mouseInteraction
-          parallaxStrength={0.35}
+          mouseInteraction={false}
           grain
           grainIntensity={0.03}
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-ink/25 to-ink" />
       </div>
 
-      <div className="pointer-events-none relative flex min-h-0 flex-1 flex-col px-6 pb-10 pt-16">
+      <div className="relative flex min-h-0 flex-1 flex-col px-6 pb-10 pt-16">
         <div className="mt-auto">
           <motion.h1
             initial={{ opacity: 0, y: 18 }}
@@ -60,7 +59,7 @@ export default function Onboarding({ onStart }: { onStart: () => void }) {
           </motion.p>
         </div>
 
-        <div className="pointer-events-auto mt-10">
+        <div className="mt-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronLeft, CheckCheck } from 'lucide-react'
-import Scramble from './Scramble'
 import { notifications } from '../content'
 
 const TAG_LABEL: Record<string, string> = {
@@ -34,10 +33,7 @@ export default function Notifications({ onBack }: { onBack: () => void }) {
       </div>
 
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
-        <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/35">
-          <Scramble text={`${count} unread`} />
-        </div>
-        <h2 className="mt-2 text-[30px] font-medium tracking-tight">Notifications</h2>
+        <h2 className="text-[30px] font-medium tracking-tight">Notifications</h2>
       </motion.div>
 
       <div className="mt-6 space-y-2">

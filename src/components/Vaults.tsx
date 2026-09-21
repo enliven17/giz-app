@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Search, SlidersHorizontal } from 'lucide-react'
 import VaultCard from './VaultCard'
-import Scramble from './Scramble'
 import { vaults, type Vault } from '../data'
 
 const FILTERS = ['All', 'Low', 'Medium', 'High'] as const
@@ -20,10 +19,7 @@ export default function Vaults({ onOpenVault }: { onOpenVault: (v: Vault) => voi
   return (
     <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-36 pt-14">
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/35">
-          <Scramble text="48 vaults open" />
-        </div>
-        <h2 className="mt-2 text-[30px] font-medium tracking-tight">Private vaults</h2>
+        <h2 className="text-[30px] font-medium tracking-tight">Private vaults</h2>
       </motion.div>
 
       <div className="mt-6 flex gap-2">

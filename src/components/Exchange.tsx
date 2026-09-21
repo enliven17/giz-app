@@ -26,10 +26,7 @@ export default function Exchange() {
   return (
     <div className="relative min-h-0 flex-1 overflow-y-auto px-5 pb-36 pt-14">
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/35">
-          <Scramble text="instant settlement" />
-        </div>
-        <h2 className="mt-2 text-[30px] font-medium tracking-tight">Exchange</h2>
+        <h2 className="text-[30px] font-medium tracking-tight">Exchange</h2>
       </motion.div>
 
       <div className="relative mt-6 space-y-2">

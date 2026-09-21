@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowDown, ChevronDown, X, Check } from 'lucide-react'
 import Scramble from './Scramble'
+import ParticleDotOrb from './ParticleDotOrb'
 import type { Vault } from '../data'
 
 export default function SwapSheet({
@@ -147,11 +148,7 @@ export default function SwapSheet({
             >
               {state === 'signing' ? (
                 <>
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1.1, repeat: Infinity, ease: 'linear' }}
-                    className="h-16 w-16 rounded-full border-2 border-neon/20 border-t-neon"
-                  />
+                  <ParticleDotOrb className="h-40 w-40" size={160} speed={1.6} />
                   <div className="mt-8 font-mono text-[11px] uppercase tracking-[0.3em] text-neon/80">
                     <Scramble text="signing with passkey" />
                   </div>

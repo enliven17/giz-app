@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X, Check, Fingerprint, Wallet } from 'lucide-react'
 import Scramble from './Scramble'
+import ParticleDotOrb from './ParticleDotOrb'
 
 const WALLETS = [
   { id: 'passkey', icon: Fingerprint, label: 'Passkey wallet', note: '0xA4f2 . . . 91c7' },
@@ -159,11 +160,7 @@ export default function TransferSheet({
             >
               {state === 'signing' ? (
                 <>
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1.1, repeat: Infinity, ease: 'linear' }}
-                    className="h-16 w-16 rounded-full border-2 border-neon/20 border-t-neon"
-                  />
+                  <ParticleDotOrb className="h-40 w-40" size={160} speed={1.6} />
                   <div className="mt-8 font-mono text-[11px] uppercase tracking-[0.3em] text-neon/80">
                     <Scramble text="signing with passkey" />
                   </div>

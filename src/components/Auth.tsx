@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Fingerprint, Wallet, ChevronLeft, ShieldCheck, Check } from 'lucide-react'
 import GlitchText from './GlitchText'
 import Scramble from './Scramble'
+import ParticleDotOrb from './ParticleDotOrb'
 
 const WALLETS = ['MetaMask', 'Rainbow', 'Ledger', 'WalletConnect']
 
@@ -85,27 +86,13 @@ export default function Auth({ onBack, onDone }: { onBack: () => void; onDone: (
             exit={{ opacity: 0 }}
             className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-ink/85 px-8 backdrop-blur-xl"
           >
-            <div className="relative flex h-40 w-40 items-center justify-center">
-              <motion.div
-                animate={{ scale: [1, 1.25, 1], opacity: [0.5, 0, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="absolute inset-0 rounded-full border border-neon/40"
-              />
-              <div className="glass flex h-28 w-28 items-center justify-center rounded-[36px]">
-                {step < 2 ? (
-                  <Fingerprint size={52} strokeWidth={1.2} className="text-neon" />
-                ) : (
-                  <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }}>
-                    <Check size={52} strokeWidth={2} className="text-neon" />
-                  </motion.span>
-                )}
-              </div>
-              {step < 2 && (
-                <motion.div
-                  animate={{ y: [-52, 52, -52] }}
-                  transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-                  className="absolute h-[2px] w-28 bg-neon/60"
-                />
+            <div className="relative flex h-48 w-48 items-center justify-center">
+              {step < 2 ? (
+                <ParticleDotOrb className="h-48 w-48" size={192} speed={1.4} />
+              ) : (
+                <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                  <Check size={56} strokeWidth={2} className="text-neon" />
+                </motion.span>
               )}
             </div>
 

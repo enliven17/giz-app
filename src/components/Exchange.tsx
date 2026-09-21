@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowDown, Check } from 'lucide-react'
 import Scramble from './Scramble'
+import SpotlightCard from './SpotlightCard'
 import { vaults } from '../data'
 
 const RECENT = [
@@ -29,64 +30,82 @@ export default function Exchange() {
         <h2 className="text-[30px] font-medium tracking-tight">Exchange</h2>
       </motion.div>
 
-      <div className="relative mt-6 space-y-2">
-        <div className="glass rounded-3xl px-5 py-4">
-          <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-widest text-white/30">
-            <span>From</span>
+      <div className="relative mt-7 space-y-2.5">
+        <SpotlightCard className="rounded-[28px] px-6 py-7">
+          <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.18em] text-white/30">
+            <span>You pay</span>
             <span>Balance 184,204.00</span>
           </div>
-          <div className="mt-2 flex items-center justify-between gap-3">
+          <div className="mt-4 flex items-end justify-between gap-4">
             <input
               value={amount}
               onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ''))}
               inputMode="decimal"
               placeholder="0"
-              className="w-full min-w-0 bg-transparent font-mono text-[30px] font-normal caret-neon outline-none placeholder:text-white/25"
+              className="w-full min-w-0 bg-transparent font-mono text-[40px] font-normal leading-none tracking-tight caret-neon outline-none placeholder:text-white/20"
             />
-            <span className="glass-soft shrink-0 rounded-full px-3 py-2 font-mono text-[12px]">USDC</span>
+            <span className="glass-soft flex h-11 shrink-0 items-center rounded-full px-4 font-mono text-[13px]">
+              USDC
+            </span>
           </div>
-        </div>
+          <div className="mt-4 flex gap-2">
+            {['25%', '50%', '75%', 'Max'].map((p) => (
+              <button
+                key={p}
+                className="glass-soft flex-1 rounded-xl py-2.5 font-mono text-[11px] text-white/45"
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        </SpotlightCard>
 
         <div className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
           <motion.button
             whileTap={{ rotate: 180 }}
-            className="glass flex h-11 w-11 items-center justify-center rounded-2xl text-neon"
+            className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.08] bg-ink text-neon"
           >
-            <ArrowDown size={16} />
+            <ArrowDown size={18} />
           </motion.button>
         </div>
 
-        <div className="glass rounded-3xl px-5 py-4">
-          <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-widest text-white/30">
-            <span>Receive</span>
+        <SpotlightCard className="rounded-[28px] px-6 py-7">
+          <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.18em] text-white/30">
+            <span>You receive</span>
             <span>Fee 0.05%</span>
           </div>
-          <div className="mt-2 flex items-center justify-between gap-3">
-            <div className="truncate font-mono text-[30px] font-normal text-white/85">
+          <div className="mt-4 flex items-end justify-between gap-4">
+            <div className="min-w-0 truncate font-mono text-[40px] font-normal leading-none tracking-tight text-white/85">
               {units.toLocaleString('en-US', { maximumFractionDigits: 2 })}
             </div>
-            <span className="glass-soft shrink-0 rounded-full px-3 py-2 font-mono text-[12px] text-neon">
+            <span className="glass-soft flex h-11 shrink-0 items-center rounded-full px-4 font-mono text-[13px] text-neon">
               {vault.ticker}
             </span>
           </div>
-        </div>
+          <div className="mt-4 truncate text-[13px] text-white/35">{vault.name}</div>
+        </SpotlightCard>
       </div>
 
-      <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+      <div className="mt-5 flex gap-2 overflow-x-auto pb-1">
         {vaults.map((v) => (
           <button
             key={v.id}
             onClick={() => setVault(v)}
-            className={`shrink-0 rounded-full px-4 py-2 font-mono text-[10px] uppercase tracking-widest ${
-              v.id === vault.id ? 'bg-neon/15 text-neon' : 'glass-soft text-white/40'
+            className={`flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 ${
+              v.id === vault.id ? 'bg-neon/10' : 'glass-soft'
             }`}
           >
-            {v.ticker}
+            <span
+              className={`font-mono text-[12px] ${v.id === vault.id ? 'text-neon' : 'text-white/70'}`}
+            >
+              {v.ticker}
+            </span>
+            <span className="font-mono text-[11px] text-white/30">{v.apy}%</span>
           </button>
         ))}
       </div>
 
-      <div className="mt-5 space-y-2 px-1 font-mono text-[11px]">
+      <div className="glass mt-5 space-y-3 rounded-3xl px-5 py-5 font-mono text-[12px]">
         {[
           ['Rate', `1 ${vault.ticker} = $${vault.price.toFixed(4)}`],
           ['Settlement', 'T+0 instant'],
@@ -95,7 +114,7 @@ export default function Exchange() {
         ].map(([k, v]) => (
           <div key={k} className="flex justify-between">
             <span className="text-white/30">{k}</span>
-            <span className="text-white/60">{v}</span>
+            <span className="text-white/70">{v}</span>
           </div>
         ))}
       </div>

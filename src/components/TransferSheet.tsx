@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { X, Check, Landmark, Wallet, CreditCard } from 'lucide-react'
+import { X, Check, Fingerprint, Wallet } from 'lucide-react'
 import Scramble from './Scramble'
 
-const METHODS = [
-  { id: 'wire', icon: Landmark, label: 'Bank wire', note: '1 to 2 business days' },
-  { id: 'usdc', icon: Wallet, label: 'USDC transfer', note: 'Instant on chain' },
-  { id: 'card', icon: CreditCard, label: 'Card', note: 'Up to $25,000' },
+const WALLETS = [
+  { id: 'passkey', icon: Fingerprint, label: 'Passkey wallet', note: '0xA4f2 . . . 91c7' },
+  { id: 'metamask', icon: Wallet, label: 'MetaMask', note: '0x7c19 . . . 4d02' },
+  { id: 'ledger', icon: Wallet, label: 'Ledger', note: '0x91be . . . e8a5' },
 ]
+
+const NETWORKS = ['Ethereum', 'Base', 'Arbitrum']
 
 export default function TransferSheet({
   mode,
@@ -17,7 +19,8 @@ export default function TransferSheet({
   onClose: () => void
 }) {
   const [amount, setAmount] = useState('10000')
-  const [method, setMethod] = useState('usdc')
+  const [wallet, setWallet] = useState('metamask')
+  const [network, setNetwork] = useState('Base')
   const [state, setState] = useState<'edit' | 'signing' | 'done'>('edit')
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -62,8 +65,8 @@ export default function TransferSheet({
 
         <div className="glass-soft rounded-3xl px-5 py-4">
           <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-widest text-white/30">
-            <span>{mode === 'deposit' ? 'Amount' : 'Withdraw'}</span>
-            <span>Available 184,204.00</span>
+            <span>Amount</span>
+            <span>{mode === 'deposit' ? 'Wallet 42,180.00' : 'Available 184,204.00'}</span>
           </div>
           <div className="mt-2 flex items-center justify-between gap-3">
             <input
@@ -89,22 +92,52 @@ export default function TransferSheet({
           ))}
         </div>
 
-        <div className="mt-5 space-y-2">
-          {METHODS.map(({ id, icon: Icon, label, note }) => (
+        <div className="mt-5 px-1 font-mono text-[10px] uppercase tracking-[0.22em] text-white/30">
+          {mode === 'deposit' ? 'From wallet' : 'To wallet'}
+        </div>
+        <div className="mt-3 space-y-2">
+          {WALLETS.map(({ id, icon: Icon, label, note }) => (
             <button
               key={id}
-              onClick={() => setMethod(id)}
+              onClick={() => setWallet(id)}
               className={`flex w-full items-center gap-4 rounded-2xl px-5 py-4 text-left ${
-                method === id ? 'bg-neon/10' : 'glass-soft'
+                wallet === id ? 'bg-neon/10' : 'glass-soft'
               }`}
             >
-              <Icon size={18} className={method === id ? 'text-neon' : 'text-white/40'} />
+              <Icon size={18} className={wallet === id ? 'text-neon' : 'text-white/40'} />
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[14px] text-white/85">{label}</span>
                 <span className="mt-0.5 block font-mono text-[10px] text-white/30">{note}</span>
               </span>
-              {method === id && <span className="h-2 w-2 rounded-full bg-neon" />}
+              {wallet === id && <span className="h-2 w-2 rounded-full bg-neon" />}
             </button>
+          ))}
+        </div>
+
+        <div className="mt-4 flex gap-2">
+          {NETWORKS.map((n) => (
+            <button
+              key={n}
+              onClick={() => setNetwork(n)}
+              className={`flex-1 rounded-xl py-2.5 font-mono text-[11px] ${
+                network === n ? 'bg-neon/10 text-neon' : 'glass-soft text-white/45'
+              }`}
+            >
+              {n}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-4 space-y-2 px-1 font-mono text-[11px]">
+          {[
+            ['Network', network],
+            ['Settlement', 'Instant on chain'],
+            ['Network fee', '$0.42'],
+          ].map(([k, v]) => (
+            <div key={k} className="flex justify-between">
+              <span className="text-white/30">{k}</span>
+              <span className="text-white/60">{v}</span>
+            </div>
           ))}
         </div>
 

@@ -33,18 +33,19 @@ export default function SignOverlay({
 
       {/* tik/carpi kurenin merkezinde */}
       {state !== 'signing' && (
-        <motion.span
-          initial={{ scale: 0.4, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.55, type: 'spring', stiffness: 220, damping: 18 }}
-          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-        >
-          {state === 'done' ? (
-            <Check size={56} strokeWidth={2} className="text-neon" />
-          ) : (
-            <X size={56} strokeWidth={2} className="text-rose-400" />
-          )}
-        </motion.span>
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <motion.span
+            initial={{ scale: 0.4, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.55, type: 'spring', stiffness: 220, damping: 18 }}
+          >
+            {state === 'done' ? (
+              <Check size={56} strokeWidth={2} className="text-neon" />
+            ) : (
+              <X size={56} strokeWidth={2} className="text-rose-400" />
+            )}
+          </motion.span>
+        </div>
       )}
 
       <div className="absolute inset-x-0 bottom-24 flex flex-col items-center">

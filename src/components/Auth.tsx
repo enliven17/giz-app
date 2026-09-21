@@ -94,14 +94,15 @@ export default function Auth({ onBack, onDone }: { onBack: () => void; onDone: (
               burst={step === 2}
             />
             {step === 2 && (
-              <motion.span
-                initial={{ scale: 0.4, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.55, type: 'spring', stiffness: 220, damping: 18 }}
-                className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-              >
-                <Check size={56} strokeWidth={2} className="text-neon" />
-              </motion.span>
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <motion.span
+                  initial={{ scale: 0.4, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.55, type: 'spring', stiffness: 220, damping: 18 }}
+                >
+                  <Check size={56} strokeWidth={2} className="text-neon" />
+                </motion.span>
+              </div>
             )}
 
             <div className="absolute inset-x-0 bottom-24 flex flex-col items-center">

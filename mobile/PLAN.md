@@ -1,0 +1,442 @@
+# Nexum mobile implementation plan
+
+Status: planning; no mobile application has been scaffolded.
+Created: 2026-09-22.
+Source baseline: local commit `ecc0d70`, with the web app under `../frontend/`.
+The locally known `origin/main` is two commits ahead (`1ea945d`); the inspected
+delta affects desktop layout. Refresh this inventory against the agreed frontend
+revision before implementation. This plan does not require switching or pulling
+the current checkout automatically.
+
+## 1. Product goal and decision status
+
+Build a cross-platform crypto investment application with the same product
+capabilities as the frontend website, adapted to native mobile interaction.
+
+### Confirmed by the user
+
+- React Native is the mobile application foundation.
+- NativeWind is the styling foundation.
+- Atomic design is the component architecture, using `src/components/atoms`,
+  `molecules`, `organisms`, and `templates`; feature screens serve as pages.
+- Use React Navigation directly with typed routes and native stack navigation.
+- Use npm with a mobile-local `package-lock.json`.
+- Introduce `just` for workspace commands, with Windows-compatible recipes.
+  Package scripts remain the source of truth for each app.
+- Feature parity with the existing frontend is the product target.
+- The mobile application lives in `mobile/`, alongside `frontend/`, `backend/`,
+  and `landing/`.
+
+### Accepted foundation
+
+The user accepted the recommended adoptions from the Toddy reference inventory.
+These are selected technologies and principles, not installed dependencies or
+completed implementation. Exact compatible versions remain a foundation task.
+
+| Area | Selected approach | Reason |
+| --- | --- | --- |
+| Platforms | iOS and Android from one codebase | Interpret cross-platform as native mobile; the existing web app remains separate |
+| Language | Strict TypeScript | Typed screen contracts, financial values, and service boundaries |
+| Runtime | Expo with development builds | Native integrations without relying on Expo Go's fixed library set |
+| Styling versions | Stable NativeWind 4 with its supported Tailwind 3 configuration | Avoid adopting the NativeWind 5 release candidate by accident |
+| State | Local React state for controls; explicit session provider; typed service adapters | Keep UI, session, and remote data responsibilities separate |
+| Delivery | Mock-backed feature parity, then real integrations | The reference frontend has no real backend or wallet integration |
+
+Select and record a compatible Expo/React Native/NativeWind/Reanimated version
+matrix during foundation work. Do not install independently chosen latest versions.
+Use the chosen Expo SDK's supported native dependency versions. NativeWind's
+current stable documentation uses Tailwind 3; its v5 instructions are a separate
+release-candidate path. Recheck at implementation time.
+
+Other library selections (remote-data cache, forms, decimal arithmetic, charts,
+bottom sheets, wallet SDK, and device E2E runner) remain open.
+Jest with jest-expo and React Native Testing Library are selected for automated
+unit/component and mocked integration testing.
+Choose one solution per responsibility when needed and record the rationale.
+
+### Accepted tools and adoption boundaries
+
+| Area | Accepted selection | Application to Nexum |
+| --- | --- | --- |
+| Native runtime | Expo development builds and expo-dev-client | iOS/Android native development; select a compatible stable SDK matrix rather than copying Toddy versions |
+| Language | Strict TypeScript | Typed domain, component, service and navigation contracts |
+| Local state | React hooks and Context | Control state and scoped providers initially; remote cache choice remains separate |
+| Motion | React Native Reanimated and compatible Worklets | Native motion with reduced-motion support; no game-specific transition policy |
+| Native layout/navigation infrastructure | react-native-safe-area-context and react-native-screens | Safe areas and React Navigation native stacks |
+| Icons and vectors | lucide-react-native and react-native-svg | Shared icon primitives and native SVG rendering |
+| Preferences | AsyncStorage behind storage adapters | Non-sensitive preferences only; never credentials, signing keys, or authoritative financial state |
+| Startup/assets | expo-font, expo-asset, expo-splash-screen, expo-status-bar | Add when their font, asset, launch or system-bar responsibilities are implemented |
+| Static checks | ESLint with Expo configuration; strict TypeScript checks | Include both in the main check command |
+| Formatting | Prettier and EditorConfig | Select and document formatting values at setup; tooling adoption does not mandate Toddy's exact values |
+| Commit hooks | Husky | Fast, scoped, non-mutating format/lint/focused-test gate; full checks stay in CI |
+| Automated tests | Jest, jest-expo, React Native Testing Library | Unit, mocked integration and accessible user-interaction tests |
+| Coverage | Full-source coverage with enforced thresholds | Establish Nexum's own meaningful baseline; do not copy Toddy's percentages |
+| Dependency health | Expo Doctor | Include in the main check command |
+| Builds | EAS development, preview and production profiles | Configure profiles at foundation; builds/submissions require their own task scope and credentials |
+| Tool versions | Document and enforce compatible Node/npm/just versions | Retain npm; no required mise or pnpm migration |
+
+Optional/deferred/excluded decisions remain explicit:
+
+- **Optional later:** custom asset audit/optimization scripts adapted to Nexum,
+  not copied with game-specific budgets or rules.
+- **Deferred:** Tenjin or any other attribution/analytics SDK until a concrete
+  requirement and data policy exist.
+- **Excluded initially:** Expo Audio, Expo IAP, landscape-only framing, game
+  navigation resets/disabled gestures, and game-specific purchases or progression.
+- **Not selected:** pnpm or mandatory mise. The user's npm choice and existing
+  decision to avoid requiring mise remain in effect.
+- **Selective adoption:** architecture checks enforce real import/ownership
+  boundaries; avoid tests that merely match source text or exact filenames.
+
+## 2. Reference behavior and feature parity
+
+The frontend is a visual and interaction reference, not a production financial
+contract. `src/data.ts` contains fixtures and synthetic chart series;
+`src/content.ts` contains static account content and notifications. Authentication
+and transaction success are driven by timers. Several visible buttons have no
+handler. Mobile must not interpret those timers or labels as working integrations.
+
+Paths in this table are relative to `../frontend/`.
+
+| Area | Reference | Mobile parity target | Current limitation / follow-up |
+| --- | --- | --- | --- |
+| Entry and access | `src/components/Onboarding.tsx`, `Auth.tsx` | Welcome, passkey-wallet path, external-wallet path, cancel/back, access to app | Simulated authentication; real session, recovery, and wallet providers unselected |
+| App navigation | `src/App.tsx`, `src/components/BottomNav.tsx` | Home, Vaults, Exchange, Settings tabs; detail and secondary screens; native back behavior | Web currently uses component state rather than native routes |
+| Portfolio | `src/components/Home.tsx` | Portfolio value, performance chart, holdings, vault shortcuts, activity, notifications, deposit/withdraw entry | Values are fixtures; period controls are currently presentation only |
+| Vault discovery | `src/components/Vaults.tsx`, `VaultCard.tsx` | Search, risk filters, cards, no-results state, detail navigation | Search currently matches name/ticker/strategy despite manager-search placeholder; advanced-filter icon is inactive |
+| Vault detail | `src/components/VaultDetail.tsx` | Price/performance, APY, TVL, lockup, allocation, strategy, minimum, buy/sell entry | Chart periods and share action are inactive; metrics are fixtures |
+| Exchange | `src/components/Exchange.tsx` | Amount input, vault selection, pay/receive preview, fee/rate summary, recent activity, confirmation flow | Floating-point estimate and timed success; percentage, direction, and see-all controls need specified behavior |
+| Buy and sell | `src/components/SwapSheet.tsx` | Native sheet/modal, correct asset units, review, signing/result states, cancellation | No quote, balance enforcement, real signature, or execution |
+| Deposit and withdrawal | `src/components/TransferSheet.tsx` | Amount, wallet/network summary, review, queued/pending/result states | Monad, USDC, fees, and settlement text are display fixtures, not agreed integration contracts |
+| Signing feedback | `src/components/SignOverlay.tsx` | Shared pending, rejected, failed, and success feedback | Timer-driven demo; signature success is not settlement |
+| Notifications | `src/components/Notifications.tsx`, `src/content.ts` | Feed, categories, unread presentation, empty/error/loading states | Static feed; OS push delivery is a separate integration |
+| Settings | `src/components/Settings.tsx` | Account summary, address, security/preferences/support navigation, alerts, disconnect | Alerts toggle is local state; clipboard and persistence need implementation |
+| Secondary pages | `src/components/SubPage.tsx`, `src/content.ts` | Passkey wallet, transaction signing, currency, statements, contact desk, terms/disclosures, activity | Most rows/actions are static; documents, recovery, support, and policy changes need contracts |
+
+Parity means preserving these user journeys and information, not copying inert
+buttons or incorrect calculations. During each feature milestone, list every
+visible action as implemented, simulated, explicitly unavailable, or awaiting a
+product decision. Do not silently omit actions. Mock-only builds must identify
+demo data and simulated operations. Release completion requires real behavior
+for each supported action or an explicitly agreed scope change.
+
+### Visual and native experience
+
+- Retain the frontend's dark surfaces, green accent, typography hierarchy,
+  rounded cards, charts, and investment information hierarchy.
+- Start token extraction from `../frontend/tailwind.config.ts` and
+  `../frontend/src/index.css`: ink `#050706`, soft ink `#0b100d`, accent `#31c47e`.
+- Adapt spacing, scrolling, safe areas, keyboard avoidance, sheets, and navigation
+  to iOS and Android. Do not copy browser fixed positioning or viewport units.
+- Verify font embedding rights and native font loading before copying font assets;
+  use a documented fallback until resolved.
+- Replace web-only Framer Motion, DOM/SVG, CSS blur, and WebGL effects with native
+  implementations or simpler approved equivalents. Decorative effects are lower
+  priority than readable data, accessible controls, and smooth scrolling.
+- Support screen readers, text scaling, reduced motion, platform-appropriate touch
+  targets, and statuses distinguishable without color alone.
+
+## 3. Selected code structure and atomic boundaries
+
+This is a target structure, not a request to create empty folders immediately.
+Create folders as their first implementation is added. React Navigation is selected;
+use explicit navigator modules rather than Expo Router file-based routes.
+
+```text
+mobile/
+  AGENTS.md
+  PLAN.md
+  App.tsx                      # Thin entry point
+  src/
+    application/               # AppRoot and provider/startup composition
+    navigation/                # Typed route params, auth stack, tabs, detail/modals
+    components/
+      atoms/                   # Text, Button, Input, Icon, Badge, Spinner
+      molecules/               # AmountField, SearchField, MetricRow, AddressRow
+      organisms/               # PortfolioSummary, VaultList, TransactionReview
+      templates/               # Screen, DetailScreen, FormScreen layouts
+    features/
+      auth/                    # screens/, controller hooks, viewModels as needed
+      portfolio/
+      vaults/
+      trading/
+      transfers/
+      notifications/
+      settings/
+      activity/
+    domain/                    # Pure models, amount rules, operation states
+    services/                  # Typed interfaces and mock/remote adapters
+    storage/                   # Serialization, normalization and persistence adapters
+    providers/                 # Session and application-level wiring
+    theme/                     # Shared semantic tokens and variants
+    config/                    # Validated public runtime configuration
+    fixtures/                  # Deterministic demo data, clearly isolated
+    utils/                     # Only genuinely shared utilities
+  assets/                      # Approved fonts and static images
+  tests/                       # Cross-feature and device test support
+  package.json
+  package-lock.json
+```
+
+| Layer | Owns | Must not own |
+| --- | --- | --- |
+| Atoms | Basic visual/control behavior and accessible defaults | API calls, navigation, session checks, financial rules, page spacing |
+| Molecules | A small reusable control composed of atoms; intrinsic input state | Feature workflows or remote-data ownership |
+| Organisms | Larger sections composed of UI pieces and passed view models/callbacks | Wallet signing implementations, API clients, settlement decisions |
+| Templates | Screen structure, safe areas, slots, scrolling and keyboard layout | Fetching, auth policy, route-specific content |
+| Feature screens (atomic pages) | Bind routes, feature hooks, data states, templates and actions | Duplicated UI primitives or inline transport/signing code |
+| Domain/services | Pure rules, typed data boundaries, integration adapters | Rendering and route navigation |
+
+Navigators register thin feature screens. Controller hooks coordinate meaningful
+screen behavior; typed view models expose presentation-ready data and callbacks.
+Use these patterns for complexity that warrants them, not mandatory pass-through
+hooks or wrapper files on every screen. Keep pure calculations in domain modules.
+`src/application/AppRoot` composes startup, navigation and providers; individual
+features retain their own orchestration rather than accumulating in one controller.
+Persisted preferences pass through `src/storage/` for serialization, normalization
+and defaults. Handle write failures; do not copy fire-and-forget persistence into
+financial operations. Financial state is reconciled with authoritative services.
+UI layers depend on lower-level UI and shared types, never on route modules.
+Keep one-off feature UI beside its feature, classified by responsibility; promote
+it to shared components when reuse is demonstrated. Avoid wrapper chains made
+only to satisfy the taxonomy. Dependency cycles are not allowed.
+
+Do not import browser components directly from `frontend/`. Initially keep the
+mobile package independent. Extract shared platform-neutral contracts or tokens
+only when both apps need them and the repository change is in scope.
+
+### Workspace command contract
+
+`just` supports Windows, macOS, and Linux. Adopt it as a thin root-level command
+runner, while npm scripts remain independently runnable inside each app. No pnpm
+or mise dependency is introduced by this decision.
+
+- Add the root `justfile` during M1 when the mobile scripts exist. The planned
+  `mobile-dev`, `mobile-check`, `mobile-android`, and `mobile-ios` recipes delegate
+  to app-local npm scripts; these commands do not exist yet.
+- Use explicit Windows shell configuration supported by the selected `just`
+  version. Prefer a single npm invocation per recipe, such as
+  `npm --prefix mobile run check`, over shell-specific command chains.
+- Avoid Bash-only syntax, POSIX-only utilities, and inline environment assignment
+  in shared recipes. Put complex portable tasks in Node scripts when necessary.
+- Document the required Node, npm, and just versions plus Windows shell setup.
+  Test on actual Windows or Windows CI; a macOS dry run is not Windows evidence.
+- Windows supports the command runner, but that does not make every native task
+  cross-platform: local iOS builds/simulators require macOS and Xcode. Mark that
+  recipe accordingly; document Android SDK/JDK requirements separately.
+
+## 4. Data, wallet, and transaction boundaries
+
+- Define interfaces for session/access, wallet capabilities, portfolio, vaults,
+  quotes/orders, transfers, activity, notifications, and preferences. Implement
+  deterministic mock adapters first; do not invent backend endpoints.
+- Keep mock selection explicit in application wiring. Production configuration
+  must not silently fall back to mock credentials, balances, or success states.
+- Keep remote state out of UI atoms. Add a remote-data cache when real fetching
+  begins; invalidate/refetch relevant portfolio and activity after confirmed
+  operations rather than manufacturing settlement locally.
+- Model amounts with asset identity, network, and precision. Use decimal strings
+  or base-unit integers with explicit rounding; never JS floating-point values
+  as the authority for orders, balances, or fees.
+- Validate empty/malformed amounts, multiple decimal separators, zero/negative
+  values, precision, balance, minimum, lockup, and applicable limits. Distinguish
+  currency display precision from settlement precision.
+- Proposed operation flow: editing -> reviewing -> awaiting signature -> submitted
+  -> pending -> confirmed. Include rejected, failed, expired-quote, and unknown
+  outcomes. Reconcile an unknown submission before retrying; prevent duplicate
+  taps and require backend-supported idempotency for real mutations.
+- Review must show source/destination assets, network, recipient when relevant,
+  amount, fees, and quote expiry. Signing, broadcasting, and settlement are
+  different events. A submitted operation cannot be canceled by closing a sheet.
+- Session authentication, device biometrics, passkeys, and transaction signing
+  are separate capabilities. Do not copy the frontend's secure-enclave claims
+  without verifying the chosen provider's actual key and recovery model.
+- Keep signing keys/seed phrases out of application storage and logs. Use an
+  appropriate platform secure-storage adapter for session credentials once the
+  authentication design is settled. Public app configuration contains no secrets.
+- Wallet SDK, account/custody model, supported chains/assets, recovery, backend
+  contracts, and settlement authority must be settled before real-money flows.
+
+## 5. Implementation milestones
+
+All items below are pending. Complete a vertical slice on both platforms before
+expanding it; do not equate a bundler start with a verified native application.
+
+### M0 — Confirm foundation and freeze parity baseline
+
+- [ ] Refresh the source inventory and choose the frontend reference revision.
+- [ ] Record the selected platform/runtime scope and compatible dependency matrix,
+      minimum OS targets, app identifiers, and font decision.
+- [ ] Separate demo parity from real-service release scope; resolve inactive
+      actions incrementally before implementing their screens.
+
+Exit: dependency choices are recorded, the parity inventory is actionable, and
+open integration decisions have a named owner or explicit unresolved status.
+
+### M1 — Native foundation
+
+- [ ] Scaffold the mobile-local TypeScript package without changing other apps.
+- [ ] Configure NativeWind, aliases, theme tokens, assets, navigation, safe areas,
+      keyboard handling, and error boundaries.
+- [ ] Add documented npm install/run/typecheck/lint/test scripts and lockfile.
+- [ ] Introduce a root `justfile` wrapping app-local npm scripts; validate recipes
+      on Windows and macOS/Linux and document platform-specific prerequisites.
+- [ ] Set up Expo development builds on iOS and Android, plus EAS development,
+      preview and production profiles (configuration, not store submission).
+- [ ] Configure ESLint/Expo, Prettier, EditorConfig, Husky, Jest/jest-expo and
+      React Native Testing Library; document each command and its scope.
+- [ ] Add `check` to run TypeScript, formatting checks, lint, Expo Doctor and tests;
+      add CI coverage with Nexum-specific thresholds and native build validation.
+- [ ] Record Node/npm/just versions and verify native dependency compatibility.
+
+Exit: a styled screen and navigation run on both iOS and Android; typecheck and
+lint pass. Record device/simulator versions and any unavailable verification.
+
+### M2 — Design system and access slice
+
+- [ ] Implement the minimum atoms, molecules, and screen templates used by entry
+      and main tabs, with accessible loading/disabled/error variants.
+- [ ] Wire Reanimated/Worklets, Safe Area Context, Screens, Lucide and SVG into
+      the design system; add the selected Expo startup/asset utilities as needed.
+- [ ] Build onboarding, simulated access, session state, disconnect, and tab shell
+      with React hooks/Context, thin screens, controller hooks and view models.
+- [ ] Ensure unauthenticated deep links cannot expose protected screens and that
+      Android back, iOS gestures, and modal dismissal behave consistently.
+
+Exit: onboarding -> demo access -> tabs -> disconnect works on both platforms;
+demo behavior is visibly identified and reusable UI has a small preview surface.
+
+### M3 — Portfolio and vaults
+
+- [ ] Implement portfolio, holdings, charts, vault discovery/search/risk filtering,
+      vault detail, and activity using typed mock adapters.
+- [ ] Implement empty, loading, error/retry, and stale/offline presentations.
+- [ ] Resolve chart period, manager-search, advanced-filter, and share behavior
+      against the parity inventory instead of reproducing silent no-ops.
+
+Exit: users can browse from portfolio to a filtered vault and back, understand
+metrics and holdings, and navigate activity; screens survive small displays and
+large text settings without hiding essential content.
+
+### M4 — Trading and transfers
+
+- [ ] Implement Exchange, buy/sell, deposit/withdraw, amount validation, review,
+      and shared operation feedback through mock service interfaces.
+- [ ] Resolve percentage/Max, asset direction, balance/minimum/lockup rules, and
+      pending-operation dismissal behavior explicitly.
+- [ ] Add deterministic rejection, failure, quote expiry, delayed confirmation,
+      unknown submission, and duplicate-submit scenarios.
+
+Exit: both platforms complete and reject each demo flow, malformed amounts cannot
+advance, and no UI timer is treated as evidence of a real transaction.
+
+### M5 — Account, notifications, and secondary pages
+
+- [ ] Implement notifications, account details, clipboard, preferences, disconnect,
+      passkey/signing information, currency, statements, support, and disclosures.
+- [ ] Persist non-sensitive preferences through an AsyncStorage adapter; specify
+      defaults, normalization, write-error handling and account-scoped logout cleanup.
+- [ ] Classify backup/recovery, document downloads, support actions, and push
+      permissions/delivery as mock, implemented integration, or unavailable.
+
+Exit: every parity row and visible action has an explicit tested outcome. Do not
+claim that a local alerts toggle registers a device for push notifications.
+
+### M6 — Real integrations
+
+Depends on backend contracts, wallet/security architecture, supported networks,
+and product decisions listed below. UI milestones can proceed before these exist.
+
+- [ ] Add validated API adapters and session lifecycle handling.
+- [ ] Integrate the chosen wallet/passkey provider and verified callback/deep-link
+      flow, including rejection, app backgrounding, return, and recovery behavior.
+- [ ] Connect quotes, orders, transfers, receipts, reconciliation, balances,
+      activity, notifications and supported account operations.
+- [ ] Exercise contract tests and end-to-end testnet scenarios on physical devices.
+
+Exit: real integration evidence replaces simulation for each supported feature;
+pending operations reconcile after app restart and retries do not double-submit.
+
+### M7 — Release readiness
+
+- [ ] Finish the parity checklist and document agreed deviations.
+- [ ] Verify accessibility, native lifecycle, offline recovery, startup/scroll
+      performance, deep links, permissions, and production configuration.
+- [ ] Test signed release builds on iOS and Android physical devices.
+- [ ] Finalize product copy, distribution metadata, support/privacy documents,
+      crash reporting with redaction, and the release/rollback process.
+
+Exit: no simulated financial behavior in a production build, critical journeys
+pass on both platforms, and remaining limitations are explicitly accepted.
+Store submission and deployment are separate tasks, not part of this planning work.
+
+## 6. Verification strategy
+
+Use Jest with jest-expo and React Native Testing Library. Organize unit, mocked
+integration, UI and shared-support suites distinctly. Rendered UI tests are not
+native device E2E. Query by accessible role/label and visible text; broad snapshots
+and implementation-state assertions are not substitutes for behavior checks.
+Include unimported production source in coverage and establish Nexum-specific
+thresholds once representative behavior exists. Add selective architecture checks
+for dependency direction and domain/UI separation, not brittle source-string tests.
+The main npm `check` command includes TypeScript, format checking, lint, Expo Doctor
+and tests. `test:coverage` runs in CI with thresholds; keep pre-commit checks scoped
+and fast. Neither command exists until M1 implementation.
+
+- Unit tests: money parsing/rounding, quote expiry, filters, and operation state
+  transitions including retry and duplicate-submit handling.
+- Component tests: amount forms, accessible controls, disabled actions, pending
+  states, and recovery/error messaging. Avoid snapshots as the only evidence.
+- Contract tests: mock/real adapter shapes, session expiry, API error mapping,
+  idempotency and reconciliation once backend contracts exist.
+- Device E2E: access -> portfolio -> vault -> buy/sell; deposit/withdraw;
+  rejected signing; settings/disconnect; wallet callback; background/resume.
+- Visual/device checks: iOS and Android, small and large phones, safe areas,
+  keyboard, large text, reduced motion, screen readers, and slow/offline network.
+- CI: mobile-scoped typecheck/lint/tests and native build validation at appropriate
+  milestones. Report passed, failed, blocked, and not-run checks separately.
+
+## 7. Open product decisions and dependencies
+
+| Decision | Needed by | Current position |
+| --- | --- | --- |
+| Minimum OS versions and tablet support | M0/M1 | iOS + Android phone baseline accepted; tablet and web build requirements unconfirmed |
+| Wallet provider, custody/account model, passkey recovery | M6 | Unselected; frontend copy is not a security specification |
+| Network, chain IDs, assets, contract addresses and decimals | M4 contracts / M6 integration | Monad and USDC appear in demo copy only |
+| Pricing, fees, minimums, limits, redemption/lockup and finality rules | M4/M6 | Require authoritative product/backend contracts |
+| Backend ownership, auth/API schemas, pagination and errors | M6 | `backend/` is currently a placeholder |
+| Eligibility/onboarding requirements before real investment | Before real-service release | Not implemented in the reference; product must define applicable requirements |
+| Statements, support, document destinations, real push delivery | M5/M6 | Static frontend references; service behavior unselected |
+| Currency conversion and supported languages | M5 | English/USD reference; currency rows are not an FX implementation |
+| Distribution identifiers, signing accounts, release ownership | M1/M7 | Unselected |
+
+Do not invent answers to these from fixture values. Record decisions here with
+date, status, rationale, and affected milestones, then mirror durable rules in
+`AGENTS.md`. A pending integration decision should not block independent mock UI work.
+
+## 8. Decision log
+
+| Date | Status | Decision | Basis |
+| --- | --- | --- | --- |
+| 2026-09-22 | Confirmed | React Native + NativeWind + atomic design; frontend feature parity; mobile-local app | User request |
+| 2026-09-22 | Confirmed | React Navigation directly; npm; `components/` with atomic subfolders; cross-platform `just` workspace commands | User selections after Toddy reference inspection |
+| 2026-09-22 | Confirmed | iOS/Android baseline, strict TypeScript, Expo development builds, React hooks/Context | User accepted recommended adoptions |
+| 2026-09-22 | Confirmed | Stable NativeWind 4/Tailwind 3 foundation; exact compatible versions selected at bootstrap | Accepted foundation; revalidate versions |
+| 2026-09-22 | Confirmed | Mock parity milestones followed by real integrations | Accepted plan; current frontend is simulated |
+| 2026-09-22 | Confirmed | Feature ownership, thin screens/controllers, typed view models, application composition, storage adapters, tokens, accessibility, behavior tests and selective architecture checks | User accepted recommended principles |
+| 2026-09-22 | Confirmed | Reanimated/Worklets, Safe Area Context/Screens, Lucide/SVG, AsyncStorage for preferences and Expo startup/asset utilities as needed | User accepted runtime recommendations |
+| 2026-09-22 | Confirmed | ESLint/Expo, Prettier, EditorConfig, Husky, Jest/jest-expo, React Native Testing Library, coverage thresholds, Expo Doctor and EAS profiles | User accepted quality/build recommendations |
+| 2026-09-22 | Deferred/excluded | Custom asset audits optional; attribution deferred; Audio/IAP and game-specific behavior excluded initially; no required mise/pnpm | Preserve original recommendation limits and explicit selections |
+
+## 9. Technical references
+
+Checked through Context7 and official documentation on 2026-09-22. Revalidate
+version-sensitive installation details before scaffolding.
+
+- [NativeWind installation and stable/RC distinction](https://www.nativewind.dev/docs/getting-started/installation)
+- [just settings and Windows shell support](https://just.systems/man/en/settings.html)
+- [React Navigation native stack](https://reactnavigation.org/docs/native-stack-navigator/)
+- [Expo development builds](https://docs.expo.dev/develop/development-builds/introduction/)
+- Repository product references: `../frontend/src/App.tsx`,
+  `../frontend/src/components/`, `../frontend/src/data.ts`,
+  `../frontend/src/content.ts`, `../frontend/tailwind.config.ts`.

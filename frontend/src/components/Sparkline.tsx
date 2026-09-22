@@ -3,11 +3,14 @@ export default function Sparkline({
   up,
   width = 60,
   height = 24,
+  fluid = false,
 }: {
   series: number[]
   up: boolean
   width?: number
   height?: number
+  /** stretch to the container width */
+  fluid?: boolean
 }) {
   const min = Math.min(...series)
   const max = Math.max(...series)
@@ -32,7 +35,13 @@ export default function Sparkline({
   const id = `sp-${up ? 'u' : 'd'}-${width}`
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} width={width} height={height} className="shrink-0 overflow-visible">
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      width={fluid ? '100%' : width}
+      height={height}
+      preserveAspectRatio={fluid ? 'none' : undefined}
+      className={fluid ? 'block overflow-visible' : 'shrink-0 overflow-visible'}
+    >
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity="0.28" />
@@ -40,7 +49,15 @@ export default function Sparkline({
         </linearGradient>
       </defs>
       <path d={area} fill={`url(#${id})`} />
-      <path d={d} fill="none" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d={d}
+        fill="none"
+        stroke={color}
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
+      />
     </svg>
   )
 }

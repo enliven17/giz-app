@@ -60,6 +60,7 @@ export default function DesktopVaults({ onOpenVault }: { onOpenVault: (v: Vault)
             vault={v}
             delay={0.04 * i}
             className="h-full"
+            chartHeight={96}
             onClick={() => onOpenVault(v)}
           />
         ))}

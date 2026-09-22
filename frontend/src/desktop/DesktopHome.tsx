@@ -170,6 +170,7 @@ export default function DesktopHome({
               vault={v}
               delay={0.05 * i}
               className="h-[164px]"
+              chartHeight={72}
               onClick={() => onOpenVault(v)}
             />
           ))}

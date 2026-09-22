@@ -1,4 +1,4 @@
-# Nexum
+# Gizu
 
 Each application lives in its own top-level folder:
 

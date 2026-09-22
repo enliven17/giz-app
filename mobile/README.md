@@ -1,4 +1,4 @@
-# Nexum mobile
+# Gizu mobile
 
 Expo SDK 57 development app for iOS and Android. The current slice includes
 welcome, simulated passkey/external-wallet access, a protected four-tab shell,
@@ -39,8 +39,8 @@ installed development app. Rebuild after native dependency/config changes.
 `just mobile-install`, `just mobile-android`, `just mobile-ios` and
 `just mobile-start` are equivalent shortcuts.
 
-Approved local identity: **Nexum Dev**, `com.example.nexum.dev` on both platforms,
-URL scheme `nexum-dev`. These are development placeholders, not registered release
+Approved local identity: **Gizu Dev**, `com.example.gizu.dev` on both platforms,
+URL scheme `gizu-dev`. These are development placeholders, not registered release
 identifiers. `app.config.ts` rejects the EAS production profile. Development and
 preview profiles exist in `eas.json`; hosted builds still need an explicitly
 selected EAS owner/project and credentials. Nothing has been submitted or published.

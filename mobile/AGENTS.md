@@ -7,7 +7,7 @@ precedence; this file does not authorize work outside the requested scope.
 
 ## Confirmed product and technical decisions
 
-- Build the Nexum mobile application with React Native and NativeWind.
+- Build the Gizu mobile application with React Native and NativeWind.
 - Use atomic design under `src/components/atoms`, `molecules`, `organisms`, and
   `templates`. Feature screens act as pages; do not add an `atomic-design/` root.
 - Use React Navigation directly, with typed route contracts and native stacks.
@@ -44,7 +44,7 @@ implementation decisions. Continue independent work when an integration is block
   values during setup. Keep hooks fast, scoped and non-mutating; full checks belong
   in CI. Do not copy another repository's hardcoded hook paths.
 - Use Jest with jest-expo and React Native Testing Library. Enforce full-source
-  coverage with thresholds based on Nexum, not copied percentages. Include Expo
+  coverage with thresholds based on Gizu, not copied percentages. Include Expo
   Doctor in the main check command alongside TypeScript, format checks, lint/tests.
 - Asset audits are optional later. Attribution/analytics is deferred. Do not add
   Expo Audio, Expo IAP, landscape-only layouts or game-specific navigation behavior.
@@ -56,8 +56,8 @@ implementation decisions. Continue independent work when an integration is block
 - The initial documented runtime target is Expo SDK 57 with React Native 0.86.3,
   React 19.2.3 and NativeWind 4.2.7/Tailwind 3.4.17. See `docs/FOUNDATION.md`
   for the SDK dependency matrix and unresolved identity/platform decisions.
-- Approved development identity: Nexum Dev, `com.example.nexum.dev` on both
-  platforms, scheme `nexum-dev`. Production builds remain blocked until release
+- Approved development identity: Gizu Dev, `com.example.gizu.dev` on both
+  platforms, scheme `gizu-dev`. Production builds remain blocked until release
   identity and integrations are selected.
 - Validate this matrix when changing dependencies; published compatibility is not evidence
   of a successful install or native build. Do not bypass conflicting peers.

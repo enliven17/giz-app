@@ -1,4 +1,4 @@
-# Nexum mobile implementation plan
+# Gizu mobile implementation plan
 
 Status: M0 baseline recorded; M1 implementation has not started.
 Created: 2026-09-22. M0 recorded: 2026-09-22.
@@ -56,7 +56,7 @@ Choose one solution per responsibility when needed and record the rationale.
 
 ### Accepted tools and adoption boundaries
 
-| Area                                    | Accepted selection                                         | Application to Nexum                                                                                     |
+| Area                                    | Accepted selection                                         | Application to Gizu                                                                                     |
 | --------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | Native runtime                          | Expo development builds and expo-dev-client                | iOS/Android native development; select a compatible stable SDK matrix rather than copying Toddy versions |
 | Language                                | Strict TypeScript                                          | Typed domain, component, service and navigation contracts                                                |
@@ -70,14 +70,14 @@ Choose one solution per responsibility when needed and record the rationale.
 | Formatting                              | Prettier and EditorConfig                                  | Select and document formatting values at setup; tooling adoption does not mandate Toddy's exact values   |
 | Commit hooks                            | Husky                                                      | Fast, scoped, non-mutating format/lint/focused-test gate; full checks stay in CI                         |
 | Automated tests                         | Jest, jest-expo, React Native Testing Library              | Unit, mocked integration and accessible user-interaction tests                                           |
-| Coverage                                | Full-source coverage with enforced thresholds              | Establish Nexum's own meaningful baseline; do not copy Toddy's percentages                               |
+| Coverage                                | Full-source coverage with enforced thresholds              | Establish Gizu's own meaningful baseline; do not copy Toddy's percentages                               |
 | Dependency health                       | Expo Doctor                                                | Include in the main check command                                                                        |
 | Builds                                  | EAS development, preview and production profiles           | Configure profiles at foundation; builds/submissions require their own task scope and credentials        |
 | Tool versions                           | Document and enforce compatible Node/npm/just versions     | Retain npm; no required mise or pnpm migration                                                           |
 
 Optional/deferred/excluded decisions remain explicit:
 
-- **Optional later:** custom asset audit/optimization scripts adapted to Nexum,
+- **Optional later:** custom asset audit/optimization scripts adapted to Gizu,
   not copied with game-specific budgets or rules.
 - **Deferred:** Tenjin or any other attribution/analytics SDK until a concrete
   requirement and data policy exist.
@@ -289,7 +289,7 @@ remaining tool versions, install checks and native build verification.
 - [x] Configure ESLint/Expo, Prettier, EditorConfig, Husky, Jest/jest-expo and
       React Native Testing Library; document each command and its scope.
 - [x] Add `check` to run TypeScript, formatting checks, lint, Expo Doctor and tests;
-      add CI coverage with Nexum-specific thresholds and native build validation.
+      add CI coverage with Gizu-specific thresholds and native build validation.
 - [x] Record Node/npm/just versions and verify native dependency compatibility.
 
 Exit: a styled screen and navigation run on both iOS and Android; typecheck and
@@ -397,7 +397,7 @@ Use Jest with jest-expo and React Native Testing Library. Organize unit, mocked
 integration, UI and shared-support suites distinctly. Rendered UI tests are not
 native device E2E. Query by accessible role/label and visible text; broad snapshots
 and implementation-state assertions are not substitutes for behavior checks.
-Include unimported production source in coverage and establish Nexum-specific
+Include unimported production source in coverage and establish Gizu-specific
 thresholds once representative behavior exists. Add selective architecture checks
 for dependency direction and domain/UI separation, not brittle source-string tests.
 The main npm `check` command includes TypeScript, format checking, lint, Expo Doctor

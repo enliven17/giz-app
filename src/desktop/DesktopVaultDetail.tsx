@@ -24,7 +24,7 @@ export default function DesktopVaultDetail({ vault, onBack }: { vault: Vault; on
   }
 
   return (
-    <div className="mx-auto max-w-[1520px] px-14 py-10">
+    <div className="mx-auto max-w-[1520px] px-14 pb-10 pt-9">
       <div className="flex items-center justify-between">
         <button
           onClick={onBack}
@@ -155,7 +155,7 @@ export default function DesktopVaultDetail({ vault, onBack }: { vault: Vault; on
         </div>
 
         <div>
-          <div className="sticky top-12">
+          <div className="sticky top-28">
             <SpotlightCard className="rounded-[28px] p-7">
               <div className="flex gap-1 rounded-2xl bg-white/[0.04] p-1">
                 {(['buy', 'sell'] as const).map((s) => (

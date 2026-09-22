@@ -17,7 +17,7 @@ export default function DesktopVaults({ onOpenVault }: { onOpenVault: (v: Vault)
   )
 
   return (
-    <div className="mx-auto max-w-[1520px] px-14 py-10">
+    <div className="mx-auto max-w-[1520px] px-14 pb-10 pt-9">
       <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-[34px] font-medium tracking-tight">Private vaults</h1>
         <p className="mt-2 text-[14px] text-white/40">

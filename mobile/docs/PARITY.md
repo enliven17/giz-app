@@ -80,3 +80,28 @@ rules in AGENTS.md; this baseline can survive removal of the initial work plan.
   welcome as its back destination. No pending protected URL is stored as session data.
 - Native gesture delivery, Android hardware back and device rendering still need
   platform QA; rendered functional tests do not establish those results.
+
+## M3 mobile status and defaults
+
+- P05: portfolio total, illustrative daily change, holdings, synthetic chart periods
+  and vault shortcuts implemented with typed mobile mock data. USD totals use exact
+  integer cents; units/price strings are display data, not execution authority.
+- P06: vault discovery and activity navigation implemented. Deposit/withdraw and
+  notifications are visibly disabled with their future slice identified (M4/M5).
+- P07: name/ticker/strategy/manager search plus All/Low/Medium/High filtering, empty
+  results and clear filters implemented. Search and risk compose; filters survive
+  detail/back navigation. Advanced filtering is explicitly unavailable.
+- P08: selected-vault price/change/APY/TVL/lockup, allocations, manager, strategy,
+  minimum/redemption and fixture fees implemented. Buy/sell await M4.
+- P15 activity: September/August fixture history is reachable from Home, including
+  empty/error/retry states. Account secondary pages otherwise remain with M5.
+- Chart periods use trailing 8/16/32/48/all samples for 1D/1W/1M/1Y/All respectively.
+  The graph is explicitly synthetic; those samples are not sourced market candles.
+- Default share behavior: native text summary with demo labeling and no URL; errors
+  can retry, and dismissal never claims that the summary was delivered.
+- Loading, empty, error/retry, stale/offline snapshots and disconnect invalidation
+  are implemented. Offline/freshness is adapter metadata, not a new OS integration.
+- These choices apply the proposed M3 defaults; no additional advanced-filter
+  requirements or public share destination were supplied.
+- Real-device small-display/large-text behavior and native sharing/navigation remain
+  to be verified. Screens use scrollable layouts, wrapping filters and stacked metrics.

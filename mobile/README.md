@@ -7,8 +7,9 @@ biometrics or wallet connection are performed.
 
 From welcome, choose **Get started** or **I have access**, then **Try demo passkey**
 or a provider under **Choose demo wallet**. Settings offers **Open UI preview**
-and **Disconnect demo**. Home/Vaults/Exchange are explicitly labeled placeholders
-until their feature slices are implemented.
+and **Disconnect demo**. Home now shows the demo portfolio, holdings and chart periods. Browse all four
+vaults, search by name/ticker/strategy/manager, filter risk, and open vault details
+or activity. Exchange and transfers remain unavailable until the trading slice.
 
 ## Prerequisites
 
@@ -98,3 +99,20 @@ presentation, real biometrics, network operations or on-chain settlement.
 
 See [docs/FOUNDATION.md](docs/FOUNDATION.md) for version decisions and the validation
 record, and [docs/PARITY.md](docs/PARITY.md) for the frozen product scope.
+
+## Portfolio and vaults
+
+All M3 values come from mobile-local typed mock adapters. Portfolio totals sum
+integer cents; chart samples are synthetic performance indexes, never trade prices.
+Period buttons select deterministic 1D/1W/1M/1Y/All fixture windows. Search combines
+case-insensitive name/ticker/strategy/manager matching with the selected risk band.
+Advanced filters are explicitly unavailable. Vault sharing opens the native share
+sheet with a labeled demo summary and no fabricated public URL.
+
+Refresh preserves the previous snapshot on failure and labels stale/offline data.
+An empty portfolio, missing vault and empty activity have explicit states. Service
+adapters can inject those states in tests; no real network or OS connectivity is
+inferred. Disconnect clears the snapshot and invalidates pending requests.
+
+Notifications, buy/sell and deposit/withdraw controls are shown as unavailable with
+their next-slice purpose. They do not simulate a successful operation.

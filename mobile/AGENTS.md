@@ -95,6 +95,23 @@ implementation decisions. Continue independent work when an integration is block
 - Keep the UI preview under Settings for inspecting reusable component states.
   Motion must honor the system reduced-motion setting.
 
+## Portfolio and vault display rules
+
+- Keep portfolio, vaults and activity behind typed mock adapters until real service
+  contracts exist. Share one session-scoped snapshot; clear it on disconnect.
+- Store monetary fixture values as decimal/base-unit strings. Sum portfolio USD
+  values in integer cents. Floating-point chart coordinates are presentation only.
+- Label chart history as a synthetic performance index; period selection changes
+  the fixture window and must not imply historical returns or executable quotes.
+- Search name, ticker, strategy and manager together with risk filtering. Keep
+  advanced filters visibly unavailable until additional criteria are specified.
+- Share only a labeled demo vault summary through the native share dialog. Do not
+  invent a public URL or claim message delivery when the dialog closes.
+- Keep old snapshots visible but marked stale/offline after refresh failures.
+  Service metadata determines freshness; do not infer real connectivity from a mock.
+- Preserve explicit unavailable controls for future trading/transfer/notification
+  slices instead of silently removing them or reporting a simulated success.
+
 ## Atomic design rules
 
 - **Atoms:** native visual/control primitives such as Text, Button, Input, Icon,

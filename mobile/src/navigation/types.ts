@@ -11,4 +11,6 @@ export type RootStackParamList = {
   WalletPicker: undefined;
   Main: NavigatorScreenParams<MainTabParamList>;
   Preview: undefined;
+  VaultDetail: { id: string };
+  Activity: undefined;
 };

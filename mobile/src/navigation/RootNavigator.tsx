@@ -1,3 +1,5 @@
+import { VaultDetailScreen } from "@/features/investments/VaultDetailScreen";
+import { ActivityScreen } from "@/features/investments/ActivityScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useSession } from "@/application/SessionProvider";
 import { WelcomeScreen } from "@/features/access/WelcomeScreen";
@@ -10,9 +12,19 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export function RootNavigator() {
   const { session } = useSession();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName={session ? "Main" : "Welcome"}>
       {session ? (
         <Stack.Group navigationKey="demo">
+          <Stack.Screen
+            name="VaultDetail"
+            component={VaultDetailScreen}
+            options={{ title: "Vault details" }}
+          />
+          <Stack.Screen
+            name="Activity"
+            component={ActivityScreen}
+            options={{ title: "Activity" }}
+          />
           <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
           <Stack.Screen
             name="Preview"

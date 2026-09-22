@@ -319,15 +319,20 @@ verified on devices/simulators; M1's pending platform checks remain unchanged.
 
 ### M3 — Portfolio and vaults
 
-- [ ] Implement portfolio, holdings, charts, vault discovery/search/risk filtering,
+- [x] Implement portfolio, holdings, charts, vault discovery/search/risk filtering,
       vault detail, and activity using typed mock adapters.
-- [ ] Implement empty, loading, error/retry, and stale/offline presentations.
-- [ ] Resolve chart period, manager-search, advanced-filter, and share behavior
+- [x] Implement empty, loading, error/retry, and stale/offline presentations.
+- [x] Resolve chart period, manager-search, advanced-filter, and share behavior
       against the parity inventory instead of reproducing silent no-ops.
 
 Exit: users can browse from portfolio to a filtered vault and back, understand
 metrics and holdings, and navigate activity; screens survive small displays and
 large text settings without hiding essential content.
+
+M3 implementation and rendered functional coverage are complete. Small-display,
+large-text, native share-sheet and native navigation QA remain unverified until
+simulator/device prerequisites are available. Earlier platform checkboxes remain
+unchanged. Chart/search/share choices use the documented M3 defaults.
 
 ### M4 — Trading and transfers
 

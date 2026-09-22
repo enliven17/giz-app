@@ -7,6 +7,8 @@ export function createLinking(signedIn: boolean): LinkingOptions<RootStackParamL
       screens: {
         Welcome: "",
         Access: "access",
+        VaultDetail: "vault/:id",
+        Activity: "activity",
         Main: {
           screens: { Home: "home", Vaults: "vaults", Exchange: "exchange", Settings: "settings" },
         },

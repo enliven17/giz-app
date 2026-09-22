@@ -5,11 +5,13 @@ import { motion, useMotionTemplate, useMotionValue, useReducedMotion } from 'fra
 export default function SpotlightCard({
   children,
   className = '',
+  contentClassName = '',
   spotlightColor = 'rgba(49,196,126,0.14)',
   spotlightSize = 260,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & {
   children: ReactNode
+  contentClassName?: string
   spotlightColor?: string
   spotlightSize?: number
 }) {
@@ -40,7 +42,7 @@ export default function SpotlightCard({
         className="pointer-events-none absolute inset-0 transition-opacity duration-300"
         style={{ background, opacity: moved ? 1 : 0 }}
       />
-      <div className="relative">{children}</div>
+      <div className={`relative ${contentClassName}`}>{children}</div>
     </div>
   )
 }

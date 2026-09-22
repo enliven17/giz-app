@@ -57,7 +57,10 @@ export default function DesktopHome({
           transition={{ delay: 0.05 }}
           className="col-span-2 flex min-h-0"
         >
-          <SpotlightCard className="flex min-h-0 w-full flex-col rounded-[28px] p-7">
+          <SpotlightCard
+            className="flex min-h-0 w-full flex-col rounded-[28px] p-7"
+            contentClassName="flex min-h-0 flex-1 flex-col"
+          >
             <div className="flex shrink-0 items-start justify-between">
               <div>
                 <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/30">
@@ -102,7 +105,10 @@ export default function DesktopHome({
           transition={{ delay: 0.1 }}
           className="flex min-h-0 flex-col gap-5"
         >
-          <SpotlightCard className="flex min-h-0 flex-1 flex-col rounded-[28px] p-6">
+          <SpotlightCard
+            className="flex min-h-0 flex-1 flex-col rounded-[28px] p-6"
+            contentClassName="flex min-h-0 flex-1 flex-col"
+          >
             <div className="flex shrink-0 items-center justify-between">
               <h3 className="text-[17px] font-medium tracking-tight">Holdings</h3>
               <button

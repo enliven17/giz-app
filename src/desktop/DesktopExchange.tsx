@@ -37,7 +37,10 @@ export default function DesktopExchange() {
 
       <div className="mt-5 grid min-h-0 flex-1 grid-cols-3 gap-5">
         <div className="col-span-2 flex min-h-0">
-          <SpotlightCard className="flex w-full flex-col rounded-[28px] p-7">
+          <SpotlightCard
+            className="flex w-full flex-col rounded-[28px] p-7"
+            contentClassName="flex min-h-0 flex-1 flex-col"
+          >
             <div className="relative space-y-3">
               <div className="rounded-3xl bg-white/[0.03] px-6 py-5">
                 <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.18em] text-white/30">
@@ -144,7 +147,10 @@ export default function DesktopExchange() {
             </div>
           </SpotlightCard>
 
-          <SpotlightCard className="flex min-h-0 flex-1 flex-col rounded-[28px] p-6">
+          <SpotlightCard
+            className="flex min-h-0 flex-1 flex-col rounded-[28px] p-6"
+            contentClassName="flex min-h-0 flex-1 flex-col"
+          >
             <h3 className="shrink-0 text-[17px] font-medium tracking-tight">Recent</h3>
             <div className="mt-2 min-h-0 flex-1 divide-y divide-white/5 overflow-y-auto">
               {RECENT.map((r) => (

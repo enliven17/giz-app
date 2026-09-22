@@ -67,7 +67,10 @@ export default function DesktopVaultDetail({ vault, onBack }: { vault: Vault; on
 
       <div className="mt-5 grid min-h-0 flex-1 grid-cols-3 gap-5">
         <div className="col-span-2 flex min-h-0 flex-col gap-5">
-          <SpotlightCard className="flex min-h-0 flex-1 flex-col rounded-[28px] p-7">
+          <SpotlightCard
+            className="flex min-h-0 flex-1 flex-col rounded-[28px] p-7"
+            contentClassName="flex min-h-0 flex-1 flex-col"
+          >
             <div className="flex shrink-0 justify-end gap-2 font-mono text-[10px] uppercase tracking-widest">
               {['1D', '1W', '1M', '1Y', 'All'].map((t, i) => (
                 <button
@@ -137,7 +140,10 @@ export default function DesktopVaultDetail({ vault, onBack }: { vault: Vault; on
         </div>
 
         <div className="flex min-h-0">
-          <SpotlightCard className="flex min-h-0 w-full flex-col rounded-[28px] p-6">
+          <SpotlightCard
+            className="flex min-h-0 w-full flex-col rounded-[28px] p-6"
+            contentClassName="flex min-h-0 flex-1 flex-col"
+          >
             <div className="flex shrink-0 gap-1 rounded-2xl bg-white/[0.04] p-1">
               {(['buy', 'sell'] as const).map((s) => (
                 <button

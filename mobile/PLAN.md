@@ -300,17 +300,22 @@ open; see `docs/FOUNDATION.md` for passed, blocked and not-run evidence.
 
 ### M2 — Design system and access slice
 
-- [ ] Implement the minimum atoms, molecules, and screen templates used by entry
+- [x] Implement the minimum atoms, molecules, and screen templates used by entry
       and main tabs, with accessible loading/disabled/error variants.
-- [ ] Wire Reanimated/Worklets, Safe Area Context, Screens, Lucide and SVG into
+- [x] Wire Reanimated/Worklets, Safe Area Context, Screens, Lucide and SVG into
       the design system; add the selected Expo startup/asset utilities as needed.
-- [ ] Build onboarding, simulated access, session state, disconnect, and tab shell
+- [x] Build onboarding, simulated access, session state, disconnect, and tab shell
       with React hooks/Context, thin screens, controller hooks and view models.
 - [ ] Ensure unauthenticated deep links cannot expose protected screens and that
       Android back, iOS gestures, and modal dismissal behave consistently.
 
 Exit: onboarding -> demo access -> tabs -> disconnect works on both platforms;
 demo behavior is visibly identified and reusable UI has a small preview surface.
+
+M2 implementation covers the complete demo journey and UI preview. Protected
+links and cancellation are covered by functional tests. The final navigation/device
+checkbox remains open until hardware back, native gestures and modal dismissal are
+verified on devices/simulators; M1's pending platform checks remain unchanged.
 
 ### M3 — Portfolio and vaults
 

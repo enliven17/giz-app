@@ -1,9 +1,14 @@
 # Nexum mobile
 
-Expo SDK 57 development app for iOS and Android. This foundation contains two
-navigable screens, shared dark-theme tokens, native safe-area/keyboard layout,
-accessible buttons and a recoverable render-error boundary. Investment journeys
-are still to be implemented. No real funds, authentication or wallet access.
+Expo SDK 57 development app for iOS and Android. The current slice includes
+welcome, simulated passkey/external-wallet access, a protected four-tab shell,
+and disconnect. Demo sessions live only in memory. No real funds, authentication,
+biometrics or wallet connection are performed.
+
+From welcome, choose **Get started** or **I have access**, then **Try demo passkey**
+or a provider under **Choose demo wallet**. Settings offers **Open UI preview**
+and **Disconnect demo**. Home/Vaults/Exchange are explicitly labeled placeholders
+until their feature slices are implemented.
 
 ## Prerequisites
 
@@ -45,22 +50,22 @@ Custom icons, fonts and launch artwork remain future product work.
 
 Run inside `mobile/`, or use `npm --prefix mobile` from the root.
 
-| Command                                                                                                  | Scope                                                          |
-| -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| `npm run typecheck`                                                                                      | Strict TypeScript, including tests/config                      |
-| `npm run lint`                                                                                           | Expo ESLint plus atom import boundaries; no warnings           |
-| `npm run format:check`                                                                                   | Non-mutating Prettier check                                    |
-| `npm run format`                                                                                         | Explicit formatting write                                      |
-| `npm test`                                                                                               | All unit and functional tests                                  |
-| `npm run test:functional`                                                                                | Full screen-flow suite                                         |
-| `npm run test:functional -- --runTestsByPath tests/functional/foundation/navigation.functional.test.tsx` | Focused journey                                                |
-| `npm run test:coverage`                                                                                  | All tests and full-source coverage thresholds                  |
-| `npm run doctor`                                                                                         | Expo project and dependency health; network access required    |
-| `npm run check`                                                                                          | Typecheck, formatting, lint, Doctor and complete test coverage |
-| `npm run export`                                                                                         | Compile iOS/Android JS and bundled assets; not a native build  |
-| `npm run prebuild -- --no-install`                                                                       | Generate ignored iOS/Android projects                          |
-| `npm run hooks:install`                                                                                  | Opt-in repository hook setup; refuses to replace other hooks   |
-| `npm run precommit`                                                                                      | Check changed mobile files without rewriting them              |
+| Command                                                                                          | Scope                                                          |
+| ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------- |
+| `npm run typecheck`                                                                              | Strict TypeScript, including tests/config                      |
+| `npm run lint`                                                                                   | Expo ESLint plus atom import boundaries; no warnings           |
+| `npm run format:check`                                                                           | Non-mutating Prettier check                                    |
+| `npm run format`                                                                                 | Explicit formatting write                                      |
+| `npm test`                                                                                       | All unit and functional tests                                  |
+| `npm run test:functional`                                                                        | Full screen-flow suite                                         |
+| `npm run test:functional -- --runTestsByPath tests/functional/access/access.functional.test.tsx` | Focused journey                                                |
+| `npm run test:coverage`                                                                          | All tests and full-source coverage thresholds                  |
+| `npm run doctor`                                                                                 | Expo project and dependency health; network access required    |
+| `npm run check`                                                                                  | Typecheck, formatting, lint, Doctor and complete test coverage |
+| `npm run export`                                                                                 | Compile iOS/Android JS and bundled assets; not a native build  |
+| `npm run prebuild -- --no-install`                                                               | Generate ignored iOS/Android projects                          |
+| `npm run hooks:install`                                                                          | Opt-in repository hook setup; refuses to replace other hooks   |
+| `npm run precommit`                                                                              | Check changed mobile files without rewriting them              |
 
 `just mobile-check` delegates to `npm run check`. CI runs it on Linux and Windows,
 then separately compiles Android Debug and an unsigned iOS simulator build.
@@ -80,8 +85,11 @@ Formatting: two spaces, semicolons, double quotes, 100-column width, LF endings.
 Add molecules/organisms when meaningful reuse exists. Colors have one source in
 `src/theme/colors.json`, consumed by Tailwind and native navigation.
 
-Functional tests render real screens and navigation. Only unavailable native
-boundaries are mocked. Unit tests cover error recovery and disabled actions.
+Functional tests render real screens, navigation and session/controller logic.
+Services are injected to test loading, rejection, failure, retry and cancellation;
+unavailable native animation/linking boundaries are mocked. Tests also cover cold
+and runtime protected deep links, modal cancellation, tabs and disconnect. Unit
+tests cover render-error recovery and disabled actions.
 Follow [AGENTS.md](AGENTS.md) for permanent testing and architecture policy.
 Initial coverage floors are 80% statements/functions/lines and 70% branches,
 based on this small foundation's measured coverage; include all source files and

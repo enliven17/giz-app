@@ -3,8 +3,7 @@
 Baseline commit: `9c0c15ed16d69f9c2ec57839b9d18222e51d946d`.
 Frontend tree: `773f8b428b741604feddf6a558c67d9fa5c55c2c`.
 Inspected 2026-09-22. Paths below are relative to `../../frontend/src/`.
-This is a source inspection, not browser/device verification. Mobile implementation
-of every row is pending. Functional regression tests must follow AGENTS.md.
+This is a source inspection, not browser/device verification. Mobile status is tracked below. Functional regression tests must follow AGENTS.md.
 
 Legend: **working** = local UI handler exists; **simulated** = fixtures/timers;
 **inactive** = displayed control without an action. None implies a real service.
@@ -65,3 +64,19 @@ requires authoritative session/wallet/API contracts and confirmed financial stat
 Compare future frontend changes against the frozen tree before extending parity.
 Record changed journey IDs and scope decisions here. Keep durable implementation
 rules in AGENTS.md; this baseline can survive removal of the initial work plan.
+
+## M2 mobile status
+
+- P01: implemented welcome -> access and back. The formerly inactive “I have
+  access” control opens demo access; no existing credential is claimed.
+- P02: simulated passkey access, memory-only demo session, loading/cancel,
+  failure/rejection recovery and duplicate-submit protection. No biometrics or keys.
+- P03: simulated MetaMask/Rainbow/Ledger/WalletConnect selection in a native modal,
+  cancellation and invalidation of late results. No external app opens.
+- P04: Home/Vaults/Exchange/Settings shell, protected navigation and disconnect
+  implemented. Content and subpages remain with M3–M5; visible placeholders say so.
+- P05–P15: product content remains pending except the P14 disconnect action.
+- Cold/runtime signed-out protected links are discarded; the access link retains
+  welcome as its back destination. No pending protected URL is stored as session data.
+- Native gesture delivery, Android hardware back and device rendering still need
+  platform QA; rendered functional tests do not establish those results.

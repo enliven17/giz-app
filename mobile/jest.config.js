@@ -1,5 +1,6 @@
 module.exports = {
   preset: "jest-expo",
+  resolver: "react-native-worklets/jest/resolver",
   transform: { "^.+\\.[jt]sx?$": "babel-jest", "^.+\\.mjs$": "babel-jest" },
   setupFilesAfterEnv: ["<rootDir>/tests/support/setup.ts"],
   moduleNameMapper: { "^@/(.*)$": "<rootDir>/src/$1" },

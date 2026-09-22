@@ -81,6 +81,20 @@ implementation decisions. Continue independent work when an integration is block
 - Clearly label demo data and simulated operations. Production must not silently
   use mocks or claim financial success from elapsed time.
 
+## Demo access and navigation
+
+- Demo sessions are memory-only and use an explicit `kind: "demo"` marker.
+  Restart/disconnect returns to the signed-out experience. Do not persist access
+  or imply that Face ID, credentials, private keys or wallet connections exist.
+- Access providers are service boundaries; controllers own pending/error state,
+  reject duplicate submissions, and invalidate results after cancel/unmount.
+- Register protected routes only during an active demo session. Clear navigation
+  history on session changes; discard signed-out protected/unknown links.
+- The welcome “I have access” action opens the same demo access screen. It is not
+  credential recovery. Tab placeholders must say when functionality is unavailable.
+- Keep the UI preview under Settings for inspecting reusable component states.
+  Motion must honor the system reduced-motion setting.
+
 ## Atomic design rules
 
 - **Atoms:** native visual/control primitives such as Text, Button, Input, Icon,

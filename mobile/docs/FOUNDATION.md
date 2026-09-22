@@ -135,3 +135,29 @@ is unrestricted for now; dedicated tablet design remains unresolved.
 M1 native runtime exit criteria remain open until both platform builds and actual
 screen/navigation checks pass. NativeWind appearance, keyboard, safe areas, Android
 back, iOS gestures, accessibility and background/resume still need device QA.
+
+## M2 implementation and verification
+
+M2 adds React Navigation bottom tabs and replaces the foundation demo screens with
+welcome, access, wallet selection, a protected tab shell and a Settings UI preview.
+Typography, button variants, notices and an animated SVG brand mark share the
+existing theme. The Reanimated entry animation honors system reduced motion.
+No additional font or splash assets were needed.
+
+Sessions are explicitly simulated, held only in memory and reset on disconnect or
+restart. Access controllers ignore late completions after cancellation/unmount.
+Native stacks handle access back navigation and the wallet modal; protected routes
+are not registered without a session. See PARITY.md for the P01–P04 status.
+
+- Passed: full `npm run check`, including TypeScript, format, lint, 21 Expo Doctor
+  checks and 20 tests. Coverage: 97.8% statements, 93.93% branches, 95.23% functions,
+  100% lines. Coverage floors are unchanged.
+- Passed: all 18 functional tests with the Android Jest preset, including the
+  access/tab/disconnect journey and cold/runtime deep-link protection.
+- Passed: iOS and Android Metro/Hermes exports after installing bottom tabs.
+- Native motion/worklets are mocked using the installed Worklets Jest resolver
+  and official mocks. Navigation, screens, session state and controllers are real
+  in the functional suite; no live wallet/API requests occur.
+- Blocked/not run: device rendering, actual Android back and iOS swipe gestures,
+  native modal dismissal, and hosted native CI, for the same M1 platform prerequisites.
+  M1's open checklist items are intentionally unchanged.

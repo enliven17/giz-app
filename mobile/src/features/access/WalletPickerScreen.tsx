@@ -29,6 +29,7 @@ export function WalletPickerScreen({
       {controller.error && <Notice error message={controller.error} />}
       <Button
         label="Cancel wallet selection"
+        variant="secondary"
         onPress={() => {
           controller.cancel();
           navigation.goBack();

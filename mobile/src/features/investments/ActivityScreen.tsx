@@ -1,14 +1,9 @@
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "@/navigation/types";
 import { Screen } from "@/components/templates/Screen";
 import { Typography } from "@/components/atoms/Typography";
-import { Button } from "@/components/atoms/Button";
 import { Metric } from "@/components/molecules/Metric";
 import { useInvestments } from "./InvestmentProvider";
 import { DataStatus } from "./DataStatus";
-export function ActivityScreen({
-  navigation,
-}: NativeStackScreenProps<RootStackParamList, "Activity">) {
+export function ActivityScreen() {
   const { data } = useInvestments();
   return (
     <Screen>
@@ -26,15 +21,6 @@ export function ActivityScreen({
           ))}
         </>
       )}
-      <Button
-        label="Back from activity"
-        variant="secondary"
-        onPress={() =>
-          navigation.canGoBack()
-            ? navigation.goBack()
-            : navigation.navigate("Main", { screen: "Home" })
-        }
-      />
     </Screen>
   );
 }

@@ -12,7 +12,11 @@ export function Screen({ children }: PropsWithChildren) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={headerHeight}
       >
-        <ScrollView contentContainerClassName="grow gap-6 p-6" keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerClassName="grow gap-4 px-5 py-4"
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+        >
           {children}
         </ScrollView>
       </KeyboardAvoidingView>

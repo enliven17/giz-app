@@ -19,23 +19,7 @@ export function HistoryChart({ series }: { series: number[] }) {
   return (
     <View className="gap-3">
       <Typography variant="label">Illustrative performance index</Typography>
-      <Typography>Generated demo history, not returns or a price quote.</Typography>
-      {values.length > 1 ? (
-        <>
-          <Svg
-            width="100%"
-            height={150}
-            viewBox="0 0 300 150"
-            accessibilityElementsHidden
-            importantForAccessibility="no-hide-descendants"
-          >
-            <Polyline points={points} fill="none" stroke={colors.accent} strokeWidth={3} />
-          </Svg>
-          <Typography accessibilityLiveRegion="polite">{`${period} demo index: ${values[0]!.toFixed(2)} to ${values[values.length - 1]!.toFixed(2)} (${values.length} samples)`}</Typography>
-        </>
-      ) : (
-        <Typography>No chart history available.</Typography>
-      )}
+      <Typography variant="caption">Synthetic history · Not actual returns or prices</Typography>
       <View
         className="flex-row flex-wrap gap-2"
         accessibilityRole="radiogroup"
@@ -50,6 +34,25 @@ export function HistoryChart({ series }: { series: number[] }) {
           />
         ))}
       </View>
+      {values.length > 1 ? (
+        <>
+          <Svg
+            width="100%"
+            height={150}
+            viewBox="0 0 300 150"
+            accessibilityElementsHidden
+            importantForAccessibility="no-hide-descendants"
+          >
+            <Polyline points={points} fill="none" stroke={colors.accent} strokeWidth={3} />
+          </Svg>
+          <Typography
+            variant="caption"
+            accessibilityLiveRegion="polite"
+          >{`${period} demo index: Start ${values[0]!.toFixed(2)} · End ${values[values.length - 1]!.toFixed(2)} (${values.length} samples)`}</Typography>
+        </>
+      ) : (
+        <Typography>No chart history available.</Typography>
+      )}
     </View>
   );
 }

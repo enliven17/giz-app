@@ -28,14 +28,6 @@ export function AccessScreen({ navigation }: NativeStackScreenProps<RootStackPar
       {controller.pending && (
         <Button label="Cancel demo access" variant="secondary" onPress={controller.cancel} />
       )}
-      <Button
-        label="Back to welcome"
-        variant="secondary"
-        onPress={() => {
-          controller.cancel();
-          navigation.goBack();
-        }}
-      />
     </Screen>
   );
 }

@@ -1,5 +1,5 @@
 import { act, screen, userEvent } from "@testing-library/react-native";
-import { Linking, Share } from "react-native";
+import { Dimensions, Linking, Share } from "react-native";
 import { renderApp, deferred } from "../../support/renderApp";
 import { investmentFixture } from "@/services/fixtures/investments";
 import { OfflineError, type InvestmentService } from "@/services/investments";
@@ -28,15 +28,15 @@ test("browses portfolio, periods, holdings, filtered vault details and activity"
   expect(screen.getByText("$25,000")).toBeVisible();
   await userEvent.press(screen.getByRole("radio", { name: "1Y" }));
   expect(screen.getByText(/1Y demo index:.*48 samples/)).toBeVisible();
-  await userEvent.press(screen.getByRole("button", { name: "Back from vault" }));
+  await userEvent.press(screen.getByRole("button", { name: "Back" }));
   await userEvent.press(await screen.findByRole("button", { name: "See all vaults" }));
   const search = screen.getByLabelText("Search name, ticker, strategy or manager");
   await userEvent.type(search, "OBSIDIAN PARTNERS");
   await userEvent.press(screen.getByRole("radio", { name: "Low risk" }));
-  expect(screen.getByText("1 vaults found")).toBeVisible();
+  expect(screen.getByText("1 vault found")).toBeVisible();
   await userEvent.press(screen.getByRole("button", { name: "View Obsidian Credit" }));
   expect(await screen.findByText("$12.0940")).toBeVisible();
-  await userEvent.press(screen.getByRole("button", { name: "Back from vault" }));
+  await userEvent.press(screen.getByRole("button", { name: "Back" }));
   expect(
     await screen.findByLabelText("Search name, ticker, strategy or manager"),
   ).toHaveDisplayValue("OBSIDIAN PARTNERS");
@@ -48,7 +48,7 @@ test("browses portfolio, periods, holdings, filtered vault details and activity"
   await userEvent.press(screen.getByRole("button", { name: "View activity" }));
   expect(await screen.findByText("September · Bought HLX")).toBeVisible();
   expect(screen.getByText("$120,000.00 (simulated history)")).toBeVisible();
-  await userEvent.press(screen.getByRole("button", { name: "Back from activity" }));
+  await userEvent.press(screen.getByRole("button", { name: "Back" }));
   expect(await screen.findByRole("header", { name: "Your portfolio" })).toBeVisible();
 });
 test("shows initial loading and recovers from an adapter failure without duplicate refreshes", async () => {
@@ -108,7 +108,7 @@ test("empty portfolio, charts, discovery and activity remain navigable", async (
   expect(screen.getByText("No chart history available.")).toBeVisible();
   await userEvent.press(screen.getByRole("button", { name: "View activity" }));
   expect(await screen.findByText("No activity yet.")).toBeVisible();
-  await userEvent.press(screen.getByRole("button", { name: "Back from activity" }));
+  await userEvent.press(screen.getByRole("button", { name: "Back" }));
   await userEvent.press(await screen.findByRole("button", { name: "See all vaults" }));
   expect(screen.getByText("No vaults available.")).toBeVisible();
 });
@@ -116,7 +116,7 @@ test("missing vault has a recoverable empty state", async () => {
   await enter({ load: async () => ({ ...investmentFixture, vaults: [] }) });
   await userEvent.press(await screen.findByRole("button", { name: "Open HLX holding" }));
   expect(await screen.findByText("Vault not found in this demo snapshot.")).toBeVisible();
-  await userEvent.press(screen.getByRole("button", { name: "Back from vault" }));
+  await userEvent.press(screen.getByRole("button", { name: "Back" }));
   expect(await screen.findByRole("header", { name: "Your portfolio" })).toBeVisible();
 });
 test("sharing sends only a labeled demo summary, handles dismissal and retries failure", async () => {
@@ -134,7 +134,7 @@ test("sharing sends only a labeled demo summary, handles dismissal and retries f
   await userEvent.press(screen.getByRole("button", { name: "Share demo summary" }));
   expect(share).toHaveBeenLastCalledWith({
     message:
-      "Nexum demo vault: Helix Alpha (HLX)\nHelix Capital\nMarket neutral basis trade\nMedium risk (fixture). Demo only; not an investment offer or live quote.",
+      "Gizu demo vault: Helix Alpha (HLX)\nHelix Capital\nMarket neutral basis trade\nMedium risk (fixture). Demo only; not an investment offer or live quote.",
   });
 });
 test("disconnect drops the snapshot and late responses cannot repopulate the next session", async () => {
@@ -157,7 +157,7 @@ test("disconnect drops the snapshot and late responses cannot repopulate the nex
 test.each(["vault/helix", "activity"])(
   "protects cold %s links and provides a return destination after access",
   async (path) => {
-    jest.mocked(Linking.getInitialURL).mockResolvedValue(`nexum-dev://${path}`);
+    jest.mocked(Linking.getInitialURL).mockResolvedValue(`gizu-dev://${path}`);
     renderApp();
     expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
     expect(screen.queryByText("$1.8342")).toBeNull();
@@ -165,9 +165,52 @@ test.each(["vault/helix", "activity"])(
     await userEvent.press(screen.getByRole("button", { name: "Try demo passkey" }));
     await userEvent.press(
       await screen.findByRole("button", {
-        name: path === "activity" ? "Back from activity" : "Back from vault",
+        name: "Back",
       }),
     );
     expect(await screen.findByLabelText("Home tab")).toBeVisible();
   },
 );
+
+test("timestamp details are optional and clearing filters is contextual", async () => {
+  await enter();
+  await screen.findByText("$810,838.24");
+  expect(screen.queryByText(`As of ${investmentFixture.asOf}`)).toBeNull();
+  await userEvent.press(screen.getByRole("button", { name: "Show data timestamp" }));
+  expect(screen.getByText(`As of ${investmentFixture.asOf}`)).toBeVisible();
+  await userEvent.press(screen.getByRole("button", { name: "Hide data timestamp" }));
+  expect(screen.queryByText(`As of ${investmentFixture.asOf}`)).toBeNull();
+  await userEvent.press(screen.getByRole("button", { name: "See all vaults" }));
+  expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
+  await userEvent.press(screen.getByRole("radio", { name: "High risk" }));
+  expect(screen.getByText("1 vault found")).toBeVisible();
+  await userEvent.press(screen.getByRole("button", { name: "Clear filters" }));
+  expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
+});
+
+test("retains search, filters and chart selection across font size changes", async () => {
+  const original = Dimensions.get("window");
+  try {
+    await enter();
+    await userEvent.press(screen.getByRole("radio", { name: "1D" }));
+    await userEvent.press(screen.getByLabelText("Vaults tab"));
+    await userEvent.type(
+      screen.getByLabelText("Search name, ticker, strategy or manager"),
+      "Vertex",
+    );
+    await userEvent.press(screen.getByRole("radio", { name: "High risk" }));
+    act(() => Dimensions.set({ window: { ...original, width: 320, fontScale: 2 } }));
+    expect(screen.getByLabelText("Search name, ticker, strategy or manager")).toHaveDisplayValue(
+      "Vertex",
+    );
+    expect(screen.getByRole("radio", { name: "High risk" })).toBeChecked();
+    expect(screen.getByText("1 vault found")).toBeVisible();
+    await userEvent.press(screen.getByRole("button", { name: "View Vertex Quant" }));
+    expect(await screen.findByText("26.7%")).toBeVisible();
+    await userEvent.press(screen.getByRole("button", { name: "Back" }));
+    await userEvent.press(screen.getByLabelText("Home tab"));
+    expect(screen.getByRole("radio", { name: "1D" })).toBeChecked();
+  } finally {
+    act(() => Dimensions.set({ window: original }));
+  }
+});

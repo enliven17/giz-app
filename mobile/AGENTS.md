@@ -263,6 +263,29 @@ The scaffolded tooling must continue to:
 - Report passed, failed, blocked and not-run checks separately. Do not present
   these commands as available before implementation.
 
+## Screen hierarchy and native usability
+
+- Prioritize the balance or vault identity/price before secondary metadata. Group
+  supporting metrics and stack them on narrow displays or enlarged system text.
+- Keep the demo/no-real-funds disclosure visible; timestamp details may expand on
+  demand. Stale/offline/error information must remain visible without expansion.
+- Use primary actions for the main task, secondary actions for alternatives, quiet
+  actions for metadata/navigation, and destructive styling for disconnect/removal.
+  Disabled actions must look unavailable; future features may use explicit notes.
+- Keep discovery search and filters near the top. Show Clear filters only when it
+  has an effect, and preserve filters and chart selections across navigation.
+- Use the shared header Back action with a sensible direct-link fallback. Avoid a
+  duplicate content back action; retain modal cancellation and native gestures.
+- Keep chart periods adjacent to the graph and expose numeric start/end summaries
+  with an explicit synthetic-data disclosure.
+- Preserve feature state when system text size changes. Native text must remeasure
+  on inactive screens as well as active screens; verify this on a simulator/device.
+- Keep Settings UI preview useful for action, typography, metric, filter, vault,
+  loading, empty, stale/offline and error states.
+- Record native display size/OS and actual accessibility, keyboard, sharing and
+  navigation checks separately from rendered tests. A single iOS pass does not
+  establish Android, Windows, VoiceOver or reduced-motion behavior.
+
 ## Verification and delivery
 
 - Once scaffolded, define and document package scripts for typecheck, lint,

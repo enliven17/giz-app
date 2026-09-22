@@ -81,10 +81,10 @@ Sources checked on 2026-09-22:
 
 | Item                                                            | Current record                                                         | Owner / resolution point                          |
 | --------------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------- |
-| Display name                                                    | Nexum Dev approved for local development                               | Product owner, before app configuration           |
-| iOS bundle ID / Android application ID                          | com.example.nexum.dev approved for development; release IDs unresolved | Product owner, before M1 identity configuration   |
-| Deep-link scheme / associated domains                           | nexum-dev approved for development; associated domains unresolved      | Product owner + wallet/backend integration owner  |
-| Development placeholder IDs                                     | User approved Nexum Dev / com.example.nexum.dev / nexum-dev            | Approved during M1                                |
+| Display name                                                    | Gizu Dev approved for local development                               | Product owner, before app configuration           |
+| iOS bundle ID / Android application ID                          | com.example.gizu.dev approved for development; release IDs unresolved | Product owner, before M1 identity configuration   |
+| Deep-link scheme / associated domains                           | gizu-dev approved for development; associated domains unresolved      | Product owner + wallet/backend integration owner  |
+| Development placeholder IDs                                     | User approved Gizu Dev / com.example.gizu.dev / gizu-dev            | Approved during M1                                |
 | Portrait/tablet policy and font rights                          | Response requested; provisional defaults above                         | Product owner, before layout/assets are finalized |
 | Expo/EAS project ownership and signing credentials              | Unresolved; no external project created                                | Release owner, before hosted/signed builds        |
 | Wallet/custody/passkeys/recovery and chain/contracts            | Unresolved                                                             | Product + backend/security owners, before M6      |
@@ -181,3 +181,41 @@ loads cannot restore a disconnected account's data. No packages were added.
 The chart and monetary fixtures remain demonstration data. Search/chart/share
 choices follow the proposed M3 defaults documented in PARITY.md. M4 trading and
 transfers and M5 notifications remain explicitly unavailable in their controls.
+
+## M3.1 usability and native validation — 2026-09-22
+
+This record supersedes the earlier local iOS availability limitation: an iPhone 17
+Pro simulator running iOS 26.5 now runs the development app. It does not retroactively
+certify all M1/M2 platform exit criteria or hosted CI.
+
+The update prioritizes balance/price, groups supporting metrics, makes timestamps
+optional while preserving demo/freshness warnings, improves discovery placement,
+adds action hierarchy and shared header navigation, and expands the UI preview.
+
+- Native passed: standard-text Home/Vaults/detail hierarchy; enlarged text up to
+  accessibility-extra-large; responsive stacked detail metrics; header Back;
+  native demo share-sheet opening and dismissal without sending; software keyboard
+  typing, filtering and Search-key dismissal.
+- Native regression found and fixed: changing system text size while a screen was
+  inactive left cached text heights and clipped content. Atomic text nodes now
+  remeasure on font-scale changes while feature/navigation state is retained.
+  Tab header text is capped at 1.3 scale; screen content continues to scale.
+- The original preferred text size was restored after the inspection.
+- Blocked during this run: reliable coordinate gesture validation. Computer
+  repeatedly returned `noWindowsAvailable` during drag/swipe attempts. Keyboard
+  Search dismissal was verified, but drag dismissal was not.
+- Not run: smaller native display, VoiceOver, reduced motion, native swipe-back and
+  wallet-modal swipe dismissal, Android device QA, Windows and hosted native CI.
+  Rendered tests and JavaScript exports must not be reported as those checks.
+
+- Automated passed: full `npm run check`, including TypeScript, formatting, lint,
+  all 21 Expo Doctor checks and all 41 tests (33 functional). Coverage: 96.62%
+  statements, 92.38% branches, 97.19% functions and 99.54% lines.
+- Automated passed: all 33 functional tests with the Android Jest preset and
+  Metro/Hermes exports for both iOS and Android. Exports emitted only a conflicting
+  terminal color-environment warning.
+- The initial sandboxed Doctor run could not reach Expo metadata; its network-enabled
+  rerun passed. There are no remaining failed automated checks.
+
+Tests mock external boundaries; text-size regression coverage verifies state
+retention, not native text measurement or glyph layout.

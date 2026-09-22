@@ -37,7 +37,7 @@ export function TabScreen({ route, navigation }: BottomTabScreenProps<MainTabPar
                 ?.navigate("Preview")
             }
           />
-          <Button label="Disconnect demo" onPress={disconnect} />
+          <Button variant="destructive" label="Disconnect demo" onPress={disconnect} />
         </>
       )}
     </Screen>

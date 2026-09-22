@@ -1,3 +1,4 @@
+import { MetricGroup } from "@/components/molecules/MetricGroup";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/navigation/types";
 import { Screen } from "@/components/templates/Screen";
@@ -10,22 +11,26 @@ import { useVaultDetailController } from "./useVaultDetailController";
 import { DataStatus } from "./DataStatus";
 export function VaultDetailScreen({
   route,
-  navigation,
 }: NativeStackScreenProps<RootStackParamList, "VaultDetail">) {
   const { data, vault, sharing, shareError, share } = useVaultDetailController(route.params.id);
   return (
     <Screen>
-      <DataStatus />
+      {!vault && <DataStatus />}
       {vault ? (
         <>
           <Typography variant="heading">{vault.name}</Typography>
           <Typography>{`${vault.ticker} · ${vault.managers}`}</Typography>
-          <Metric label="Unit price (USD demo)" value={`$${vault.price}`} />
-          <Metric label="24h change (demo)" value={`${vault.change24h}%`} />
+          <Metric emphasis label="Unit price · USD demo" value={`$${vault.price}`} />
+          <Typography variant="caption">{`${vault.change24h}% · Demo 24h change`}</Typography>
+          <DataStatus />
           <HistoryChart series={vault.series} />
-          <Metric label="Net APY (demo)" value={`${vault.apy}%`} />
-          <Metric label="TVL" value={vault.tvl} />
-          <Metric label="Lockup" value={vault.lockup} />
+          <MetricGroup
+            metrics={[
+              { label: "Net APY (demo)", value: `${vault.apy}%` },
+              { label: "TVL", value: vault.tvl },
+              { label: "Lockup", value: vault.lockup },
+            ]}
+          />
           <Typography variant="heading">Allocation</Typography>
           {vault.allocation.map((item) => (
             <Metric key={item.label} label={item.label} value={`${item.pct}%`} />
@@ -42,22 +47,12 @@ export function VaultDetailScreen({
             variant="secondary"
             onPress={() => void share()}
           />
+          <Typography variant="caption">Buying and selling are not available yet.</Typography>
           {shareError && <Notice error message="Sharing failed. Please try again." />}
-          <Button label="Buy — coming in trading slice" disabled onPress={() => {}} />
-          <Button label="Sell — coming in trading slice" disabled onPress={() => {}} />
         </>
       ) : (
         data && <Notice message="Vault not found in this demo snapshot." />
       )}
-      <Button
-        label="Back from vault"
-        variant="secondary"
-        onPress={() =>
-          navigation.canGoBack()
-            ? navigation.goBack()
-            : navigation.navigate("Main", { screen: "Vaults" })
-        }
-      />
     </Screen>
   );
 }

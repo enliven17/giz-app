@@ -114,5 +114,16 @@ An empty portfolio, missing vault and empty activity have explicit states. Servi
 adapters can inject those states in tests; no real network or OS connectivity is
 inferred. Disconnect clears the snapshot and invalidates pending requests.
 
-Notifications, buy/sell and deposit/withdraw controls are shown as unavailable with
-their next-slice purpose. They do not simulate a successful operation.
+Notifications, buy/sell and deposit/withdraw are identified by availability notes.
+They do not simulate a successful operation.
+
+Balance and vault price lead their screens; demo disclosure remains visible while
+its timestamp expands on tap. Refresh uses a quiet action. Search/risk filters sit
+near the top and Clear filters appears only when needed. Header Back preserves the
+previous screen and falls back to the relevant tab for direct entry. Settings →
+UI preview demonstrates shared actions, metrics, filters and feedback states.
+
+The iPhone 17 Pro / iOS 26.5 development app was inspected at standard and enlarged
+text sizes, including native sharing and software keyboard search. Smaller native
+displays, VoiceOver, reduced motion, gestures and Android QA remain pending; see
+the foundation record for the exact scope.

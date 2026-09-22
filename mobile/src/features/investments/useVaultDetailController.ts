@@ -21,7 +21,7 @@ export function useVaultDetailController(id: string) {
     setShareError(false);
     try {
       await Share.share({
-        message: `Nexum demo vault: ${vault.name} (${vault.ticker})\n${vault.managers}\n${vault.strategy}\n${vault.risk} risk (fixture). Demo only; not an investment offer or live quote.`,
+        message: `Gizu demo vault: ${vault.name} (${vault.ticker})\n${vault.managers}\n${vault.strategy}\n${vault.risk} risk (fixture). Demo only; not an investment offer or live quote.`,
       });
     } catch {
       if (active.current) setShareError(true);

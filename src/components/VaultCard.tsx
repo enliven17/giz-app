@@ -7,10 +7,12 @@ export default function VaultCard({
   vault: v,
   onClick,
   delay = 0,
+  className = 'aspect-square',
 }: {
   vault: Vault
   onClick: () => void
   delay?: number
+  className?: string
 }) {
   const up = v.change24h >= 0
   return (
@@ -20,7 +22,7 @@ export default function VaultCard({
       transition={{ delay, duration: 0.45 }}
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
-      className="glass relative flex aspect-square flex-col justify-between overflow-hidden rounded-3xl p-4 text-left"
+      className={`glass relative flex flex-col justify-between overflow-hidden rounded-3xl p-4 text-left ${className}`}
     >
       <div className="flex items-start justify-between">
         <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-neon/10 font-mono text-[11px] font-bold text-neon">

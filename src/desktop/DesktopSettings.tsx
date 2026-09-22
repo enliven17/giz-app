@@ -32,14 +32,14 @@ export default function DesktopSettings({ onOpen }: { onOpen: (id: string) => vo
   const [alerts, setAlerts] = useState(true)
 
   return (
-    <div className="mx-auto max-w-[1520px] px-14 pb-10 pt-9">
-      <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-[34px] font-medium tracking-tight">Account</h1>
-        <p className="mt-2 text-[14px] text-white/40">Member since September 2026, desk coverage EMEA.</p>
+    <div className="mx-auto flex min-h-0 w-full max-w-[1520px] flex-1 flex-col px-14 pb-6 pt-7">
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="shrink-0">
+        <h1 className="text-[28px] font-medium tracking-tight">Account</h1>
+        <p className="mt-1 text-[13px] text-white/40">Member since September 2026, desk coverage EMEA.</p>
       </motion.div>
 
-      <div className="mt-8 grid grid-cols-3 gap-6">
-        <SpotlightCard className="rounded-[28px] p-7">
+      <div className="mt-5 grid min-h-0 flex-1 grid-cols-3 gap-5">
+        <SpotlightCard className="h-fit rounded-[28px] p-6">
           <div className="flex items-center gap-4">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-neon/10 font-mono text-[17px] text-neon">
               CP
@@ -66,7 +66,7 @@ export default function DesktopSettings({ onOpen }: { onOpen: (id: string) => vo
           </div>
         </SpotlightCard>
 
-        <div className="col-span-2 space-y-6">
+        <div className="col-span-2 space-y-4">
           {groups.map((g, gi) => (
             <motion.section
               key={g.title}
@@ -85,7 +85,7 @@ export default function DesktopSettings({ onOpen }: { onOpen: (id: string) => vo
                       key={r.id}
                       role={'toggle' in r ? undefined : 'button'}
                       onClick={() => !('toggle' in r) && onOpen(r.id)}
-                      className="flex items-center gap-4 px-6 py-4 text-left hover:bg-white/[0.02]"
+                      className="flex items-center gap-4 px-6 py-3.5 text-left hover:bg-white/[0.02]"
                     >
                       <Icon size={16} className="shrink-0 text-white/40" />
                       <span className="flex-1 truncate text-[14px] text-white/85">{r.label}</span>

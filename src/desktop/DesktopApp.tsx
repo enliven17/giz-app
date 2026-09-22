@@ -58,6 +58,7 @@ export default function DesktopApp() {
           key={screen === 'app' ? tab : screen === 'sub' ? `sub-${sub}` : screen}
           {...fade}
           transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          className="flex min-h-0 flex-1 flex-col"
         >
           {screen === 'app' && tab === 'home' && (
             <DesktopHome
@@ -74,12 +75,12 @@ export default function DesktopApp() {
             <DesktopVaultDetail vault={vault} onBack={() => setScreen('app')} />
           )}
           {screen === 'notifications' && (
-            <div className="mx-auto max-w-[760px] px-12">
+            <div className="mx-auto flex min-h-0 w-full max-w-[760px] flex-1 flex-col px-12">
               <Notifications onBack={() => setScreen('app')} />
             </div>
           )}
           {screen === 'sub' && (
-            <div className="mx-auto max-w-[760px] px-12">
+            <div className="mx-auto flex min-h-0 w-full max-w-[760px] flex-1 flex-col px-12">
               <SubPage id={sub} onBack={() => setScreen('app')} />
             </div>
           )}

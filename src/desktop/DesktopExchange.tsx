@@ -27,19 +27,19 @@ export default function DesktopExchange() {
   }
 
   return (
-    <div className="mx-auto max-w-[1520px] px-14 pb-10 pt-9">
-      <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-[34px] font-medium tracking-tight">Exchange</h1>
-        <p className="mt-2 text-[14px] text-white/40">
+    <div className="mx-auto flex min-h-0 w-full max-w-[1520px] flex-1 flex-col px-14 pb-6 pt-7">
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="shrink-0">
+        <h1 className="text-[28px] font-medium tracking-tight">Exchange</h1>
+        <p className="mt-1 text-[13px] text-white/40">
           Swap into any open vault, settled instantly on Monad.
         </p>
       </motion.div>
 
-      <div className="mt-8 grid grid-cols-3 gap-6">
-        <div className="col-span-2">
-          <SpotlightCard className="rounded-[28px] p-8">
+      <div className="mt-5 grid min-h-0 flex-1 grid-cols-3 gap-5">
+        <div className="col-span-2 flex min-h-0">
+          <SpotlightCard className="flex w-full flex-col rounded-[28px] p-7">
             <div className="relative space-y-3">
-              <div className="rounded-3xl bg-white/[0.03] px-7 py-7">
+              <div className="rounded-3xl bg-white/[0.03] px-6 py-5">
                 <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.18em] text-white/30">
                   <span>You pay</span>
                   <span>Balance 184,204.00</span>
@@ -50,7 +50,7 @@ export default function DesktopExchange() {
                     onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ''))}
                     inputMode="decimal"
                     placeholder="0"
-                    className="w-full min-w-0 bg-transparent font-mono text-[46px] font-normal leading-none tracking-tight caret-neon outline-none placeholder:text-white/20"
+                    className="w-full min-w-0 bg-transparent font-mono text-[40px] font-normal leading-none tracking-tight caret-neon outline-none placeholder:text-white/20"
                   />
                   <span className="glass-soft flex h-12 shrink-0 items-center rounded-full px-5 font-mono text-[14px]">
                     USDC
@@ -77,13 +77,13 @@ export default function DesktopExchange() {
                 </motion.button>
               </div>
 
-              <div className="rounded-3xl bg-white/[0.03] px-7 py-7">
+              <div className="rounded-3xl bg-white/[0.03] px-6 py-5">
                 <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.18em] text-white/30">
                   <span>You receive</span>
                   <span>Fee 0.05%</span>
                 </div>
                 <div className="mt-4 flex items-end justify-between gap-5">
-                  <div className="min-w-0 truncate font-mono text-[46px] font-normal leading-none tracking-tight text-white/85">
+                  <div className="min-w-0 truncate font-mono text-[40px] font-normal leading-none tracking-tight text-white/85">
                     {units.toLocaleString('en-US', { maximumFractionDigits: 2 })}
                   </div>
                   <span className="glass-soft flex h-12 shrink-0 items-center rounded-full px-5 font-mono text-[14px] text-neon">
@@ -94,7 +94,7 @@ export default function DesktopExchange() {
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-4 gap-3">
+            <div className="mt-5 grid grid-cols-4 gap-3">
               {[
                 ['Rate', `$${vault.price.toFixed(4)}`],
                 ['Settlement', 'T+0'],
@@ -110,17 +110,17 @@ export default function DesktopExchange() {
 
             <button
               onClick={confirm}
-              className="neon-btn mt-6 flex h-16 w-full items-center justify-center rounded-2xl text-[15px] font-semibold"
+              className="neon-btn mt-auto flex h-14 w-full items-center justify-center rounded-2xl text-[15px] font-semibold"
             >
               Confirm swap
             </button>
           </SpotlightCard>
         </div>
 
-        <div className="space-y-6">
-          <SpotlightCard className="rounded-[28px] p-7">
+        <div className="flex min-h-0 flex-col gap-5">
+          <SpotlightCard className="shrink-0 rounded-[28px] p-6">
             <h3 className="text-[17px] font-medium tracking-tight">Destination vault</h3>
-            <div className="mt-5 space-y-2">
+            <div className="mt-3 space-y-1.5">
               {vaults.map((v) => (
                 <button
                   key={v.id}
@@ -144,11 +144,11 @@ export default function DesktopExchange() {
             </div>
           </SpotlightCard>
 
-          <SpotlightCard className="rounded-[28px] p-7">
-            <h3 className="text-[17px] font-medium tracking-tight">Recent</h3>
-            <div className="mt-4 divide-y divide-white/5">
+          <SpotlightCard className="flex min-h-0 flex-1 flex-col rounded-[28px] p-6">
+            <h3 className="shrink-0 text-[17px] font-medium tracking-tight">Recent</h3>
+            <div className="mt-2 min-h-0 flex-1 divide-y divide-white/5 overflow-y-auto">
               {RECENT.map((r) => (
-                <div key={r.pair + r.date} className="flex items-center justify-between py-4">
+                <div key={r.pair + r.date} className="flex items-center justify-between py-3.5">
                   <div className="min-w-0">
                     <div className="truncate text-[13px] font-medium">{r.pair}</div>
                     <div className="mt-0.5 font-mono text-[10px] text-white/30">{r.date}</div>

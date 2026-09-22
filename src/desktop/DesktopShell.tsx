@@ -24,9 +24,9 @@ export default function DesktopShell({
 }) {
   return (
     <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-ink">
-      <div className="scanlines noise relative min-h-0 flex-1 overflow-y-auto">
-        <header className="sticky top-0 z-30 border-b border-white/[0.05] bg-ink/80 backdrop-blur-xl">
-          <div className="mx-auto flex max-w-[1520px] items-center gap-4 px-14 py-5">
+      <div className="scanlines noise relative flex min-h-0 flex-1 flex-col overflow-hidden">
+        <header className="z-30 shrink-0 border-b border-white/[0.05] bg-ink/80 backdrop-blur-xl">
+          <div className="mx-auto flex max-w-[1520px] items-center gap-4 px-14 py-4">
             <div className="flex items-center gap-3">
               <div className="glass flex h-10 w-10 items-center justify-center rounded-2xl font-mono text-[15px] font-bold text-neon">
                 N
@@ -63,7 +63,7 @@ export default function DesktopShell({
           </div>
         </header>
 
-        {children}
+        <div className="flex min-h-0 flex-1 flex-col">{children}</div>
       </div>
 
       <div className="z-40 flex shrink-0 justify-center pb-7 pt-4">

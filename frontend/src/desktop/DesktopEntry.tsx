@@ -53,10 +53,7 @@ export default function DesktopEntry({ onDone }: { onDone: () => void }) {
         </div>
 
         <div className="relative flex items-center gap-3">
-          <div className="glass flex h-10 w-10 items-center justify-center rounded-2xl font-mono text-[15px] font-bold text-neon">
-            N
-          </div>
-          <span className="text-[17px] font-medium tracking-tight">Nexum</span>
+          <span className="text-[18px] font-medium tracking-tight">Gizu</span>
         </div>
 
         <div className="relative max-w-[620px]">
@@ -111,7 +108,7 @@ export default function DesktopEntry({ onDone }: { onDone: () => void }) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -16 }}
               >
-                <h2 className="text-[28px] font-medium tracking-tight">Enter Nexum</h2>
+                <h2 className="text-[28px] font-medium tracking-tight">Enter Gizu</h2>
                 <p className="mt-3 text-[14px] leading-relaxed text-white/45">
                   Access is passkey based. No seed phrase, no extension required.
                 </p>

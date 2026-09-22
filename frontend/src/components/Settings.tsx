@@ -124,7 +124,7 @@ export default function Settings({
       </button>
 
       <div className="mt-8 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-white/20">
-        Nexum v0.1.0
+        Gizu v0.1.0
       </div>
     </div>
   )

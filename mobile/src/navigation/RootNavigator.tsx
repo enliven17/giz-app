@@ -22,7 +22,7 @@ export function RootNavigator() {
         </Stack.Group>
       ) : (
         <Stack.Group navigationKey="guest">
-          <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ title: "Nexum" }} />
+          <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ title: "Gizu" }} />
           <Stack.Screen name="Access" component={AccessScreen} options={{ title: "Demo access" }} />
           <Stack.Screen
             name="WalletPicker"

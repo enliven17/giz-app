@@ -12,7 +12,7 @@ export function WelcomeScreen({
     <Screen>
       <BrandMark />
       <Typography variant="title">Private capital, without the gate.</Typography>
-      <Typography>Explore the Nexum investment experience.</Typography>
+      <Typography>Explore the Gizu investment experience.</Typography>
       <Notice message="Demo only — no real funds, wallet connection or credentials." />
       <Button label="Get started" onPress={() => navigation.navigate("Access")} />
       <Button

@@ -8,13 +8,13 @@ if (process.env.EAS_BUILD_PROFILE === "production") {
 }
 
 const config: ExpoConfig = {
-  name: "Nexum Dev",
-  slug: "nexum-mobile",
+  name: "Gizu Dev",
+  slug: "gizu-mobile",
   version: "0.1.0",
-  scheme: "nexum-dev",
+  scheme: "gizu-dev",
   userInterfaceStyle: "dark",
-  ios: { bundleIdentifier: "com.example.nexum.dev", supportsTablet: false },
-  android: { package: "com.example.nexum.dev" },
+  ios: { bundleIdentifier: "com.example.gizu.dev", supportsTablet: false },
+  android: { package: "com.example.gizu.dev" },
   plugins: [["expo-splash-screen", { backgroundColor: "#050706" }]],
 };
 export default config;

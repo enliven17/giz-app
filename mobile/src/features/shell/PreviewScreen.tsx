@@ -12,7 +12,7 @@ export function PreviewScreen({
     <Screen>
       <Typography variant="heading">UI preview</Typography>
       <BrandMark />
-      <Typography variant="label">NEXUM / DEMO</Typography>
+      <Typography variant="label">GIZU / DEMO</Typography>
       <Typography>System typography scales with device accessibility settings.</Typography>
       <Button label="Disabled action" disabled onPress={() => {}} />
       <Button label="Loading action" loading onPress={() => {}} />

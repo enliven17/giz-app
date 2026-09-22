@@ -28,10 +28,7 @@ export default function DesktopShell({
         <header className="z-30 shrink-0 border-b border-white/[0.05] bg-ink/80 backdrop-blur-xl">
           <div className="mx-auto flex max-w-[1520px] items-center gap-4 px-14 py-4">
             <div className="flex items-center gap-3">
-              <div className="glass flex h-10 w-10 items-center justify-center rounded-2xl font-mono text-[15px] font-bold text-neon">
-                N
-              </div>
-              <span className="text-[17px] font-medium tracking-tight">Nexum</span>
+              <span className="text-[18px] font-medium tracking-tight">Gizu</span>
             </div>
 
             <div className="ml-auto flex items-center gap-3">

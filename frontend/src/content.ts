@@ -17,7 +17,7 @@ export const subpages: Record<string, SubPageContent> = {
     title: 'Passkey wallet',
     sections: [
       {
-        body: 'Your signing key is generated inside the device secure enclave and never leaves it. Nexum stores only the public half.',
+        body: 'Your signing key is generated inside the device secure enclave and never leaves it. Gizu stores only the public half.',
       },
       {
         title: 'This device',
@@ -42,7 +42,7 @@ export const subpages: Record<string, SubPageContent> = {
     kicker: 'security',
     title: 'Transaction signing',
     sections: [
-      { body: 'Choose what Nexum asks for before an order is broadcast.' },
+      { body: 'Choose what Gizu asks for before an order is broadcast.' },
       {
         title: 'Require biometrics',
         rows: [
@@ -110,7 +110,7 @@ export const subpages: Record<string, SubPageContent> = {
         rows: [
           { label: 'Secure message', value: 'Open' },
           { label: 'Voice callback', value: 'Book' },
-          { label: 'desk@nexum.capital' },
+          { label: 'desk@gizu.capital' },
         ],
       },
       {

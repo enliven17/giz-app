@@ -1,3 +1,5 @@
+import { PortfolioScreen } from "@/features/investments/PortfolioScreen";
+import { VaultsScreen } from "@/features/investments/VaultsScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { House, Layers, ArrowLeftRight, Settings } from "lucide-react-native";
 import { TabScreen } from "@/features/shell/TabScreen";
@@ -16,8 +18,8 @@ export function MainTabs() {
         },
       })}
     >
-      <Tabs.Screen name="Home" component={TabScreen} />
-      <Tabs.Screen name="Vaults" component={TabScreen} />
+      <Tabs.Screen name="Home" component={PortfolioScreen} />
+      <Tabs.Screen name="Vaults" component={VaultsScreen} />
       <Tabs.Screen name="Exchange" component={TabScreen} />
       <Tabs.Screen name="Settings" component={TabScreen} />
     </Tabs.Navigator>

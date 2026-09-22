@@ -161,3 +161,23 @@ are not registered without a session. See PARITY.md for the P01–P04 status.
 - Blocked/not run: device rendering, actual Android back and iOS swipe gestures,
   native modal dismissal, and hosted native CI, for the same M1 platform prerequisites.
   M1's open checklist items are intentionally unchanged.
+
+## M3 implementation and verification
+
+Portfolio, holdings, vault discovery/details and activity now use one session-scoped
+mock snapshot. Chart windows, manager search, risk filters and labeled native sharing
+are implemented. Empty/loading/error/retry/stale/offline states are explicit; late
+loads cannot restore a disconnected account's data. No packages were added.
+
+- Passed: full `npm run check` (TypeScript, format, lint, all 21 Expo Doctor checks,
+  38 tests). Full-source coverage: 96.66% statements, 92.61% branches,
+  91.08% functions and 99.49% lines. Existing thresholds remain unchanged.
+- Passed: all 30 functional tests with the Android Jest preset.
+- Passed: Metro/Hermes exports for iOS and Android.
+- Not run: native share-sheet interaction, small-display and large-text visual QA,
+  native navigation gestures and hosted CI. Existing native-tooling prerequisites
+  remain unresolved; JavaScript exports and rendered tests are not native builds.
+
+The chart and monetary fixtures remain demonstration data. Search/chart/share
+choices follow the proposed M3 defaults documented in PARITY.md. M4 trading and
+transfers and M5 notifications remain explicitly unavailable in their controls.

@@ -4,7 +4,7 @@ import DesktopEntry from './DesktopEntry'
 import DesktopShell from './DesktopShell'
 import DesktopHome from './DesktopHome'
 import DesktopVaults from './DesktopVaults'
-import DesktopExchange from './DesktopExchange'
+import ComingSoon from '../components/ComingSoon'
 import DesktopSettings from './DesktopSettings'
 import DesktopVaultDetail from './DesktopVaultDetail'
 import Notifications from '../components/Notifications'
@@ -69,7 +69,7 @@ export default function DesktopApp() {
             />
           )}
           {screen === 'app' && tab === 'vaults' && <DesktopVaults onOpenVault={openVault} />}
-          {screen === 'app' && tab === 'swap' && <DesktopExchange />}
+          {screen === 'app' && tab === 'swap' && <ComingSoon />}
           {screen === 'app' && tab === 'settings' && <DesktopSettings onOpen={openSub} />}
           {screen === 'vault' && vault && (
             <DesktopVaultDetail vault={vault} onBack={() => setScreen('app')} />

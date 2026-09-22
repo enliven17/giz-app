@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, Fingerprint, Wallet, ShieldCheck, Check, ChevronLeft } from 'lucide-react'
+import { ArrowRight, Fingerprint, ShieldCheck, Check, ChevronLeft } from 'lucide-react'
 import GradientWaves from '../components/GradientWaves'
 import GlitchText from '../components/GlitchText'
 import BubbleUpButton from '../components/BubbleUpButton'
 import Scramble from '../components/Scramble'
 import ParticleDotOrb from '../components/ParticleDotOrb'
-
-const WALLETS = ['MetaMask', 'Rainbow', 'Ledger', 'WalletConnect']
+import RequestAccess from '../components/RequestAccess'
 
 export default function DesktopEntry({ onDone }: { onDone: () => void }) {
   const [view, setView] = useState<'hero' | 'auth'>('hero')
-  const [mode, setMode] = useState<'idle' | 'passkey' | 'connect'>('idle')
+  const [mode, setMode] = useState<'idle' | 'passkey'>('idle')
+  const [requesting, setRequesting] = useState(false)
   const [step, setStep] = useState(0)
 
   useEffect(() => {
@@ -64,11 +64,14 @@ export default function DesktopEntry({ onDone }: { onDone: () => void }) {
               transition={{ delay: 0.15, duration: 0.5 }}
               className="block"
             >
-              <GlitchText className="text-white">Private</GlitchText>{' '}
-              <GlitchText className="text-neon">capital</GlitchText>
+              <GlitchText className="text-neon">DeFi</GlitchText>{' '}
+              <span className="text-white/55">in</span>
             </motion.span>
-            <span className="block text-white/55">
-              {['without', 'the gate'].map((word, i) => (
+            <span className="block">
+              {[
+                { word: 'Stealth', accent: true },
+                { word: 'Mode', accent: false },
+              ].map(({ word, accent }, i) => (
                 <motion.span
                   key={word}
                   initial={{ opacity: 0, y: 12, filter: 'blur(6px)' }}
@@ -76,7 +79,11 @@ export default function DesktopEntry({ onDone }: { onDone: () => void }) {
                   transition={{ delay: 0.85 + i * 0.3, duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                   className="mr-[0.25em] inline-block"
                 >
-                  {word}
+                  {accent ? (
+                    <GlitchText className="text-neon">{word}</GlitchText>
+                  ) : (
+                    <span className="text-white/55">{word}</span>
+                  )}
                 </motion.span>
               ))}
             </span>
@@ -87,8 +94,7 @@ export default function DesktopEntry({ onDone }: { onDone: () => void }) {
             transition={{ delay: 1.5 }}
             className="mt-7 max-w-[440px] text-[16px] leading-relaxed text-white/45"
           >
-            Curated private vaults, verified managers, settlement in minutes. Your keys stay on your
-            device.
+            Curated confidential vaults, settlement in minutes. Your keys stay on your device.
           </motion.p>
         </div>
 
@@ -124,10 +130,10 @@ export default function DesktopEntry({ onDone }: { onDone: () => void }) {
                   </BubbleUpButton>
                 </motion.div>
                 <button
-                  onClick={() => setView('auth')}
+                  onClick={() => setRequesting(true)}
                   className="mt-5 w-full text-center font-mono text-xs uppercase tracking-[0.3em] text-white/35"
                 >
-                  I have access
+                  Request access
                 </button>
               </motion.div>
             ) : (
@@ -152,70 +158,22 @@ export default function DesktopEntry({ onDone }: { onDone: () => void }) {
                   A passkey wallet lives in your device secure enclave.
                 </p>
 
-                <div className="mt-8 grid grid-cols-2 gap-3">
-                  <button
-                    onClick={() => setMode('passkey')}
-                    className="glass flex aspect-square flex-col justify-between rounded-3xl p-5 text-left"
-                  >
-                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-neon/10 text-neon">
-                      <Fingerprint size={24} strokeWidth={1.6} />
+                <button
+                  onClick={() => setMode('passkey')}
+                  className="glass mt-8 flex w-full items-center gap-5 rounded-3xl p-6 text-left"
+                >
+                  <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-neon/10 text-neon">
+                    <Fingerprint size={26} strokeWidth={1.6} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[17px] font-medium leading-tight">
+                      Create passkey wallet
                     </span>
-                    <span>
-                      <span className="block text-[16px] font-medium leading-tight">
-                        Create passkey wallet
-                      </span>
-                      <span className="mt-2 block font-mono text-[10px] uppercase tracking-widest text-neon/60">
-                        Touch ID
-                      </span>
+                    <span className="mt-1.5 block font-mono text-[10px] uppercase tracking-widest text-neon/60">
+                      Touch ID or Windows Hello
                     </span>
-                  </button>
-
-                  <button
-                    onClick={() => setMode('connect')}
-                    className="glass-soft flex aspect-square flex-col justify-between rounded-3xl p-5 text-left"
-                  >
-                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-white/70">
-                      <Wallet size={22} strokeWidth={1.6} />
-                    </span>
-                    <span>
-                      <span className="block text-[16px] font-medium leading-tight text-white/85">
-                        Connect wallet
-                      </span>
-                      <span className="mt-2 block font-mono text-[10px] uppercase tracking-widest text-white/35">
-                        External signer
-                      </span>
-                    </span>
-                  </button>
-                </div>
-
-                <AnimatePresence>
-                  {mode === 'connect' && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="mt-4 space-y-2">
-                        {WALLETS.map((w, i) => (
-                          <motion.button
-                            key={w}
-                            initial={{ opacity: 0, x: -12 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.05 * i }}
-                            onClick={onDone}
-                            className="glass-soft flex w-full items-center justify-between rounded-2xl px-5 py-4 text-left"
-                          >
-                            <span className="text-[15px] text-white/85">{w}</span>
-                            <span className="font-mono text-[10px] uppercase tracking-widest text-neon/60">
-                              connect
-                            </span>
-                          </motion.button>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                  </span>
+                </button>
 
                 <div className="mt-8 flex items-center justify-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-white/25">
                   <ShieldCheck size={13} /> non custodial
@@ -225,6 +183,10 @@ export default function DesktopEntry({ onDone }: { onDone: () => void }) {
           </AnimatePresence>
         </div>
       </div>
+
+      <AnimatePresence>
+        {requesting && <RequestAccess variant="modal" onClose={() => setRequesting(false)} />}
+      </AnimatePresence>
 
       <AnimatePresence>
         {mode === 'passkey' && (

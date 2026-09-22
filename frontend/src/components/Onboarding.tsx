@@ -4,7 +4,13 @@ import GlitchText from './GlitchText'
 import GradientWaves from './GradientWaves'
 import BubbleUpButton from './BubbleUpButton'
 
-export default function Onboarding({ onStart }: { onStart: () => void }) {
+export default function Onboarding({
+  onStart,
+  onRequestAccess,
+}: {
+  onStart: () => void
+  onRequestAccess: () => void
+}) {
   return (
     <div className="relative flex min-h-0 flex-1 flex-col">
       <div className="pointer-events-none absolute inset-0">
@@ -41,11 +47,14 @@ export default function Onboarding({ onStart }: { onStart: () => void }) {
               transition={{ delay: 0.15, duration: 0.5 }}
               className="block"
             >
-              <GlitchText className="text-white">Private</GlitchText>{' '}
-              <GlitchText className="text-neon">capital</GlitchText>
+              <GlitchText className="text-neon">DeFi</GlitchText>{' '}
+              <span className="text-white/55">in</span>
             </motion.span>
-            <span className="block text-white/55">
-              {['without', 'the gate'].map((word, i) => (
+            <span className="block">
+              {[
+                { word: 'Stealth', accent: true },
+                { word: 'Mode', accent: false },
+              ].map(({ word, accent }, i) => (
                 <motion.span
                   key={word}
                   initial={{ opacity: 0, y: 10, filter: 'blur(6px)' }}
@@ -53,7 +62,11 @@ export default function Onboarding({ onStart }: { onStart: () => void }) {
                   transition={{ delay: 0.85 + i * 0.3, duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                   className="mr-[0.25em] inline-block"
                 >
-                  {word}
+                  {accent ? (
+                    <GlitchText className="text-neon">{word}</GlitchText>
+                  ) : (
+                    <span className="text-white/55">{word}</span>
+                  )}
                 </motion.span>
               ))}
             </span>
@@ -65,7 +78,7 @@ export default function Onboarding({ onStart }: { onStart: () => void }) {
             transition={{ delay: 1.5 }}
             className="mt-6 max-w-[310px] text-[15px] leading-relaxed text-white/45"
           >
-            Curated private vaults, verified managers, settlement in minutes. Your keys stay on your device.
+            Curated confidential vaults, settlement in minutes. Your keys stay on your device.
           </motion.p>
         </div>
 
@@ -81,8 +94,11 @@ export default function Onboarding({ onStart }: { onStart: () => void }) {
             </BubbleUpButton>
           </motion.div>
 
-          <button className="mt-5 w-full text-center font-mono text-xs uppercase tracking-[0.3em] text-white/35">
-            I have access
+          <button
+            onClick={onRequestAccess}
+            className="mt-5 w-full text-center font-mono text-xs uppercase tracking-[0.3em] text-white/35"
+          >
+            Request access
           </button>
         </div>
       </div>

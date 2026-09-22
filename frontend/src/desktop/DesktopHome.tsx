@@ -155,7 +155,7 @@ export default function DesktopHome({
 
       <section className="mt-5 shrink-0">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-[18px] font-medium tracking-tight">Private vaults</h2>
+          <h2 className="text-[18px] font-medium tracking-tight">Confidential vaults</h2>
           <button
             onClick={onSeeAllVaults}
             className="font-mono text-[10px] uppercase tracking-widest text-neon/70"

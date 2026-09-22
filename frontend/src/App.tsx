@@ -5,13 +5,14 @@ import Onboarding from './components/Onboarding'
 import Auth from './components/Auth'
 import Home from './components/Home'
 import Vaults from './components/Vaults'
-import Exchange from './components/Exchange'
+import ComingSoon from './components/ComingSoon'
 import Settings from './components/Settings'
 import VaultDetail from './components/VaultDetail'
 import SwapSheet from './components/SwapSheet'
 import TransferSheet from './components/TransferSheet'
 import Notifications from './components/Notifications'
 import SubPage from './components/SubPage'
+import RequestAccess from './components/RequestAccess'
 import BottomNav from './components/BottomNav'
 import type { Vault } from './data'
 import useIsDesktop from './useIsDesktop'
@@ -34,6 +35,7 @@ export default function App() {
   const [trade, setTrade] = useState<'buy' | 'sell' | null>(null)
   const [transfer, setTransfer] = useState<'deposit' | 'withdraw' | null>(null)
   const [sub, setSub] = useState('')
+  const [requesting, setRequesting] = useState(false)
 
   const openSub = (id: string) => {
     setSub(id)
@@ -59,7 +61,9 @@ export default function App() {
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           className="flex min-h-0 flex-1 flex-col"
         >
-          {screen === 'onboard' && <Onboarding onStart={() => setScreen('auth')} />}
+          {screen === 'onboard' && (
+            <Onboarding onStart={() => setScreen('auth')} onRequestAccess={() => setRequesting(true)} />
+          )}
           {screen === 'auth' && <Auth onBack={() => setScreen('onboard')} onDone={() => setScreen('app')} />}
           {screen === 'app' && tab === 'home' && (
             <Home
@@ -71,7 +75,7 @@ export default function App() {
             />
           )}
           {screen === 'app' && tab === 'vaults' && <Vaults onOpenVault={openVault} />}
-          {screen === 'app' && tab === 'swap' && <Exchange />}
+          {screen === 'app' && tab === 'swap' && <ComingSoon />}
           {screen === 'app' && tab === 'settings' && (
             <Settings
               onOpen={openSub}
@@ -94,6 +98,7 @@ export default function App() {
       <AnimatePresence>
         {trade && vault && <SwapSheet vault={vault} side={trade} onClose={() => setTrade(null)} />}
         {transfer && <TransferSheet mode={transfer} onClose={() => setTransfer(null)} />}
+        {requesting && <RequestAccess onClose={() => setRequesting(false)} />}
       </AnimatePresence>
     </Shell>
   )

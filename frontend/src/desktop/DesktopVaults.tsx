@@ -19,9 +19,9 @@ export default function DesktopVaults({ onOpenVault }: { onOpenVault: (v: Vault)
   return (
     <div className="mx-auto flex min-h-0 w-full max-w-[1520px] flex-1 flex-col px-14 pb-6 pt-7">
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="shrink-0">
-        <h1 className="text-[28px] font-medium tracking-tight">Private vaults</h1>
+        <h1 className="text-[28px] font-medium tracking-tight">Confidential vaults</h1>
         <p className="mt-1 text-[13px] text-white/40">
-          Curated strategies from verified managers, settlement on Monad.
+          Curated strategies, settlement on Monad.
         </p>
       </motion.div>
 

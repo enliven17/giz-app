@@ -19,7 +19,7 @@ export default function Vaults({ onOpenVault }: { onOpenVault: (v: Vault) => voi
   return (
     <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-36 pt-14">
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-        <h2 className="text-[30px] font-medium tracking-tight">Private vaults</h2>
+        <h2 className="text-[30px] font-medium tracking-tight">Confidential vaults</h2>
       </motion.div>
 
       <div className="mt-6 flex gap-2">

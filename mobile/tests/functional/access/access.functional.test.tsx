@@ -23,12 +23,12 @@ test("welcome, access, all tabs, UI preview and disconnect form a complete demo 
   await userEvent.press(screen.getByRole("button", { name: "Open UI preview" }));
   expect(await screen.findByRole("header", { name: "UI preview" })).toBeVisible();
   expect(screen.getByRole("button", { name: "Loading action" })).toBeDisabled();
-  await userEvent.press(screen.getByRole("button", { name: "Back to settings" }));
+  await userEvent.press(screen.getByRole("button", { name: "Back" }));
   await userEvent.press(await screen.findByRole("button", { name: "Disconnect demo" }));
   expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
   expect(screen.queryByLabelText("Settings tab")).toBeNull();
   await userEvent.press(screen.getByRole("button", { name: "I have access" }));
-  await userEvent.press(screen.getByRole("button", { name: "Back to welcome" }));
+  await userEvent.press(screen.getByRole("button", { name: "Back" }));
   expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
 });
 test.each(walletProviders)("selects %s as a simulated provider", async (method) => {
@@ -99,7 +99,7 @@ test.each(["home", "vaults", "exchange", "settings", "garbage?token=ignored"])(
 test("an access deep link still has a safe way back to welcome", async () => {
   jest.mocked(Linking.getInitialURL).mockResolvedValue("nexum-dev://access");
   renderApp();
-  await userEvent.press(await screen.findByRole("button", { name: "Back to welcome" }));
+  await userEvent.press(await screen.findByRole("button", { name: "Back" }));
   expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
 });
 
@@ -108,7 +108,7 @@ test("leaving access invalidates pending work even when the service rejects late
   renderApp({ request: () => pending.promise });
   await openAccess();
   await userEvent.press(screen.getByRole("button", { name: "Try demo passkey" }));
-  await userEvent.press(screen.getByRole("button", { name: "Back to welcome" }));
+  await userEvent.press(screen.getByRole("button", { name: "Back" }));
   await act(async () => pending.reject(new Error("late failure")));
   expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
   expect(screen.queryByRole("alert")).toBeNull();
@@ -146,4 +146,30 @@ test("runtime links are gated before access and work only inside a demo session"
   await screen.findByRole("button", { name: "Get started" });
   await send("nexum-dev://exchange");
   expect(screen.queryByLabelText("Exchange tab")).toBeNull();
+});
+
+test("UI preview demonstrates action, filter and feedback states without changing the account", async () => {
+  renderApp();
+  await signIn();
+  await userEvent.press(screen.getByLabelText("Settings tab"));
+  await userEvent.press(screen.getByRole("button", { name: "Open UI preview" }));
+  for (const name of [
+    "Primary example",
+    "Secondary example",
+    "Quiet example",
+    "Destructive example",
+  ]) {
+    await userEvent.press(await screen.findByRole("button", { name }));
+  }
+  expect(screen.getByText("Destructive style previewed. Nothing was deleted.")).toBeVisible();
+  await userEvent.press(screen.getByRole("radio", { name: "Example risk filter" }));
+  expect(screen.getByRole("radio", { name: "Example risk filter" })).toBeChecked();
+  await userEvent.press(screen.getByRole("button", { name: "Refresh data" }));
+  expect(screen.getByText("Refresh previewed.")).toBeVisible();
+  await userEvent.press(screen.getByRole("button", { name: "Retry data" }));
+  expect(screen.getByText("Retry previewed.")).toBeVisible();
+  await userEvent.press(screen.getByRole("button", { name: "View Helix Alpha" }));
+  expect(screen.getByText("Vault card previewed.")).toBeVisible();
+  await userEvent.press(screen.getByRole("button", { name: "Back" }));
+  expect(await screen.findByRole("button", { name: "Disconnect demo" })).toBeVisible();
 });

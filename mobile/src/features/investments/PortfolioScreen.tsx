@@ -17,21 +17,20 @@ export function PortfolioScreen({ navigation }: BottomTabScreenProps<MainTabPara
   return (
     <Screen>
       <Typography variant="heading">Your portfolio</Typography>
+      {data && (
+        <Metric emphasis label="Portfolio value · USD demo" value={portfolioTotal(data.holdings)} />
+      )}
       <DataStatus />
       {data && (
         <>
-          <Metric label="Portfolio value (USD demo)" value={portfolioTotal(data.holdings)} />
           {data.holdings.length > 0 && (
-            <Metric
-              label="Illustrative daily change"
-              value={`${data.dailyChange.percent}% · +${dollars(data.dailyChange.valueCents)}`}
-            />
+            <Typography variant="caption">{`${data.dailyChange.percent}% · +${dollars(data.dailyChange.valueCents)} illustrative daily change`}</Typography>
           )}
           <HistoryChart series={data.portfolioSeries} />
           <Button label="View activity" onPress={() => root.navigate("Activity")} />
-          <Button label="Deposit — coming in trading slice" disabled onPress={() => {}} />
-          <Button label="Withdraw — coming in trading slice" disabled onPress={() => {}} />
-          <Button label="Notifications — coming in account slice" disabled onPress={() => {}} />
+          <Typography variant="caption">
+            Deposits, withdrawals and notifications are not available yet.
+          </Typography>
           <Typography variant="heading">Holdings</Typography>
           {data.holdings.length === 0 && <Typography>No holdings yet.</Typography>}
           {data.holdings.map((holding) => (

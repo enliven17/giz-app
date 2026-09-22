@@ -1,3 +1,4 @@
+import { Button } from "@/components/atoms/Button";
 import { VaultDetailScreen } from "@/features/investments/VaultDetailScreen";
 import { ActivityScreen } from "@/features/investments/ActivityScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -12,7 +13,34 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export function RootNavigator() {
   const { session } = useSession();
   return (
-    <Stack.Navigator initialRouteName={session ? "Main" : "Welcome"}>
+    <Stack.Navigator
+      initialRouteName={session ? "Main" : "Welcome"}
+      screenOptions={({ route, navigation }) => ({
+        headerBackVisible: false,
+        headerLeft:
+          route.name === "Welcome" || route.name === "Main" || route.name === "WalletPicker"
+            ? undefined
+            : () => (
+                <Button
+                  label="Back"
+                  variant="quiet"
+                  onPress={() => {
+                    if (navigation.canGoBack()) navigation.goBack();
+                    else if (!session) navigation.navigate("Welcome");
+                    else
+                      navigation.navigate("Main", {
+                        screen:
+                          route.name === "VaultDetail"
+                            ? "Vaults"
+                            : route.name === "Preview"
+                              ? "Settings"
+                              : "Home",
+                      });
+                  }}
+                />
+              ),
+      })}
+    >
       {session ? (
         <Stack.Group navigationKey="demo">
           <Stack.Screen

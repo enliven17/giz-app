@@ -87,7 +87,7 @@ rules in AGENTS.md; this baseline can survive removal of the initial work plan.
   and vault shortcuts implemented with typed mobile mock data. USD totals use exact
   integer cents; units/price strings are display data, not execution authority.
 - P06: vault discovery and activity navigation implemented. Deposit/withdraw and
-  notifications are visibly disabled with their future slice identified (M4/M5).
+  notifications have explicit availability notes for future slices (M4/M5).
 - P07: name/ticker/strategy/manager search plus All/Low/Medium/High filtering, empty
   results and clear filters implemented. Search and risk compose; filters survive
   detail/back navigation. Advanced filtering is explicitly unavailable.
@@ -103,5 +103,9 @@ rules in AGENTS.md; this baseline can survive removal of the initial work plan.
   are implemented. Offline/freshness is adapter metadata, not a new OS integration.
 - These choices apply the proposed M3 defaults; no additional advanced-filter
   requirements or public share destination were supplied.
-- Real-device small-display/large-text behavior and native sharing/navigation remain
-  to be verified. Screens use scrollable layouts, wrapping filters and stacked metrics.
+- M3.1 improves hierarchy, contextual filter clearing, optional timestamps and
+  grouped responsive metrics. Header Back replaces duplicate content back actions;
+  chart windows, filter state, disclosure and sharing semantics are preserved.
+- iPhone 17 Pro / iOS 26.5 standard/enlarged text, header Back, native share-sheet
+  opening/dismissal and software keyboard search were inspected. Smaller displays,
+  VoiceOver/reduced motion, gestures and Android remain pending; see FOUNDATION.md.

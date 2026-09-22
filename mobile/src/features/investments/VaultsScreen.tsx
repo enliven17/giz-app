@@ -20,7 +20,8 @@ export function VaultsScreen({ navigation }: BottomTabScreenProps<MainTabParamLi
   return (
     <Screen>
       <Typography variant="heading">Private vaults</Typography>
-      <DataStatus />
+
+      <Typography variant="caption">Search by name, ticker, strategy or manager</Typography>
       <SearchInput
         label="Search name, ticker, strategy or manager"
         value={query}
@@ -40,18 +41,21 @@ export function VaultsScreen({ navigation }: BottomTabScreenProps<MainTabParamLi
           />
         ))}
       </View>
-      <Button
-        label="Clear filters"
-        variant="secondary"
-        onPress={() => {
-          setQuery("");
-          setRisk("All");
-        }}
-      />
-      <Button label="Advanced filters — unavailable in this demo" disabled onPress={() => {}} />
+      {(query !== "" || risk !== "All") && (
+        <Button
+          label="Clear filters"
+          variant="quiet"
+          onPress={() => {
+            setQuery("");
+            setRisk("All");
+          }}
+        />
+      )}
+      <Typography variant="caption">Advanced filters are not available yet.</Typography>
+      <DataStatus />
       {data && (
         <>
-          <Typography accessibilityLiveRegion="polite">{`${filtered.length} vaults found`}</Typography>
+          <Typography accessibilityLiveRegion="polite">{`${filtered.length} ${filtered.length === 1 ? "vault" : "vaults"} found`}</Typography>
           {filtered.length === 0 && (
             <Typography>
               {data.vaults.length ? "No vaults match your filters." : "No vaults available."}

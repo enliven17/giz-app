@@ -329,10 +329,32 @@ Exit: users can browse from portfolio to a filtered vault and back, understand
 metrics and holdings, and navigate activity; screens survive small displays and
 large text settings without hiding essential content.
 
-M3 implementation and rendered functional coverage are complete. Small-display,
-large-text, native share-sheet and native navigation QA remain unverified until
-simulator/device prerequisites are available. Earlier platform checkboxes remain
-unchanged. Chart/search/share choices use the documented M3 defaults.
+M3 implementation and rendered functional coverage are complete. M3.1 below records
+subsequent iOS verification; small-display and remaining native checks are still
+open. Earlier platform checkboxes remain unchanged. Chart/search/share choices use
+the documented M3 defaults.
+
+### M3.1 — Usability and native validation
+
+- [x] Prioritize portfolio balance and vault identity/price; group secondary metrics.
+- [x] Keep demo disclosure visible; make timestamp details optional and refresh quiet.
+- [x] Move search and risk filters earlier, make clearing contextual, use singular
+      result copy and subdued notes for unavailable features.
+- [x] Distinguish primary, secondary, quiet, destructive and unavailable actions.
+- [x] Keep chart periods adjacent to the chart with synthetic disclosure and start/end values.
+- [x] Use a shared header Back action with direct-link fallback; remove redundant
+      content back actions and preserve discovery state.
+- [x] Expand Settings UI preview with metrics, actions, filters, vault and feedback states.
+- [x] Fix text remeasurement after system font-size changes without resetting feature state.
+- [x] Validate iPhone 17 Pro / iOS 26.5 normal and enlarged text, header back,
+      native share-sheet opening/dismissal, software keyboard input and Search dismissal.
+- [ ] Validate a smaller native display, VoiceOver and reduced motion, native swipe
+      back/modal dismissal and drag-to-dismiss keyboard.
+- [ ] Complete Android device and Windows checks; do not infer these from Jest/export.
+
+Implementation is complete. Native validation is partial: Computer control returned
+intermittent `noWindowsAvailable` errors during coordinate gestures. The iOS text-size
+setting was restored after inspection. See docs/FOUNDATION.md for the validation record.
 
 ### M4 — Trading and transfers
 

@@ -155,7 +155,9 @@ export default function DesktopVaultDetail({ vault, onBack }: { vault: Vault; on
                     <motion.span
                       layoutId="deskSide"
                       transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-                      className="absolute inset-0 rounded-xl bg-neon"
+                      className={`absolute inset-0 rounded-xl ${
+                        s === 'sell' ? 'bg-[#c4576a]' : 'bg-neon'
+                      }`}
                     />
                   )}
                   <span className={`relative ${side === s ? 'text-ink' : 'text-white/50'}`}>{s}</span>
@@ -215,7 +217,9 @@ export default function DesktopVaultDetail({ vault, onBack }: { vault: Vault; on
 
             <button
               onClick={confirm}
-              className="neon-btn mt-4 flex h-14 w-full shrink-0 items-center justify-center rounded-2xl text-[15px] font-semibold capitalize"
+              className={`mt-4 flex h-14 w-full shrink-0 items-center justify-center rounded-2xl text-[15px] font-semibold capitalize ${
+                side === 'sell' ? 'sell-btn' : 'neon-btn'
+              }`}
             >
               Confirm {side}
             </button>

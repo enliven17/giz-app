@@ -67,6 +67,11 @@ body {
     -webkit-backdrop-filter: blur(14px);
     border: 1px solid rgba(255, 255, 255, 0.045);
   }
+  .sell-btn {
+    background: #c4576a;
+    color: #1b0508;
+    box-shadow: none;
+  }
   .neon-btn {
     background: #31c47e;
     color: #05140d;

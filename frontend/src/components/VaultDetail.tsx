@@ -165,7 +165,7 @@ export default function VaultDetail({
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={() => onTrade('sell')}
-          className="glass flex flex-1 items-center justify-center rounded-2xl py-5 text-[15px] font-semibold text-white/85"
+          className="sell-btn flex flex-1 items-center justify-center rounded-2xl py-5 text-[15px] font-semibold"
         >
           Sell
         </motion.button>

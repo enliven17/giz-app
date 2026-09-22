@@ -7,12 +7,11 @@ import DesktopVaults from './DesktopVaults'
 import ComingSoon from '../components/ComingSoon'
 import DesktopSettings from './DesktopSettings'
 import DesktopVaultDetail from './DesktopVaultDetail'
-import Notifications from '../components/Notifications'
 import SubPage from '../components/SubPage'
 import TransferSheet from '../components/TransferSheet'
 import type { Vault } from '../data'
 
-type Screen = 'entry' | 'app' | 'vault' | 'notifications' | 'sub'
+type Screen = 'entry' | 'app' | 'vault' | 'sub'
 type Tab = 'home' | 'vaults' | 'swap' | 'settings'
 
 const fade = {
@@ -47,7 +46,6 @@ export default function DesktopApp() {
         setTab(id as Tab)
         setScreen('app')
       }}
-      onNotifications={() => setScreen('notifications')}
       onDisconnect={() => {
         setTab('home')
         setScreen('entry')
@@ -73,11 +71,6 @@ export default function DesktopApp() {
           {screen === 'app' && tab === 'settings' && <DesktopSettings onOpen={openSub} />}
           {screen === 'vault' && vault && (
             <DesktopVaultDetail vault={vault} onBack={() => setScreen('app')} />
-          )}
-          {screen === 'notifications' && (
-            <div className="mx-auto flex min-h-0 w-full max-w-[760px] flex-1 flex-col px-12">
-              <Notifications onBack={() => setScreen('app')} />
-            </div>
           )}
           {screen === 'sub' && (
             <div className="mx-auto flex min-h-0 w-full max-w-[760px] flex-1 flex-col px-12">

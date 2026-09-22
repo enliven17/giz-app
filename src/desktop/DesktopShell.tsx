@@ -23,8 +23,8 @@ export default function DesktopShell({
   children: ReactNode
 }) {
   return (
-    <div className="relative h-[100dvh] w-full overflow-hidden bg-ink">
-      <div className="scanlines noise relative h-full overflow-y-auto pb-36">
+    <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-ink">
+      <div className="scanlines noise relative min-h-0 flex-1 overflow-y-auto">
         <header className="sticky top-0 z-30 border-b border-white/[0.05] bg-ink/80 backdrop-blur-xl">
           <div className="mx-auto flex max-w-[1520px] items-center gap-4 px-14 py-5">
             <div className="flex items-center gap-3">
@@ -66,12 +66,12 @@ export default function DesktopShell({
         {children}
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 flex justify-center pb-8">
+      <div className="z-40 flex shrink-0 justify-center pb-7 pt-4">
         <motion.nav
           initial={{ y: 60, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-          className="glass pointer-events-auto flex items-center gap-1 rounded-full p-2"
+          className="glass flex items-center gap-1 rounded-full p-2"
         >
           {NAV.map(({ id, label, icon: Icon }) => {
             const on = tab === id

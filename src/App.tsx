@@ -14,6 +14,8 @@ import Notifications from './components/Notifications'
 import SubPage from './components/SubPage'
 import BottomNav from './components/BottomNav'
 import type { Vault } from './data'
+import useIsDesktop from './useIsDesktop'
+import DesktopApp from './desktop/DesktopApp'
 
 type Screen = 'onboard' | 'auth' | 'app' | 'vault' | 'notifications' | 'sub'
 type Tab = 'home' | 'vaults' | 'swap' | 'settings'
@@ -25,6 +27,7 @@ const slide = {
 }
 
 export default function App() {
+  const isDesktop = useIsDesktop()
   const [screen, setScreen] = useState<Screen>('onboard')
   const [tab, setTab] = useState<Tab>('home')
   const [vault, setVault] = useState<Vault | null>(null)
@@ -44,6 +47,8 @@ export default function App() {
 
   // ponytail: vault ekraninda alt aksiyon bari var, nav gizleniyor
   const showNav = screen === 'app'
+
+  if (isDesktop) return <DesktopApp />
 
   return (
     <Shell>

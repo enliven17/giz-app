@@ -9,10 +9,13 @@ import SignOverlay, { type SignState } from './SignOverlay'
 export default function TransferSheet({
   mode,
   onClose,
+  variant = 'sheet',
 }: {
   mode: 'deposit' | 'withdraw'
   onClose: () => void
+  variant?: 'sheet' | 'modal'
 }) {
+  const modal = variant === 'modal'
   const [amount, setAmount] = useState('10000')
   const [state, setState] = useState<'edit' | SignState>('edit')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -44,15 +47,19 @@ export default function TransferSheet({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={state === 'edit' ? onClose : undefined}
-      className="absolute inset-0 z-40 flex items-end overscroll-contain bg-ink/70 backdrop-blur-md"
+      className={`fixed inset-0 z-40 flex overscroll-contain bg-ink/70 backdrop-blur-md ${
+        modal ? 'items-center justify-center p-8' : 'items-end'
+      }`}
     >
       <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
+        initial={modal ? { y: 24, opacity: 0, scale: 0.98 } : { y: '100%' }}
+        animate={modal ? { y: 0, opacity: 1, scale: 1 } : { y: 0 }}
+        exit={modal ? { y: 24, opacity: 0, scale: 0.98 } : { y: '100%' }}
         transition={{ type: 'spring', stiffness: 250, damping: 30 }}
         onClick={(e) => e.stopPropagation()}
-        className="glass relative w-full overflow-hidden rounded-t-[36px] px-5 pb-8 pt-5"
+        className={`glass relative w-full overflow-hidden px-5 pb-8 pt-5 ${
+          modal ? 'max-w-[440px] rounded-[36px] p-7' : 'rounded-t-[36px]'
+        }`}
       >
         <div className="mb-5 flex items-center justify-between">
           <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-neon/70">

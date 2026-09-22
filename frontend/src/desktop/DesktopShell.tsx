@@ -25,7 +25,7 @@ export default function DesktopShell({
   return (
     <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-ink">
       <div className="scanlines noise relative flex min-h-0 flex-1 flex-col overflow-hidden">
-        <header className="z-30 shrink-0 border-b border-white/[0.05] bg-ink/80 backdrop-blur-xl">
+        <header className="z-30 shrink-0">
           <div className="mx-auto flex max-w-[1520px] items-center gap-4 px-14 py-4">
             <div className="flex items-center gap-3">
               <img src="/gizulogo.svg" alt="" className="h-7 w-auto" />

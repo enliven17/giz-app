@@ -21,8 +21,8 @@ precedence; this file does not authorize work outside the requested scope.
 
 Accepted technical decisions include Expo development builds,
 strict TypeScript, React hooks/Context, feature controllers/view models, native UI
-infrastructure, and the quality/build tools listed below. These are decisions to
-implement, not evidence that packages are installed or checks already exist.
+infrastructure, and the quality/build tools listed below. The foundation is scaffolded; inspect package scripts and the verification record
+before claiming a tool or native build has been validated.
 Exact compatible versions and unresolved product/security integrations remain
 implementation decisions. Continue independent work when an integration is blocked.
 
@@ -50,6 +50,22 @@ implementation decisions. Continue independent work when an integration is block
   Expo Audio, Expo IAP, landscape-only layouts or game-specific navigation behavior.
 - npm remains selected and mise is not required. Document compatible Node/npm/just
   versions; selected tools do not authorize installation or release outside the task.
+
+## Foundation baseline
+
+- The initial documented runtime target is Expo SDK 57 with React Native 0.86.3,
+  React 19.2.3 and NativeWind 4.2.7/Tailwind 3.4.17. See `docs/FOUNDATION.md`
+  for the SDK dependency matrix and unresolved identity/platform decisions.
+- Approved development identity: Nexum Dev, `com.example.nexum.dev` on both
+  platforms, scheme `nexum-dev`. Production builds remain blocked until release
+  identity and integrations are selected.
+- Validate this matrix when changing dependencies; published compatibility is not evidence
+  of a successful install or native build. Do not bypass conflicting peers.
+- Frozen frontend tree: `773f8b428b741604feddf6a558c67d9fa5c55c2c` at commit
+  `9c0c15ed16d69f9c2ec57839b9d18222e51d946d`. Use `docs/PARITY.md` for journey
+  coverage and explicitly reconcile later frontend changes.
+- Initial parity is a labeled demo. Keep real wallet/API execution separate and
+  do not infer app identifiers, redistribution rights or financial rules from fixtures.
 
 ## Current state and source of truth
 
@@ -206,7 +222,7 @@ flows distinct from isolated unit tests and adapter integration tests.
 
 ### Commands and enforcement
 
-When tooling is scaffolded:
+The scaffolded tooling must continue to:
 
 - Provide `npm run test:functional` for the complete functional suite, supporting
   focused file selection.

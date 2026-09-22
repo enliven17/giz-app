@@ -3,7 +3,7 @@
 Each application lives in its own top-level folder:
 
 - `frontend/`: React, TypeScript, and Vite web app.
-- `mobile/`: Reserved for the future mobile app.
+- `mobile/`: Expo / React Native mobile app. See [mobile setup](mobile/README.md).
 - `backend/`: Reserved for the future backend server.
 - `landing/`: Reserved for the landing website.
 

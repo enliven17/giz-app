@@ -28,6 +28,7 @@ export default function Auth({ onBack, onDone }: { onBack: () => void; onDone: (
       </button>
 
       <div className="mt-10">
+        <img src="/gizulogo.svg" alt="" className="mb-6 h-8 w-auto" />
         <h2 className="text-[34px] font-semibold leading-tight tracking-tight">
           <GlitchText className="text-white">Create</GlitchText>{' '}
           <span className="text-neon">access</span>

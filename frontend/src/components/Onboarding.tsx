@@ -39,6 +39,15 @@ export default function Onboarding({
       </div>
 
       <div className="relative flex min-h-0 flex-1 flex-col px-6 pb-10 pt-16">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-2.5"
+        >
+          <img src="/gizulogo.svg" alt="" className="h-7 w-auto" />
+          <span className="text-[16px] font-medium tracking-tight">Gizu</span>
+        </motion.div>
+
         <div className="mt-auto">
           <h1 className="text-[46px] font-semibold leading-[1.0] tracking-tighter">
             <motion.span

@@ -53,6 +53,7 @@ export default function DesktopEntry({ onDone }: { onDone: () => void }) {
         </div>
 
         <div className="relative flex items-center gap-3">
+          <img src="/gizulogo.svg" alt="" className="h-8 w-auto" />
           <span className="text-[18px] font-medium tracking-tight">Gizu</span>
         </div>
 

@@ -28,6 +28,7 @@ export default function DesktopShell({
         <header className="z-30 shrink-0 border-b border-white/[0.05] bg-ink/80 backdrop-blur-xl">
           <div className="mx-auto flex max-w-[1520px] items-center gap-4 px-14 py-4">
             <div className="flex items-center gap-3">
+              <img src="/gizulogo.svg" alt="" className="h-7 w-auto" />
               <span className="text-[18px] font-medium tracking-tight">Gizu</span>
             </div>
 

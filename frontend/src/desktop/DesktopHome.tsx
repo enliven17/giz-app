@@ -153,7 +153,7 @@ export default function DesktopHome({
         </motion.div>
       </div>
 
-      <section className="mt-5 shrink-0">
+      <section className="mt-6 shrink-0">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-[18px] font-medium tracking-tight">Confidential vaults</h2>
           <button
@@ -169,8 +169,8 @@ export default function DesktopHome({
               key={v.id}
               vault={v}
               delay={0.05 * i}
-              className="h-[164px]"
-              chartHeight={72}
+              className="h-[196px]"
+              chartHeight={60}
               onClick={() => onOpenVault(v)}
             />
           ))}

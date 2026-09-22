@@ -70,8 +70,9 @@ export default function Auth({ onBack, onDone }: { onBack: () => void; onDone: (
             <ParticleDotOrb
               className="pointer-events-none absolute inset-0 h-full w-full"
               speed={1.4}
-              distance={11}
+              distance={5.6}
               spread={9}
+              dotScale={1.5}
               burst={step === 2}
             />
             {step === 2 && (

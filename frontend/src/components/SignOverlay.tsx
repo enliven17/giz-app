@@ -29,8 +29,9 @@ export default function SignOverlay({
       <ParticleDotOrb
         className="pointer-events-none absolute inset-0 h-full w-full"
         speed={1.4}
-        distance={isDesktop ? 6.5 : 11}
+        distance={isDesktop ? 6.5 : 5.6}
         spread={isDesktop ? 14 : 9}
+        dotScale={isDesktop ? 1 : 1.5}
         burst={state !== 'signing'}
       />
 

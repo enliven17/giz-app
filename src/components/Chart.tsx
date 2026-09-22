@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useId, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 
 type Props = {
@@ -26,6 +26,7 @@ const smooth = (pts: { x: number; y: number }[]) =>
 
 export default function Chart({ series, height = 160, up = true, interactive = true }: Props) {
   const [hover, setHover] = useState<number | null>(null)
+  const uid = useId().replace(/:/g, '')
   const ref = useRef<SVGSVGElement>(null)
 
   const { line, area, points, min, max } = useMemo(() => {
@@ -65,21 +66,10 @@ export default function Chart({ series, height = 160, up = true, interactive = t
         className="block touch-none overflow-visible"
       >
         <defs>
-          <linearGradient id={`fill-${up}`} x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={`fill-${uid}`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={color} stopOpacity="0.22" />
             <stop offset="100%" stopColor={color} stopOpacity="0" />
           </linearGradient>
-          <mask id={`reveal-${up}`}>
-            <motion.rect
-              x="0"
-              y={-20}
-              height={height + 40}
-              fill="#fff"
-              initial={{ width: 0 }}
-              animate={{ width: W }}
-              transition={{ duration: 1, ease: 'easeOut' }}
-            />
-          </mask>
         </defs>
 
         {[0.25, 0.5, 0.75].map((g) => (
@@ -94,8 +84,12 @@ export default function Chart({ series, height = 160, up = true, interactive = t
           />
         ))}
 
-        <g mask={`url(#reveal-${up})`}>
-          <path d={area} fill={`url(#fill-${up})`} />
+        <motion.g
+          initial={{ clipPath: 'inset(0 100% 0 0)' }}
+          animate={{ clipPath: 'inset(0 0% 0 0)' }}
+          transition={{ duration: 1, ease: 'easeOut' }}
+        >
+          <path d={area} fill={`url(#fill-${uid})`} />
           <path
             d={line}
             fill="none"
@@ -105,7 +99,7 @@ export default function Chart({ series, height = 160, up = true, interactive = t
             strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"
           />
-        </g>
+        </motion.g>
 
         {active && (
           <>

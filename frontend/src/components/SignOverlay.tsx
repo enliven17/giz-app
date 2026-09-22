@@ -11,12 +11,16 @@ export default function SignOverlay({
   doneLabel,
   detail,
   onCancel,
+  tone = 'positive',
 }: {
   state: SignState
   doneLabel: string
   detail?: string
   onCancel?: () => void
+  tone?: 'positive' | 'negative'
 }) {
+  const negative = tone === 'negative'
+  const accent = negative ? '#c4576a' : '#31c47e'
   const isDesktop = useIsDesktop()
 
   return (
@@ -29,9 +33,11 @@ export default function SignOverlay({
       <ParticleDotOrb
         className="pointer-events-none absolute inset-0 h-full w-full"
         speed={1.4}
-        distance={isDesktop ? 6.5 : 5.6}
-        spread={isDesktop ? 14 : 9}
-        dotScale={isDesktop ? 1 : 1.5}
+        color={accent}
+        distance={isDesktop ? 6.5 : 8.5}
+        spread={isDesktop ? 14 : 11}
+        dotScale={isDesktop ? 1 : 0.85}
+        count={isDesktop ? 190 : 340}
         burst={state !== 'signing'}
       />
 
@@ -44,7 +50,7 @@ export default function SignOverlay({
             transition={{ delay: 0.55, type: 'spring', stiffness: 220, damping: 18 }}
           >
             {state === 'done' ? (
-              <Check size={56} strokeWidth={2} className="text-neon" />
+              <Check size={56} strokeWidth={2} style={{ color: accent }} />
             ) : (
               <X size={56} strokeWidth={2} className="text-rose-400" />
             )}

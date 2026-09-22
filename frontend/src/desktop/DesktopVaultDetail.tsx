@@ -227,6 +227,7 @@ export default function DesktopVaultDetail({ vault, onBack }: { vault: Vault; on
         {state !== 'edit' && (
           <SignOverlay
             state={state}
+            tone={side === 'sell' ? 'negative' : 'positive'}
             doneLabel="order filled"
             detail={`${units.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${getToken}`}
             onCancel={() => {

@@ -24,7 +24,6 @@ type Tab = 'home' | 'vaults' | 'swap' | 'settings'
 const slide = {
   initial: { opacity: 0, x: 24, filter: 'blur(6px)' },
   animate: { opacity: 1, x: 0, filter: 'blur(0px)' },
-  exit: { opacity: 0, x: -24, filter: 'blur(6px)' },
 }
 
 export default function App() {
@@ -54,8 +53,7 @@ export default function App() {
 
   return (
     <Shell>
-      <AnimatePresence mode="wait">
-        <motion.div
+      <motion.div
           key={screen === 'app' ? tab : screen === 'sub' ? `sub-${sub}` : screen}
           {...slide}
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
@@ -91,7 +89,6 @@ export default function App() {
             <VaultDetail vault={vault} onBack={() => setScreen('app')} onTrade={setTrade} />
           )}
         </motion.div>
-      </AnimatePresence>
 
       {showNav && <BottomNav active={tab} onChange={(id) => setTab(id as Tab)} />}
 

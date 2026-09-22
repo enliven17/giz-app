@@ -17,7 +17,6 @@ type Tab = 'home' | 'vaults' | 'swap' | 'settings'
 const fade = {
   initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -12 },
 }
 
 export default function DesktopApp() {
@@ -51,8 +50,7 @@ export default function DesktopApp() {
         setScreen('entry')
       }}
     >
-      <AnimatePresence mode="wait">
-        <motion.div
+      <motion.div
           key={screen === 'app' ? tab : screen === 'sub' ? `sub-${sub}` : screen}
           {...fade}
           transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
@@ -78,7 +76,6 @@ export default function DesktopApp() {
             </div>
           )}
         </motion.div>
-      </AnimatePresence>
 
       <AnimatePresence>
         {transfer && (

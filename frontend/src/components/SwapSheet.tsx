@@ -152,6 +152,7 @@ export default function SwapSheet({
           {state !== 'edit' && (
             <SignOverlay
               state={state}
+              tone={side === 'sell' ? 'negative' : 'positive'}
               doneLabel="order filled"
               detail={`${units.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${getToken}`}
               onCancel={reject}

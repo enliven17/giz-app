@@ -14,6 +14,8 @@ export interface ParticleDotOrbProps {
   spread?: number;
   /** dot size multiplier */
   dotScale?: number;
+  /** how many dots on the sphere */
+  count?: number;
 }
 
 const particleVertexShader = `
@@ -106,6 +108,7 @@ export default function ParticleDotOrb({
   distance = 4.4,
   spread = 5.0,
   dotScale = 1,
+  count = 190,
 }: ParticleDotOrbProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
@@ -140,8 +143,7 @@ export default function ParticleDotOrb({
     const group = new THREE.Group();
     scene.add(group);
 
-    // 190 crisp dots with Fibonacci sphere distribution
-    const count = 190;
+    // Fibonacci sphere distribution
     const positions = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     const dirs = new Float32Array(count * 3);
@@ -270,7 +272,7 @@ export default function ParticleDotOrb({
       material.dispose();
       renderer.dispose();
     };
-  }, [size, speed, color, distance, spread, dotScale]);
+  }, [size, speed, color, distance, spread, dotScale, count]);
 
   return (
     <div className={`flex items-center justify-center ${className}`}>

@@ -17,9 +17,9 @@ export function Choice({
       accessibilityLabel={label}
       accessibilityState={{ checked: selected }}
       onPress={onPress}
-      className={`min-h-12 justify-center rounded-xl border px-4 py-3 ${selected ? "border-accent bg-surface" : "border-border"}`}
+      className={`min-h-12 justify-center rounded-full border px-4 py-3 ${selected ? "border-transparent bg-accent/10" : "border-border"}`}
     >
-      <Text key={fontScale} className={selected ? "text-base text-accent" : "text-base text-muted"}>
+      <Text key={fontScale} className={selected ? "text-sm text-accent" : "text-sm text-muted"}>
         {label}
       </Text>
     </Pressable>

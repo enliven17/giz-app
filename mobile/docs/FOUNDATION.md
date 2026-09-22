@@ -79,17 +79,17 @@ Sources checked on 2026-09-22:
 
 ## Identity and unresolved decisions
 
-| Item                                                            | Current record                                                         | Owner / resolution point                          |
-| --------------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------- |
+| Item                                                            | Current record                                                        | Owner / resolution point                          |
+| --------------------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------- |
 | Display name                                                    | Gizu Dev approved for local development                               | Product owner, before app configuration           |
 | iOS bundle ID / Android application ID                          | com.example.gizu.dev approved for development; release IDs unresolved | Product owner, before M1 identity configuration   |
 | Deep-link scheme / associated domains                           | gizu-dev approved for development; associated domains unresolved      | Product owner + wallet/backend integration owner  |
-| Development placeholder IDs                                     | User approved Gizu Dev / com.example.gizu.dev / gizu-dev            | Approved during M1                                |
-| Portrait/tablet policy and font rights                          | Response requested; provisional defaults above                         | Product owner, before layout/assets are finalized |
-| Expo/EAS project ownership and signing credentials              | Unresolved; no external project created                                | Release owner, before hosted/signed builds        |
-| Wallet/custody/passkeys/recovery and chain/contracts            | Unresolved                                                             | Product + backend/security owners, before M6      |
-| Prices, fees, precision, limits, lockups and finality           | Fixture values only, not authoritative contracts                       | Product + backend owners, before real operations  |
-| Support, statements, push delivery, eligibility and disclosures | Unresolved service/product contracts                                   | Product owner, before related integration/release |
+| Development placeholder IDs                                     | User approved Gizu Dev / com.example.gizu.dev / gizu-dev              | Approved during M1                                |
+| Portrait/tablet policy and font rights                          | Response requested; provisional defaults above                        | Product owner, before layout/assets are finalized |
+| Expo/EAS project ownership and signing credentials              | Unresolved; no external project created                               | Release owner, before hosted/signed builds        |
+| Wallet/custody/passkeys/recovery and chain/contracts            | Unresolved                                                            | Product + backend/security owners, before M6      |
+| Prices, fees, precision, limits, lockups and finality           | Fixture values only, not authoritative contracts                      | Product + backend owners, before real operations  |
+| Support, statements, push delivery, eligibility and disclosures | Unresolved service/product contracts                                  | Product owner, before related integration/release |
 
 M0 records these unresolved decisions explicitly; it does not manufacture identity
 or security decisions. They do not block independent UI work, but any dependent
@@ -219,3 +219,51 @@ adds action hierarchy and shared header navigation, and expands the UI preview.
 
 Tests mock external boundaries; text-size regression coverage verifies state
 retention, not native text measurement or glyph layout.
+
+## Headerless navigation — 2026-09-22
+
+All top stack/tab headers are hidden. Back actions now live in scrolling screen
+content with the previous direct-entry fallback destinations. Wallet cancellation
+and bottom tabs remain available. Screen owns safe-area insets and uses the top
+inset for its keyboard offset; it no longer depends on navigator header height.
+This supersedes the earlier shared-header design and capped header-title styling.
+
+- Passed: full npm check, all 41 tests, all 21 Expo Doctor checks, formatting,
+  TypeScript and lint. The initial sandboxed Doctor metadata failure was resolved
+  by the network-enabled rerun.
+- Passed native: iPhone 17 Pro / iOS 26.5 Settings and UI preview have no title bar,
+  content clears the status bar, and the content Back action returns to Settings.
+- Not run for this change: native keyboard, large-text, swipe/modal gesture,
+  Android-device and smaller-display checks. Earlier verification is historical,
+  not proof of these behaviors after the header change.
+
+## M3.2 frontend design parity — 2026-09-22
+
+Implementation adds shared Surface, Badge, IconButton, GroupedRow, Balance, AccessCard
+and Sparkline components, responsive vault tiles, portfolio ordering, grouped details,
+account rows, a static entry background and a floating tab capsule. It removes the
+remaining brand mark and in-app demo disclosures. Mock adapters, memory-only sessions
+and share-payload provenance remain intact. No packages or font assets were added.
+
+- Passed: full npm check, all 21 Expo Doctor checks and 42 tests, including 34
+  functional tests. Coverage: 95.88% statements, 91.01% branches, 90.62% functions,
+  98.4% lines. Thresholds are unchanged.
+- Passed: all 34 functional tests with the Android preset; iOS and Android Hermes
+  exports. Exports emitted only terminal color-environment warnings.
+- Passed native: iPhone 17 Pro / iOS 26.5 entry/access/Home/Vaults/detail rendering,
+  detail Back, safe-area clearance and capsule placement, native search input and
+  Search-key keyboard dismissal. Four preferred-text-size increments changed the
+  vault grid to a readable single column; the original size was restored.
+- Font embedding blocked: repository inspection found Helvetica files but no mobile
+  redistribution licence. System typography is the selected fallback.
+- Gesture inspection blocked: Computer returned `noWindowsAvailable` during scroll
+  attempts. Native full-screen scrolling, swipe-back and modal gesture QA remains open.
+- Not run: matched-size frontend/native screenshot comparison, smaller native device,
+  VoiceOver, Android device QA, Windows/hosted CI, and physical-device testing. Static
+  artwork has no motion, but system reduced-motion settings were not exercised.
+- Initial sandboxed Expo metadata checks could not reach the network; the permitted
+  network-enabled check passed. No failed automated checks remain.
+
+The simulator still uses the previously installed development binary (displaying
+Nexum Dev in its developer menu); it loaded the current Gizu JavaScript successfully.
+A fresh native build is needed to reflect the renamed development identity in that menu.

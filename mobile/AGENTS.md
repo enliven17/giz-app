@@ -64,7 +64,7 @@ implementation decisions. Continue independent work when an integration is block
 - Frozen frontend tree: `773f8b428b741604feddf6a558c67d9fa5c55c2c` at commit
   `9c0c15ed16d69f9c2ec57839b9d18222e51d946d`. Use `docs/PARITY.md` for journey
   coverage and explicitly reconcile later frontend changes.
-- Initial parity is a labeled demo. Keep real wallet/API execution separate and
+- Initial parity uses internal mock adapters. Keep real wallet/API execution separate and
   do not infer app identifiers, redistribution rights or financial rules from fixtures.
 
 ## Current state and source of truth
@@ -78,8 +78,10 @@ implementation decisions. Continue independent work when an integration is block
   controls. Treat it as a prototype, not a backend or wallet contract.
 - Maintain a parity record for every visible action: implemented, simulated,
   explicitly unavailable, or awaiting a decision. Do not silently remove features.
-- Clearly label demo data and simulated operations. Production must not silently
-  use mocks or claim financial success from elapsed time.
+- Keep app copy free of demo/simulated prefixes, banners and repetitive disclosures.
+  Preserve mock status in engineering records and isolated fixtures. Removing copy
+  does not implement real services; never claim biometric/key creation or settlement
+  without those integrations. Production must not silently use mocks.
 
 ## Demo access and navigation
 
@@ -101,7 +103,7 @@ implementation decisions. Continue independent work when an integration is block
   contracts exist. Share one session-scoped snapshot; clear it on disconnect.
 - Store monetary fixture values as decimal/base-unit strings. Sum portfolio USD
   values in integer cents. Floating-point chart coordinates are presentation only.
-- Label chart history as a synthetic performance index; period selection changes
+- Display charts as performance indexes; period selection changes
   the fixture window and must not imply historical returns or executable quotes.
 - Search name, ticker, strategy and manager together with risk filtering. Keep
   advanced filters visibly unavailable until additional criteria are specified.
@@ -267,17 +269,21 @@ The scaffolded tooling must continue to:
 
 - Prioritize the balance or vault identity/price before secondary metadata. Group
   supporting metrics and stack them on narrow displays or enlarged system text.
-- Keep the demo/no-real-funds disclosure visible; timestamp details may expand on
-  demand. Stale/offline/error information must remain visible without expansion.
+- Timestamp details may expand on demand. Stale/offline/error and unavailable
+  feedback must remain visible; do not reintroduce in-app demo disclosures.
 - Use primary actions for the main task, secondary actions for alternatives, quiet
   actions for metadata/navigation, and destructive styling for disconnect/removal.
   Disabled actions must look unavailable; future features may use explicit notes.
 - Keep discovery search and filters near the top. Show Clear filters only when it
   has an effect, and preserve filters and chart selections across navigation.
-- Use the shared header Back action with a sensible direct-link fallback. Avoid a
-  duplicate content back action; retain modal cancellation and native gestures.
+- Hide all top navigator bars, including access, detail and modal headers. Keep
+  bottom tabs and one accessible title within screen content.
+- Place Back actions in scrolling screen content with a sensible direct-link
+  fallback. Keep wallet cancellation accessible without requiring a gesture.
+- Screen templates own top safe-area spacing and keyboard offsets; do not rely on
+  navigator headers for notch/status-bar clearance. Preserve native back gestures.
 - Keep chart periods adjacent to the graph and expose numeric start/end summaries
-  with an explicit synthetic-data disclosure.
+  without implying a live price feed.
 - Preserve feature state when system text size changes. Native text must remeasure
   on inactive screens as well as active screens; verify this on a simulator/device.
 - Keep Settings UI preview useful for action, typography, metric, filter, vault,
@@ -305,3 +311,20 @@ The scaffolded tooling must continue to:
 - Apply the same verification reporting categories to all checks.
 - Keep accepted product and technical decisions current in this file. Update
   affected guidance whenever an accepted decision changes.
+
+## Frontend design parity
+
+- Use layered dark surfaces, subtle borders, rounded cards, restrained green accents
+  and system typography. Embed custom fonts only with verified mobile redistribution
+  rights; no licence was found for the frontend Helvetica files during M3.2.
+- Bottom tabs use a floating capsule in normal layout flow so its rendered height
+  reserves space. Keep accessible tab names/events and no top navigation bars.
+- Vault tiles show ticker, change, sparkline, name, TVL and APY. Use a single column
+  on narrow screens or enlarged text; never force clipping to preserve square tiles.
+- Use shared surfaces, badges, icon buttons, grouped rows and balances. Format money
+  with existing integer-cent helpers and expose the entire balance to accessibility.
+- Use isolated profile fixtures for presentation; do not imply a connected address.
+- Decorative artwork remains static for reduced motion and predictable native cost.
+  Do not animate/glitch essential text or financial values.
+- Trading/transfers remain M4 and notifications/account behavior remain M5. Keep
+  their controls explicitly unavailable while applying the new presentation.

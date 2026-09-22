@@ -104,8 +104,22 @@ rules in AGENTS.md; this baseline can survive removal of the initial work plan.
 - These choices apply the proposed M3 defaults; no additional advanced-filter
   requirements or public share destination were supplied.
 - M3.1 improves hierarchy, contextual filter clearing, optional timestamps and
-  grouped responsive metrics. Header Back replaces duplicate content back actions;
+  grouped responsive metrics. Content Back replaces top navigation bars;
   chart windows, filter state, disclosure and sharing semantics are preserved.
 - iPhone 17 Pro / iOS 26.5 standard/enlarged text, header Back, native share-sheet
   opening/dismissal and software keyboard search were inspected. Smaller displays,
   VoiceOver/reduced motion, gestures and Android remain pending; see FOUNDATION.md.
+
+## M3.2 visual parity update
+
+The mobile frontend layouts at repository commit
+`42c51e2341e2c5a45def140a5da2a137b147bd10` guide the new surfaces, vault tiles,
+portfolio ordering, grouped details/account rows, entry/access cards and bottom capsule.
+The prior top-header removal remains in effect. In-app demo disclosures and prefixes
+are removed by user decision; internal mocks and share-payload provenance remain.
+
+Search/manager/risk composition, chart periods, refresh/retry, holdings/detail/activity,
+access cancellation and disconnect retain their implemented behavior. Profile content
+is an isolated presentation fixture without a connected address. New deposit/withdraw,
+buy/sell, notification and account-row controls are disabled and explicitly unavailable.
+M4/M5 scope is unchanged. No web-only glitch/blur animation or unlicensed font is copied.

@@ -1,10 +1,12 @@
 import { Text, useWindowDimensions, type TextProps } from "react-native";
 const variants = {
-  title: "text-4xl font-bold text-text",
-  heading: "text-2xl font-semibold text-text",
+  title: "text-4xl font-medium text-text",
+  heading: "text-2xl font-medium text-text",
   body: "text-base leading-6 text-muted",
-  balance: "text-4xl font-semibold text-text",
+  balance: "text-5xl font-normal text-text",
   value: "text-xl font-semibold text-text",
+  row: "text-base font-medium text-text",
+  negative: "text-sm font-medium text-danger",
   caption: "text-sm leading-5 text-muted",
   label: "text-sm font-semibold text-accent",
 };

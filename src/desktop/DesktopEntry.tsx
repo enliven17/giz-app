@@ -240,8 +240,8 @@ export default function DesktopEntry({ onDone }: { onDone: () => void }) {
             <ParticleDotOrb
               className="pointer-events-none absolute inset-0 h-full w-full"
               speed={1.4}
-              distance={11}
-              spread={9}
+              distance={6.5}
+              spread={14}
               burst={step === 2}
             />
             {step === 2 && (

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Check, X } from 'lucide-react'
 import Scramble from './Scramble'
 import ParticleDotOrb from './ParticleDotOrb'
+import useIsDesktop from '../useIsDesktop'
 
 export type SignState = 'signing' | 'done' | 'failed'
 
@@ -16,6 +17,8 @@ export default function SignOverlay({
   detail?: string
   onCancel?: () => void
 }) {
+  const isDesktop = useIsDesktop()
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -26,8 +29,8 @@ export default function SignOverlay({
       <ParticleDotOrb
         className="pointer-events-none absolute inset-0 h-full w-full"
         speed={1.4}
-        distance={11}
-        spread={9}
+        distance={isDesktop ? 6.5 : 11}
+        spread={isDesktop ? 14 : 9}
         burst={state !== 'signing'}
       />
 

@@ -17,7 +17,7 @@ export default function DesktopVaults({ onOpenVault }: { onOpenVault: (v: Vault)
   )
 
   return (
-    <div className="mx-auto max-w-[1180px] px-12 py-12">
+    <div className="mx-auto max-w-[1520px] px-14 py-10">
       <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-[34px] font-medium tracking-tight">Private vaults</h1>
         <p className="mt-2 text-[14px] text-white/40">
@@ -53,7 +53,7 @@ export default function DesktopVaults({ onOpenVault }: { onOpenVault: (v: Vault)
         </button>
       </div>
 
-      <div className="mt-8 grid grid-cols-4 gap-5">
+      <div className="mt-8 grid grid-cols-4 gap-6 xl:grid-cols-5">
         {list.map((v, i) => (
           <VaultCard key={v.id} vault={v} delay={0.04 * i} onClick={() => onOpenVault(v)} />
         ))}

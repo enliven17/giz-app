@@ -20,7 +20,7 @@ export default function DesktopHome({
   const [whole, cents] = total.toFixed(2).split('.')
 
   return (
-    <div className="mx-auto max-w-[1180px] px-12 py-12">
+    <div className="mx-auto max-w-[1520px] px-14 py-10">
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
@@ -48,7 +48,7 @@ export default function DesktopHome({
         </div>
       </motion.div>
 
-      <div className="mt-10 grid grid-cols-3 gap-5">
+      <div className="mt-9 grid grid-cols-3 gap-6">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -62,7 +62,7 @@ export default function DesktopHome({
                   Portfolio value
                 </div>
                 <div className="mt-3 flex items-end gap-1">
-                  <span className="text-[52px] font-normal leading-none tracking-tight">
+                  <span className="text-[58px] font-normal leading-none tracking-tight">
                     ${Number(whole).toLocaleString('en-US')}
                   </span>
                   <span className="pb-1 text-[26px] text-white/35">.{cents}</span>
@@ -88,7 +88,7 @@ export default function DesktopHome({
               </div>
             </div>
             <div className="mt-8">
-              <Chart series={portfolioSeries} height={260} up />
+              <Chart series={portfolioSeries} height={300} up />
             </div>
           </SpotlightCard>
         </motion.div>
@@ -144,7 +144,7 @@ export default function DesktopHome({
         </motion.div>
       </div>
 
-      <section className="mt-12">
+      <section className="mt-10">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-[22px] font-medium tracking-tight">Private vaults</h2>
           <button
@@ -154,7 +154,7 @@ export default function DesktopHome({
             see all
           </button>
         </div>
-        <div className="grid grid-cols-4 gap-5">
+        <div className="grid grid-cols-4 gap-6 xl:grid-cols-5">
           {vaults.map((v, i) => (
             <VaultCard key={v.id} vault={v} delay={0.05 * i} onClick={() => onOpenVault(v)} />
           ))}

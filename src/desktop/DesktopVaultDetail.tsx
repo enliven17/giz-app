@@ -24,7 +24,7 @@ export default function DesktopVaultDetail({ vault, onBack }: { vault: Vault; on
   }
 
   return (
-    <div className="mx-auto max-w-[1180px] px-12 py-12">
+    <div className="mx-auto max-w-[1520px] px-14 py-10">
       <div className="flex items-center justify-between">
         <button
           onClick={onBack}
@@ -65,7 +65,7 @@ export default function DesktopVaultDetail({ vault, onBack }: { vault: Vault; on
           </motion.div>
 
           <SpotlightCard className="rounded-[28px] p-8">
-            <Chart series={vault.series} height={300} up={up} />
+            <Chart series={vault.series} height={340} up={up} />
             <div className="mt-5 flex gap-2 font-mono text-[10px] uppercase tracking-widest">
               {['1D', '1W', '1M', '1Y', 'All'].map((t, i) => (
                 <button

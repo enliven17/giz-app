@@ -6,7 +6,7 @@ import { notifications } from '../content'
 const NAV = [
   { id: 'home', label: 'Overview', icon: LayoutGrid },
   { id: 'vaults', label: 'Earn', icon: PieChart },
-  { id: 'swap', label: 'Swap', icon: ArrowLeftRight, soon: true },
+  { id: 'swap', label: 'Swap', icon: ArrowLeftRight },
   { id: 'settings', label: 'Settings', icon: Cog },
 ] as const
 
@@ -132,8 +132,7 @@ export default function DesktopShell({
           transition={{ type: 'spring', stiffness: 260, damping: 26 }}
           className="glass pointer-events-auto flex items-center gap-1 rounded-full p-2"
         >
-          {NAV.map((item) => {
-            const { id, label, icon: Icon } = item
+          {NAV.map(({ id, label, icon: Icon }) => {
             const on = tab === id
             return (
               <button
@@ -156,15 +155,6 @@ export default function DesktopShell({
                 <span className={`relative text-[13px] ${on ? 'text-ink font-medium' : 'text-white/45'}`}>
                   {label}
                 </span>
-                {'soon' in item && (
-                  <span
-                    className={`relative rounded-full px-2 py-0.5 font-mono text-[8px] uppercase tracking-[0.15em] ${
-                      on ? 'bg-ink/15 text-ink' : 'bg-white/[0.06] text-white/35'
-                    }`}
-                  >
-                    soon
-                  </span>
-                )}
               </button>
             )
           })}

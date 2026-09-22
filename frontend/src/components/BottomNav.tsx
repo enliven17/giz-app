@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 const items = [
   { id: 'home', icon: Home },
   { id: 'vaults', icon: PieChart },
-  { id: 'swap', icon: ArrowLeftRight, soon: true },
+  { id: 'swap', icon: ArrowLeftRight },
   { id: 'settings', icon: Settings },
 ] as const
 
@@ -23,8 +23,7 @@ export default function BottomNav({
         transition={{ type: 'spring', stiffness: 260, damping: 26 }}
         className="glass pointer-events-auto flex items-center gap-1 rounded-full px-2 py-2"
       >
-        {items.map((item) => {
-          const { id, icon: Icon } = item
+        {items.map(({ id, icon: Icon }) => {
           const on = active === id
           return (
             <button
@@ -44,9 +43,6 @@ export default function BottomNav({
                 strokeWidth={on ? 2.4 : 1.8}
                 className={`relative ${on ? 'text-ink' : 'text-white/45'}`}
               />
-              {'soon' in item && !on && (
-                <span className="absolute right-2.5 top-2 h-1.5 w-1.5 rounded-full bg-neon/60" />
-              )}
             </button>
           )
         })}

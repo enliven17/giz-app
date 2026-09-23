@@ -1,13 +1,19 @@
 import { useEffect, useRef } from 'react'
 
 // ASCII wave field, ported from mimir/HeroAscii and tuned for Gizu.
-// Drawing is batched: colours are quantised into a small palette and runs of
-// neighbouring cells sharing a level are written with one fillText, which keeps
-// a full screen field cheap enough to stay smooth.
+// Two things keep a full screen field cheap: drawing is batched into runs of
+// cells that share a colour level, and the per cell trigonometry is replaced by
+// a sine table plus per row and per column terms computed once per frame.
 const BASE: [number, number, number] = [176, 206, 192]
 const PEAK: [number, number, number] = [49, 196, 126]
 const LEVELS = 7
 const CHARS = ' .:-=+*#%@'
+
+const SIN_N = 2048
+const SIN_MASK = SIN_N - 1
+const SIN_SCALE = SIN_N / (Math.PI * 2)
+const SIN = new Float32Array(SIN_N)
+for (let i = 0; i < SIN_N; i++) SIN[i] = Math.sin((i / SIN_N) * Math.PI * 2)
 
 type Props = {
   className?: string
@@ -34,7 +40,7 @@ export default function AsciiField({
     const ctx = canvas.getContext('2d', { alpha: true })
     if (!ctx) return
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5)
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.25)
     const cellW = fontSize * 0.6
 
     // one colour per level, so fillStyle changes at most LEVELS times per row
@@ -52,6 +58,25 @@ export default function AsciiField({
     let H = 0
     let cols = 0
     let rows = 0
+    let aspect = 1
+
+    // per column terms, rebuilt only on resize
+    let xNorm = new Float32Array(0)
+    let cx2 = new Float32Array(0)
+    let sinX = new Float32Array(0)
+    let cosX = new Float32Array(0)
+
+    // the canvas sits at the top of the page, so its box follows scroll
+    let baseTop = 0
+    let left = 0
+    let top = 0
+
+    const measure = () => {
+      const rect = canvas.getBoundingClientRect()
+      left = rect.left
+      baseTop = rect.top + window.scrollY
+      top = rect.top
+    }
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect()
@@ -64,6 +89,22 @@ export default function AsciiField({
       ctx.textBaseline = 'top'
       cols = Math.ceil(W / cellW)
       rows = Math.ceil(H / fontSize)
+      aspect = cols / Math.max(rows, 1)
+
+      xNorm = new Float32Array(cols)
+      cx2 = new Float32Array(cols)
+      sinX = new Float32Array(cols)
+      cosX = new Float32Array(cols)
+      for (let x = 0; x < cols; x++) {
+        const n = x / cols
+        const cx = n - 0.5
+        xNorm[x] = n
+        cx2[x] = cx * cx
+        sinX[x] = Math.sin(x * 0.28)
+        cosX[x] = Math.cos(x * 0.28)
+      }
+
+      measure()
     }
 
     resize()
@@ -73,15 +114,20 @@ export default function AsciiField({
       window.clearTimeout(resizeTimer)
       resizeTimer = window.setTimeout(resize, 120)
     }
+    const onScroll = () => {
+      top = baseTop - window.scrollY
+    }
     window.addEventListener('resize', onResize)
+    window.addEventListener('scroll', onScroll, { passive: true })
 
     const target = { x: 0.5, y: 0.5, on: 0 }
     const cur = { x: 0.5, y: 0.5, on: 0 }
 
+    // no layout reads here, the box is cached above
     const onMove = (e: PointerEvent) => {
-      const rect = canvas.getBoundingClientRect()
-      target.x = (e.clientX - rect.left) / rect.width
-      target.y = (e.clientY - rect.top) / rect.height
+      if (!W || !H) return
+      target.x = (e.clientX - left) / W
+      target.y = (e.clientY - top) / H
       target.on = 1
     }
     const onLeave = () => {
@@ -110,40 +156,56 @@ export default function AsciiField({
       cur.on += (target.on - cur.on) * 0.07
 
       ctx.clearRect(0, 0, W, H)
-      const aspect = cols / Math.max(rows, 1)
       const t = frame * 0.03
+      const rippleT = frame * 0.1
+      const live = cur.on > 0.02
+
+      // the noise term is sin(x·a + t1)·cos(y·b + t2), expanded so the per cell
+      // work is multiplication only
       const nT1 = frame * 0.012
       const nT2 = frame * 0.02
-      const live = cur.on > 0.02
+      const s1 = Math.sin(nT1)
+      const c1 = Math.cos(nT1)
+      const s2 = Math.sin(nT2)
+      const c2 = Math.cos(nT2)
 
       for (let y = 0; y < rows; y++) {
         const cy = y / rows - 0.5
+        const cy2 = cy * cy
         const py = y / rows - cur.y
+        const py2 = py * py
         const rowY = y * fontSize
+        const sy = Math.sin(y * 0.32)
+        const cyc = Math.cos(y * 0.32)
+        const noiseY = cyc * c2 - sy * s2
+
         let run = ''
         let runLevel = -1
         let runStart = 0
 
         for (let x = 0; x < cols; x++) {
-          const cx = x / cols - 0.5
-          const dist = Math.sqrt(cx * cx + cy * cy)
-          const wave = Math.sin(dist * 14 - t) * 0.5 + 0.5
-          const noise = Math.sin(x * 0.28 + nT1) * Math.cos(y * 0.32 + nT2)
+          const dist = Math.sqrt(cx2[x] + cy2)
+          const wave = SIN[(((dist * 14 - t) * SIN_SCALE) | 0) & SIN_MASK] * 0.5 + 0.5
+          const noise = (sinX[x] * c1 + cosX[x] * s1) * noiseY
 
           let ripple = 0
           if (live) {
-            const dx = (x / cols - cur.x) * aspect
-            const d2 = dx * dx + py * py
+            const dx = (xNorm[x] - cur.x) * aspect
+            const d2 = dx * dx + py2
             if (d2 < reach2) {
               const pd = Math.sqrt(d2)
               const falloff = 1 - pd / pointer
-              ripple = Math.sin(pd * 26 - frame * 0.1) * falloff * falloff * cur.on
+              ripple =
+                SIN[(((pd * 26 - rippleT) * SIN_SCALE) | 0) & SIN_MASK] *
+                falloff *
+                falloff *
+                cur.on
             }
           }
 
           const val = wave * 0.62 + noise * 0.24 + ripple * 0.7
           const clamped = val < 0 ? 0 : val > 1 ? 1 : val
-          const ch = CHARS[Math.floor(clamped * (CHARS.length - 1))]
+          const ch = CHARS[(clamped * (CHARS.length - 1)) | 0]
           const level = ch === ' ' ? -1 : Math.round(clamped * (LEVELS - 1))
 
           if (level !== runLevel) {
@@ -189,6 +251,7 @@ export default function AsciiField({
       io.disconnect()
       window.clearTimeout(resizeTimer)
       window.removeEventListener('resize', onResize)
+      window.removeEventListener('scroll', onScroll)
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerleave', onLeave)
     }

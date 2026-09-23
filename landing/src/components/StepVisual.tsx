@@ -601,8 +601,8 @@ function Shield({ on }: { on: boolean }) {
             transition={{ duration: 0.3, ease: 'easeInOut', delay: on ? 0.1 : 0 }}
             className="absolute inset-x-2.5 z-10 flex items-center gap-2.5 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.08] px-2.5 py-2.5 backdrop-blur-md"
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-neon/15 text-[12px] font-semibold text-neon">
-              G
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-neon/15">
+              <img src="/gizulogo.svg" alt="" className="h-4 w-auto" />
             </span>
             <span className="min-w-0 flex-1">
               <span className="flex items-baseline gap-2">

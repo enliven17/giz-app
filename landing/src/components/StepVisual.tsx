@@ -572,30 +572,22 @@ function Batch({ on }: { on: boolean }) {
             fill="none"
             preserveAspectRatio="none"
           >
-            <defs>
-              <radialGradient id="reactor-grad" fx="1">
-                <stop offset="0%" stopColor="#31c47e" />
-                <stop offset="100%" stopColor="transparent" />
-              </radialGradient>
-              <mask id="reactor-mask">
-                {FEEDS.map((f, i) => (
-                  <path key={i} d={feedPath(f.y)} stroke="white" strokeWidth="3" fill="none" />
-                ))}
-                <path d={OUT_PATH} stroke="white" strokeWidth="3" fill="none" />
-              </mask>
-            </defs>
-
             {FEEDS.map((f, i) => (
               <path key={i} d={feedPath(f.y)} stroke="rgba(255,255,255,0.1)" strokeWidth="1.2" />
             ))}
             <path d={OUT_PATH} stroke="rgba(255,255,255,0.1)" strokeWidth="1.2" />
 
             {on && (
-              <g mask="url(#reactor-mask)">
-                {FEEDS.map((_, i) => (
-                  <circle key={i} className={`reactor-in reactor-in-${i}`} r="11" fill="url(#reactor-grad)" />
+              <g stroke="#31c47e" strokeWidth="1.6" strokeLinecap="round" fill="none">
+                {FEEDS.map((f, i) => (
+                  <path
+                    key={i}
+                    className={`reactor-flow reactor-flow-${i}`}
+                    d={feedPath(f.y)}
+                    pathLength={1}
+                  />
                 ))}
-                <circle className="reactor-out" r="11" fill="url(#reactor-grad)" />
+                <path className="reactor-flow reactor-flow-out" d={OUT_PATH} pathLength={1} />
               </g>
             )}
           </svg>
@@ -642,26 +634,17 @@ function Batch({ on }: { on: boolean }) {
       </div>
 
       <style>{`
-        .reactor-in, .reactor-out {
-          offset-anchor: 0 0;
-          animation: reactor-run 2.6s linear infinite;
+        /* a dash running along the path, which the compositor keeps up with */
+        .reactor-flow {
+          stroke-dasharray: 0.14 1;
+          animation: reactor-flow 2.6s linear infinite;
         }
-        ${FEEDS.map(
-          (f, i) => `
-        .reactor-in-${i} {
-          offset-path: path("${feedPath(f.y)}");
-          animation-delay: ${(i * 0.32).toFixed(2)}s;
-        }`,
-        ).join('')}
-        .reactor-out {
-          offset-path: path("${OUT_PATH}");
-          animation-delay: 1.3s;
-        }
-        @keyframes reactor-run {
-          0% { offset-distance: 0%; opacity: 0; }
-          12% { opacity: 1; }
-          85% { opacity: 1; }
-          100% { offset-distance: 100%; opacity: 0; }
+        ${FEEDS.map((_, i) => `
+        .reactor-flow-${i} { animation-delay: ${(i * 0.32).toFixed(2)}s; }`).join('')}
+        .reactor-flow-out { animation-delay: 1.3s; }
+        @keyframes reactor-flow {
+          from { stroke-dashoffset: 1.14; }
+          to { stroke-dashoffset: 0; }
         }
       `}</style>
     </Stage>

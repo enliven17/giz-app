@@ -56,8 +56,8 @@ const STEPS: TimelineStep[] = [
 
 export default function HowItWorks() {
   return (
-    <section id="money" className="shell scroll-mt-28 py-24 md:py-32">
-      <Reveal>
+    <section id="money" className="scroll-mt-28 py-24 md:py-32">
+      <Reveal className="shell">
         <p className="eyebrow">How it works</p>
         <h2 className="mt-5 max-w-[18ch] text-[clamp(32px,4.4vw,52px)] font-semibold leading-[1.02] tracking-[-0.025em]">
           From your wallet to an encrypted position
@@ -67,7 +67,8 @@ export default function HowItWorks() {
         </p>
       </Reveal>
 
-      <div className="mt-16">
+      {/* wider than the rest of the page, the cards need the room */}
+      <div className="mx-auto mt-16 w-full max-w-[1360px] px-6 md:px-10">
         <Timeline steps={STEPS} />
       </div>
     </section>

@@ -89,7 +89,7 @@ function CheckCircle({ delay = 2.3 }: { delay?: number }) {
 /** Shared stage so every step visual has the same optical weight. */
 function Stage({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative h-56 overflow-hidden rounded-xl border border-white/[0.07] bg-[#0a0e0c]">
+    <div className="relative h-48 overflow-hidden rounded-xl border border-white/[0.07] bg-[#0a0e0c] sm:h-56">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(90%_70%_at_50%_0%,rgba(49,196,126,0.1),transparent_70%)]" />
       {children}
     </div>
@@ -233,7 +233,7 @@ function Wallet({ on }: { on: boolean }) {
             borderColor: on ? 'rgba(49,196,126,0.28)' : 'rgba(255,255,255,0.08)',
           }}
           transition={{ duration: 0.4, ease: EASE }}
-          className="relative w-[248px] overflow-hidden rounded-xl border bg-gradient-to-b from-[#141a17] to-[#0b100e] p-4 shadow-lg"
+          className="relative w-[min(248px,100%)] overflow-hidden rounded-xl border bg-gradient-to-b from-[#141a17] to-[#0b100e] p-4 shadow-lg"
         >
           {/* a light sweeps across the card while it reads the wallet */}
           <motion.span
@@ -305,7 +305,7 @@ function Funding({ on }: { on: boolean }) {
 /** Beam travelling along a routed path, adapted from the fraud card. */
 function Route({ on }: { on: boolean }) {
   // the path starts and ends at the edge of each node, never under it
-  const path = 'M 22 22 L 50 22 L 50 56 L 78 56'
+  const path = 'M 26 24 L 50 24 L 50 54 L 74 54'
 
   return (
     <Stage>
@@ -316,7 +316,7 @@ function Route({ on }: { on: boolean }) {
           fill="none"
           preserveAspectRatio="none"
         >
-          <path d={path} stroke="rgba(255,255,255,0.12)" strokeWidth="0.8" />
+          <path d={path} stroke="rgba(255,255,255,0.12)" strokeWidth="0.7" />
           {on && (
             <g mask="url(#route-mask)">
               <circle className="route-beam" cx="0" cy="0" r="10" fill="url(#route-grad)" />
@@ -324,7 +324,7 @@ function Route({ on }: { on: boolean }) {
           )}
           <defs>
             <mask id="route-mask">
-              <path d={path} stroke="white" strokeWidth="1.6" />
+              <path d={path} stroke="white" strokeWidth="1.4" />
             </mask>
             <radialGradient id="route-grad" fx="1">
               <stop offset="0%" stopColor="#31c47e" />
@@ -333,24 +333,48 @@ function Route({ on }: { on: boolean }) {
           </defs>
         </svg>
 
-        {/* nodes sit where the path begins and ends */}
-        <span
-          className="absolute flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-xl border border-white/10 bg-[#0a0e0c] text-[10px] uppercase tracking-[0.15em] text-white/40"
-          style={{ left: '14%', top: '28%' }}
+        {/* the address that goes in */}
+        <div
+          className="absolute -translate-x-1/2 -translate-y-1/2 text-center"
+          style={{ left: '14%', top: '31%' }}
         >
-          from
-        </span>
-        <span
-          className="absolute flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-xl border border-neon/25 bg-[#0c1712] text-[10px] uppercase tracking-[0.15em] text-neon/70"
-          style={{ left: '86%', top: '72%' }}
+          <div className="rounded-xl border border-white/10 bg-[#0a0e0c] px-3 py-2.5">
+            <div className="font-mono text-[11px] text-white/70">0x7a4f</div>
+          </div>
+          <div className="mt-2 text-[9px] uppercase tracking-[0.18em] text-white/30">public</div>
+        </div>
+
+        {/* and the unrelated one that comes out */}
+        <div
+          className="absolute -translate-x-1/2 -translate-y-1/2 text-center"
+          style={{ left: '86%', top: '69%' }}
         >
-          to
-        </span>
+          <motion.div
+            initial={false}
+            animate={
+              on
+                ? { borderColor: 'rgba(49,196,126,0.35)', backgroundColor: '#0c1712' }
+                : { borderColor: 'rgba(255,255,255,0.1)', backgroundColor: '#0a0e0c' }
+            }
+            transition={{ duration: 0.4, delay: on ? 1.2 : 0 }}
+            className="rounded-xl border px-3 py-2.5"
+          >
+            <motion.div
+              initial={false}
+              animate={{ opacity: on ? 1 : 0.45, color: on ? '#31c47e' : 'rgba(255,255,255,0.45)' }}
+              transition={{ duration: 0.4, delay: on ? 1.2 : 0 }}
+              className="font-mono text-[11px]"
+            >
+              0xd93b
+            </motion.div>
+          </motion.div>
+          <div className="mt-2 text-[9px] uppercase tracking-[0.18em] text-white/30">unlinked</div>
+        </div>
 
         <motion.div
           initial={false}
-          animate={{ opacity: on ? 1 : 0.45 }}
-          className="absolute -translate-x-1/2 -translate-y-1/2 rounded-md border border-white/10 bg-[#0a0e0c] px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-white/50"
+          animate={{ opacity: on ? 1 : 0.4 }}
+          className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-md border border-white/10 bg-[#0a0e0c] px-2.5 py-1.5 text-[9px] uppercase tracking-[0.2em] text-white/50"
           style={{ left: '50%', top: '50%' }}
         >
           confidential
@@ -360,7 +384,7 @@ function Route({ on }: { on: boolean }) {
       <style>{`
         .route-beam {
           offset-anchor: 10px 0px;
-          offset-path: path("M 22 22 L 50 22 L 50 56 L 78 56");
+          offset-path: path("M 26 24 L 50 24 L 50 54 L 74 54");
           animation: route-run 3s cubic-bezier(0.05, 0.05, 0.05, 0.03) infinite;
         }
         @keyframes route-run {
@@ -373,71 +397,71 @@ function Route({ on }: { on: boolean }) {
   )
 }
 
+const DERIVED = ['P1', 'P2', 'P3', 'P4']
+
 function Keys({ on }: { on: boolean }) {
   return (
-    <div className="relative h-56 overflow-hidden rounded-xl border border-white/[0.07] bg-[#0a0e0c]">
+    <Stage>
       <Scrambler on={on} />
       <EdgeMask />
 
-      <div className="absolute inset-0 flex flex-col items-center justify-center pt-4">
-        <div className="relative rounded-[3px] bg-black/40 p-1">
-          <div className="relative h-[84px] w-[64px] overflow-hidden rounded-[2px] bg-gradient-to-br from-[#161d19] to-[#0d1310]">
-            <svg
-              viewBox="0 0 80 96"
-              fill="none"
-              className="absolute inset-0 h-full w-full"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M26.22 78.25c2.679-3.522 1.485-17.776 1.485-17.776-1.084-2.098-1.918-4.288-2.123-5.619-3.573 0-3.7-8.05-3.827-9.937-.102-1.509 1.403-1.383 2.169-1.132-.298-1.3-.92-5.408-1.021-11.446C22.775 24.794 30.94 17.75 40 17.75h.005c9.059 0 17.225 7.044 17.097 14.59-.102 6.038-.723 10.147-1.021 11.446.765-.251 2.271-.377 2.169 1.132-.128 1.887-.254 9.937-3.827 9.937-.205 1.331-1.039 3.521-2.123 5.619 0 0-1.194 14.254 1.485 17.776" className="stroke-white/10" />
-              {on && (
-                <path
-                  d="M26.22 78.25c2.679-3.522 1.485-17.776 1.485-17.776-1.084-2.098-1.918-4.288-2.123-5.619-3.573 0-3.7-8.05-3.827-9.937-.102-1.509 1.403-1.383 2.169-1.132-.298-1.3-.92-5.408-1.021-11.446C22.775 24.794 30.94 17.75 40 17.75h.005c9.059 0 17.225 7.044 17.097 14.59-.102 6.038-.723 10.147-1.021 11.446.765-.251 2.271-.377 2.169 1.132-.128 1.887-.254 9.937-3.827 9.937-.205 1.331-1.039 3.521-2.123 5.619 0 0-1.194 14.254 1.485 17.776"
-                  className="draw-outline stroke-neon drop-shadow-[0_0_6px_rgba(49,196,126,0.8)]"
-                />
-              )}
-            </svg>
-          </div>
-        </div>
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-4">
+        {/* the master account */}
+        <motion.div
+          initial={false}
+          animate={{ y: on ? 0 : 6, opacity: on ? 1 : 0.55 }}
+          transition={{ duration: 0.5, ease: EASE }}
+          className="flex items-center gap-2.5 rounded-xl border border-neon/25 bg-[#0c1712] px-3.5 py-2"
+        >
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-neon/15 font-mono text-[12px] font-semibold text-neon">
+            M
+          </span>
+          <span className="text-[11px] text-white/55">one passkey</span>
+          <CheckCircle delay={on ? 1.1 : 0} />
+        </motion.div>
 
-        <div className="mt-4 flex items-center gap-1 text-[12px]">
-          <motion.span
-            initial={{ x: 8 }}
-            animate={{ x: on ? -2 : 8 }}
-            transition={{ duration: 0.4, delay: 1.8, ease: 'easeInOut' }}
+        {/* and what it derives */}
+        <div className="relative h-7 w-full max-w-[236px]">
+          <svg
+            className="absolute inset-0 h-full w-full"
+            viewBox="0 0 236 28"
+            fill="none"
+            preserveAspectRatio="none"
           >
-            Passkey M
-          </motion.span>
-          {on && <CheckCircle />}
+            {DERIVED.map((_, i) => {
+              const x = 30 + i * 59
+              return (
+                <motion.path
+                  key={i}
+                  d={`M 118 0 V 12 H ${x} V 28`}
+                  stroke={on ? 'rgba(49,196,126,0.45)' : 'rgba(255,255,255,0.12)'}
+                  strokeWidth="1"
+                  initial={false}
+                  animate={{ pathLength: on ? 1 : 0.15 }}
+                  transition={{ duration: 0.5, delay: on ? 0.35 + i * 0.1 : 0, ease: EASE }}
+                />
+              )
+            })}
+          </svg>
         </div>
 
-        <div className="mt-4 flex gap-2">
-          {['P1', 'P2', 'P3', 'P4'].map((k, i) => (
+        <div className="flex w-full max-w-[236px] justify-between">
+          {DERIVED.map((k, i) => (
             <motion.span
               key={k}
               initial={false}
               animate={on ? { opacity: 1, y: 0 } : { opacity: 0.35, y: 5 }}
-              transition={{ duration: 0.4, delay: on ? 2.5 + i * 0.12 : 0 }}
-              className="rounded-lg border border-neon/25 bg-neon/10 px-3 py-1.5 font-mono text-[12px] font-semibold text-neon"
+              transition={{ duration: 0.4, delay: on ? 0.6 + i * 0.1 : 0 }}
+              className="w-[52px] rounded-lg border border-neon/25 bg-neon/10 py-1.5 text-center font-mono text-[12px] font-semibold text-neon"
             >
               {k}
             </motion.span>
           ))}
         </div>
-      </div>
 
-      <style>{`
-        .draw-outline {
-          stroke-dasharray: 160;
-          stroke-dashoffset: 160;
-          animation: draw-outline 4s ease forwards;
-        }
-        @keyframes draw-outline {
-          to { stroke-dashoffset: 0; }
-        }
-      `}</style>
-    </div>
+        <p className="text-[10px] uppercase tracking-[0.18em] text-white/30">derived, not linked</p>
+      </div>
+    </Stage>
   )
 }
 
@@ -468,7 +492,7 @@ function Deposit({ on }: { on: boolean }) {
             borderColor: on ? 'rgba(49,196,126,0.5)' : 'rgba(255,255,255,0.08)',
           }}
           transition={{ duration: 0.4, ease: EASE }}
-          className="w-[248px] rounded-xl border bg-gradient-to-b from-[#141a17] to-[#0b100e] p-5"
+          className="w-[min(248px,100%)] rounded-xl border bg-gradient-to-b from-[#141a17] to-[#0b100e] p-5"
         >
           <div className="text-[10px] uppercase tracking-[0.22em] text-white/35">Amount</div>
           <div className="mt-3 flex items-baseline">
@@ -553,81 +577,154 @@ function Encrypt({ on }: { on: boolean }) {
   )
 }
 
-const DOTS = [
-  { top: '38%', left: '18%' },
-  { top: '64%', left: '32%' },
-  { top: '46%', left: '74%' },
-  { top: '76%', left: '56%' },
-  { top: '30%', left: '46%' },
-  { top: '62%', left: '8%' },
-  { top: '82%', left: '24%' },
-  { top: '56%', left: '88%' },
-  { top: '26%', left: '68%' },
+const FEEDS = [
+  { y: 22, label: 'yours', mine: true },
+  { y: 56, label: '\u2022\u2022\u2022\u2022\u2022', mine: false },
+  { y: 90, label: '\u2022\u2022\u2022\u2022\u2022', mine: false },
+  { y: 124, label: '\u2022\u2022\u2022\u2022\u2022', mine: false },
 ]
 
-/** Radar sweep over a field of deposits, adapted from the bot detection card.
- *  Here it says the opposite thing: no single deposit can be singled out. */
+const feedPath = (y: number) => `M 66 ${y} C 104 ${y} 108 73 126 73`
+
+/** Deposits stream into one core and leave as a single batch, so nothing that
+ *  comes out points back at anything that went in. */
 function Batch({ on }: { on: boolean }) {
-  const [index, setIndex] = useState(0)
-
-  useEffect(() => {
-    if (!on) return
-    const id = window.setInterval(() => setIndex((v) => (v + 1) % DOTS.length), 2200)
-    return () => window.clearInterval(id)
-  }, [on])
-
   return (
     <Stage>
-      <div className="absolute inset-x-0 bottom-0 top-2">
-        {/* the sweep */}
-        <motion.div
-          className="pointer-events-none absolute bottom-3 left-1/2 h-48 w-48 origin-bottom-left"
-          style={{
-            background:
-              'radial-gradient(circle at 0% 100%, rgba(49,196,126,0.28) 5%, transparent 60%)',
-          }}
-          initial={{ opacity: 0.6, rotate: -55 }}
-          animate={on ? { opacity: [0.6, 1, 0.6], rotate: [-55, -42, -50, -45, -55] } : { opacity: 0.3 }}
-          transition={{ duration: 14, repeat: on ? Infinity : 0, ease: 'easeInOut' }}
-        />
+      <svg
+        className="absolute inset-0 h-full w-full"
+        viewBox="0 0 268 146"
+        fill="none"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          <radialGradient id="reactor-grad" fx="1">
+            <stop offset="0%" stopColor="#31c47e" />
+            <stop offset="100%" stopColor="transparent" />
+          </radialGradient>
+          <mask id="reactor-mask">
+            {FEEDS.map((f, i) => (
+              <path key={i} d={feedPath(f.y)} stroke="white" strokeWidth="2.4" fill="none" />
+            ))}
+            <path d="M 174 73 H 206" stroke="white" strokeWidth="2.4" fill="none" />
+          </mask>
+        </defs>
 
-        {/* range rings */}
-        <div className="absolute left-1/2 top-6 h-full w-[130%] -translate-x-1/2 rounded-full border-t border-dashed border-white/10" />
-        <div className="absolute left-1/2 top-14 h-full w-[110%] -translate-x-1/2 rounded-full border-t border-dashed border-white/10" />
-        <div className="absolute left-1/2 top-24 h-full w-[88%] -translate-x-1/2 rounded-full border-t border-dashed border-white/10" />
-
-        {/* the deposits */}
-        {DOTS.map((d, i) => (
-          <span
-            key={i}
-            className="absolute h-[5px] w-[5px] rounded-[1px] bg-white/25"
-            style={{ top: d.top, left: d.left }}
-          />
+        {/* the feeds */}
+        {FEEDS.map((f, i) => (
+          <g key={i}>
+            <path d={feedPath(f.y)} stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+            <rect
+              x="12"
+              y={f.y - 11}
+              width="54"
+              height="22"
+              rx="7"
+              fill={f.mine ? 'rgba(49,196,126,0.1)' : 'rgba(255,255,255,0.04)'}
+              stroke={f.mine ? 'rgba(49,196,126,0.3)' : 'rgba(255,255,255,0.08)'}
+            />
+            <text
+              x="39"
+              y={f.y + 3}
+              textAnchor="middle"
+              className="font-mono"
+              fontSize="9"
+              fill={f.mine ? '#31c47e' : 'rgba(255,255,255,0.4)'}
+            >
+              {f.label}
+            </text>
+          </g>
         ))}
 
-        {/* the one the sweep is over, which still says nothing about its owner */}
-        <motion.div
-          layoutId="batch-dot"
-          className="absolute flex h-[7px] w-[7px] items-center justify-center rounded-[1px] bg-neon shadow-[0_0_10px_4px_rgba(49,196,126,0.55)]"
-          style={DOTS[index]}
-          transition={{ type: 'spring', stiffness: 300, damping: 70 }}
-        >
-          <motion.span
-            key={index}
-            className="absolute h-[300%] w-[300%] rounded-full border border-neon/70"
-            initial={{ scale: 1, opacity: 0.7 }}
-            animate={{ scale: 1.8, opacity: [0.7, 1, 0] }}
-            transition={{ duration: 1.2, ease: 'easeOut', delay: 0.6 }}
-          />
-        </motion.div>
+        {/* the output */}
+        <path d="M 174 73 H 206" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+        <rect
+          x="206"
+          y="59"
+          width="50"
+          height="28"
+          rx="9"
+          fill="rgba(49,196,126,0.1)"
+          stroke="rgba(49,196,126,0.3)"
+        />
+        <text x="231" y="77" textAnchor="middle" className="font-mono" fontSize="10" fill="#31c47e">
+          batch
+        </text>
 
-        <div className="absolute bottom-1 left-1/2 h-20 w-20 -translate-x-1/2 rounded-full border border-white/10 bg-[#0a0e0c]" />
-      </div>
+        {/* the core */}
+        <motion.circle
+          cx="150"
+          cy="73"
+          r="23"
+          fill="#0c1712"
+          stroke="rgba(49,196,126,0.25)"
+          initial={false}
+          animate={{ scale: on ? [1, 1.05, 1] : 1 }}
+          transition={{ duration: 2.4, repeat: on ? Infinity : 0, ease: 'easeInOut' }}
+          style={{ transformOrigin: '150px 73px' }}
+        />
+        <motion.circle
+          cx="150"
+          cy="73"
+          r="29"
+          fill="none"
+          stroke="rgba(49,196,126,0.3)"
+          strokeWidth="1"
+          strokeDasharray="4 7"
+          initial={false}
+          animate={{ rotate: on ? 360 : 0 }}
+          transition={{ duration: 14, repeat: on ? Infinity : 0, ease: 'linear' }}
+          style={{ transformOrigin: '150px 73px' }}
+        />
+        <motion.circle
+          cx="150"
+          cy="73"
+          r="6"
+          fill="#31c47e"
+          initial={false}
+          animate={{ opacity: on ? [0.5, 1, 0.5] : 0.4 }}
+          transition={{ duration: 1.6, repeat: on ? Infinity : 0, ease: 'easeInOut' }}
+        />
+
+        {/* what actually travels */}
+        {on && (
+          <g mask="url(#reactor-mask)">
+            {FEEDS.map((_, i) => (
+              <circle key={i} className={`reactor-in reactor-in-${i}`} r="9" fill="url(#reactor-grad)" />
+            ))}
+            <circle className="reactor-out" r="9" fill="url(#reactor-grad)" />
+          </g>
+        )}
+      </svg>
+
+      <style>{`
+        .reactor-in, .reactor-out {
+          offset-anchor: 0 0;
+          animation: reactor-run 2.6s linear infinite;
+        }
+        ${FEEDS.map(
+          (f, i) => `
+        .reactor-in-${i} {
+          offset-path: path("${feedPath(f.y)}");
+          animation-delay: ${(i * 0.32).toFixed(2)}s;
+        }`,
+        ).join('')}
+        .reactor-out {
+          offset-path: path("M 174 73 H 206");
+          animation: reactor-run 2.6s linear infinite;
+          animation-delay: 1.3s;
+        }
+        @keyframes reactor-run {
+          0% { offset-distance: 0%; opacity: 0; }
+          12% { opacity: 1; }
+          85% { opacity: 1; }
+          100% { offset-distance: 100%; opacity: 0; }
+        }
+      `}</style>
     </Stage>
   )
 }
 
-/** Phone that lifts to reveal an alert, adapted from the notification centre. */
 function Shield({ on }: { on: boolean }) {
   return (
     <Stage>
@@ -635,7 +732,7 @@ function Shield({ on }: { on: boolean }) {
         initial={false}
         animate={{ y: on ? -22 : 0 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className="absolute inset-x-0 top-8 mx-auto h-60 w-[250px] rounded-[34px] border border-white/10 bg-[#111714] p-1.5"
+        className="absolute inset-x-0 top-8 mx-auto h-60 w-[min(250px,92%)] rounded-[34px] border border-white/10 bg-[#111714] p-1.5"
       >
         <div className="relative h-full overflow-hidden rounded-[28px] bg-[#070b09]">
           <div className="absolute left-5 top-3 text-[9px] text-white/35">09:41</div>

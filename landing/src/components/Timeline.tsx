@@ -37,7 +37,7 @@ function Row({ step, index }: { step: TimelineStep; index: number }) {
       <StepVisual kind={step.visual} on={on} />
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
-        <h3 className="text-[21px] font-semibold tracking-tight">{step.title}</h3>
+        <h3 className="text-[19px] font-semibold tracking-tight sm:text-[21px]">{step.title}</h3>
         {step.chain && (
           <span
             className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors duration-500 ${
@@ -48,20 +48,20 @@ function Row({ step, index }: { step: TimelineStep; index: number }) {
           </span>
         )}
       </div>
-      <p className="mt-2.5 text-[14.5px] leading-relaxed text-white/45">{step.body}</p>
+      <p className="mt-2.5 text-[14px] leading-relaxed sm:text-[14.5px] text-white/45">{step.body}</p>
     </motion.article>
   )
 
   return (
     <li
       ref={ref}
-      className="relative grid items-center gap-y-0 pl-16 md:grid-cols-[1fr_2px_1fr] md:gap-x-0 md:pl-0"
+      className="relative grid items-center gap-y-0 pl-10 sm:pl-14 md:grid-cols-[1fr_2px_1fr] md:gap-x-0 md:pl-0"
     >
       {/* left column */}
-      <div className="md:pr-14">{left ? card : null}</div>
+      <div className="md:pr-10 xl:pr-14">{left ? card : null}</div>
 
       {/* the node, always centred on the row */}
-      <div className="absolute left-6 top-1/2 -translate-y-1/2 md:static md:flex md:h-full md:items-center md:justify-center">
+      <div className="absolute left-4 top-1/2 -translate-y-1/2 sm:left-6 md:static md:flex md:h-full md:items-center md:justify-center">
         <span className="relative block">
           <span
             className={`block h-3 w-3 -translate-x-1/2 rounded-full transition-all duration-500 md:translate-x-0 ${
@@ -70,7 +70,7 @@ function Row({ step, index }: { step: TimelineStep; index: number }) {
           />
           {/* connector from the node to the card, same length on both sides */}
           <span
-            className={`absolute top-1/2 hidden h-px w-14 -translate-y-1/2 transition-colors duration-500 md:block ${
+            className={`absolute top-1/2 hidden h-px w-10 -translate-y-1/2 xl:w-14 transition-colors duration-500 md:block ${
               left ? 'right-full' : 'left-full'
             } ${on ? 'bg-neon/30' : 'bg-white/10'}`}
           />
@@ -78,7 +78,7 @@ function Row({ step, index }: { step: TimelineStep; index: number }) {
       </div>
 
       {/* right column */}
-      <div className="md:pl-14">{left ? null : card}</div>
+      <div className="md:pl-10 xl:pl-14">{left ? null : card}</div>
     </li>
   )
 }
@@ -94,10 +94,10 @@ export default function Timeline({ steps }: { steps: TimelineStep[] }) {
   return (
     <div ref={ref} className="relative">
       {/* the spine, filling as the page scrolls */}
-      <div className="pointer-events-none absolute left-6 top-0 h-full w-px bg-white/[0.08] md:left-1/2 md:-translate-x-1/2" />
+      <div className="pointer-events-none absolute left-4 top-0 h-full w-px bg-white/[0.08] sm:left-6 md:left-1/2 md:-translate-x-1/2" />
       <motion.div
         style={{ scaleY: progress }}
-        className="pointer-events-none absolute left-6 top-0 h-full w-px origin-top bg-gradient-to-b from-neon/70 via-neon to-neon/70 md:left-1/2 md:-translate-x-1/2"
+        className="pointer-events-none absolute left-4 top-0 h-full w-px origin-top sm:left-6 bg-gradient-to-b from-neon/70 via-neon to-neon/70 md:left-1/2 md:-translate-x-1/2"
       />
 
       <ol className="relative space-y-12 md:space-y-20">

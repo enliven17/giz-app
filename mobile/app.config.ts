@@ -23,6 +23,10 @@ const config: ExpoConfig = {
     associatedDomains: [`webcredentials:${identity.rpId}`],
   },
   android: { package: identity.androidPackage },
-  plugins: [["expo-splash-screen", { backgroundColor: "#050706" }], "expo-secure-store"],
+  plugins: [
+    ["expo-splash-screen", { backgroundColor: "#050706" }],
+    "expo-secure-store",
+    "./plugins/withAndroidDevelopmentSigning.cjs",
+  ],
 };
 export default config;

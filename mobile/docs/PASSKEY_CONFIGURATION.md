@@ -1,6 +1,10 @@
 # Passkey identity and configuration
 
 Initial release: **iOS only**, as requested on 2026-09-23. Android is deferred.
+Android local signing and the frontend association file have since been prepared
+at the user's request; see [Android signing](ANDROID_SIGNING.md). Android runtime
+support and device acceptance remain deferred. The iOS template/verifier commands
+below still handle Apple only and do not generate or validate the Android file.
 Apple Team ID `588X2UZY3L` is user supplied and configured in both the shared
 identity file and Expo's iOS signing configuration. No credentials were created
 and nothing was published during this configuration change.
@@ -61,8 +65,8 @@ Publish it at `https://gizu.io/.well-known/apple-app-site-association` (without 
 Preserve intended existing entries if the domain already serves an association.
 The template is outside website public directories and is never auto-published.
 
-`verify-domain` fetches and validates **only the Apple file**. No `assetlinks.json`
-is required, generated or fetched for this release. Its last run after adding the
+`verify-domain` fetches and validates **only the Apple file**. It does not generate
+or fetch the separately prepared Android `assetlinks.json`. Its run after adding the
 Team ID failed with `fetch failed`; public hosting has not been verified.
 
 Expo declares `webcredentials:gizu.io` and the supplied team. Regenerate/rebuild

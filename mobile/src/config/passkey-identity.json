@@ -6,7 +6,9 @@
   "iosBundleIdentifier": "com.example.gizu.dev",
   "androidPackage": "com.example.gizu.dev",
   "appleTeamId": "588X2UZY3L",
-  "androidSha256Fingerprints": ["REPLACE_WITH_ANDROID_SHA256_FINGERPRINT"],
+  "androidSha256Fingerprints": [
+    "49:91:65:19:5C:9C:4D:2E:C2:D1:65:C8:09:19:EB:52:42:1F:50:31:0E:8C:48:60:53:32:39:F1:B1:58:A8:C6"
+  ],
   "derivation": {
     "version": "mera-evm-v1",
     "prfSaltLabel": "mera.prf.salt.v1",

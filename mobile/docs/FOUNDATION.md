@@ -1,5 +1,27 @@
 # Mobile foundation
 
+## Mera P1 native probe — 2026-09-23
+
+Installed pinned Mera/native-passkey and derivation dependencies plus Expo Crypto
+and SecureStore. The iOS development client compiled and ran on iOS 26.5, including
+the offline native-randomness/derivation/signature self-check. iOS/Android exports
+passed with documented transitive Noble package-export fallback warnings.
+The probe is separate from demo investment providers and stores metadata only.
+Actual passkey ceremonies remain blocked by P0 identities/hosting and physical
+devices; Android SDK/JDK are unavailable locally. See the
+[P1 native probe](MERA_NATIVE_PROBE.md) for commands and acceptance evidence.
+
+## Passkey P0 configuration — 2026-09-23
+
+The user froze `gizu.io` across development/production and web/mobile, with a
+shared account-zero derivation. `app.config.ts` now declares the matching iOS
+webcredentials entitlement. Native mode is blocked; signing IDs and hosted
+associations remain unverified. Rebuild the development client before native
+association testing. The existing demo installation floors remain unchanged;
+native passkey support is limited to iOS 18+ / Android API 28+ with PRF support.
+See [PASSKEY_CONFIGURATION.md](PASSKEY_CONFIGURATION.md) for the source config,
+review templates, verification commands and remaining external inputs.
+
 ## M5 verification — 2026-09-23
 
 - Added SDK-bundled AsyncStorage 2.2.0 and Expo Clipboard ~57.0.2 using Expo's

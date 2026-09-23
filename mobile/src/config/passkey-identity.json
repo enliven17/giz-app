@@ -1,0 +1,21 @@
+{
+  "rpId": "gizu.io",
+  "rpName": "Gizu",
+  "sharedWebMobileWallets": true,
+  "sharedDevelopmentProductionRp": true,
+  "iosBundleIdentifier": "com.example.gizu.dev",
+  "androidPackage": "com.example.gizu.dev",
+  "appleTeamId": "REPLACE_WITH_APPLE_TEAM_ID",
+  "androidSha256Fingerprints": ["REPLACE_WITH_ANDROID_SHA256_FINGERPRINT"],
+  "derivation": {
+    "version": "mera-evm-v1",
+    "prfSaltLabel": "mera.prf.salt.v1",
+    "prfSaltHex": "896d46ac4ac191885c46137439db7bb52fb05cff3ecd34af7cdae0a1e0c00db9",
+    "prfBytes": 32,
+    "mnemonicLanguage": "english",
+    "bip39Passphrase": "",
+    "path": "m/44'/60'/0'/0/0",
+    "accountIndex": 0
+  },
+  "minimumPasskeyOs": { "iosMajor": 18, "androidApi": 28 }
+}

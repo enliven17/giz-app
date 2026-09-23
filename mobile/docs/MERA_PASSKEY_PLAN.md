@@ -1,12 +1,17 @@
 # Mera passkey wallet integration plan
 
-Status: proposed implementation plan; no integration code added.
+Status: P0 local identity/configuration implemented; signing and hosted association
+verification remain blocked. P1 probe implemented; real device acceptance remains pending.
+See [native compatibility probe](MERA_NATIVE_PROBE.md).
+See [P0 configuration record](PASSKEY_CONFIGURATION.md).
 Researched: 2026-09-23. Local baseline: `ed5a2b3`.
 User decision: use Mera with React Native, starting with passkey-created wallets.
 Confirmed follow-up: one EVM wallet, metadata-only persistence, a fresh passkey
 request when signing is needed, and separation from mock balances/transactions.
 The user supplied `gizu.io` and authorized mock configuration for missing inputs.
-Other recommendations below remain proposals.
+The user confirmed `gizu.io` for both development and production and shared
+web/mobile wallet recovery using the same passkey and derivation. Other
+recommendations below remain proposals.
 
 ## Feasibility and what Mera provides
 
@@ -58,13 +63,12 @@ that all external security keys or browser-supported providers work natively.
   salt, PRF entropy to English BIP-39 mnemonic, seed with empty BIP-39 passphrase,
   then BIP-32 path `m/44'/60'/0'/0/0`. Record a derivation version and test vectors.
   Revalidate the published implementation before adopting it. No custom crypto.
-- Domain: `gizu.io`, supplied by the user. Use `gizu.io` as the planned RP ID
-  in configuration examples for now; hosting and ownership have not been verified.
-  Decide whether to use a dedicated subdomain and separate development RP before
-  creating durable credentials. Do not change the RP ID after wallet creation
-  without a recovery/migration plan. Different RP domains yield separate credentials.
-- Use the same production RP ID and derivation on web/mobile only if cross-surface
-  access is intended. Matching usernames do not make two credentials the same.
+- Frozen RP ID: `gizu.io` for development, production, web and mobile (user
+  confirmed). Hosting and signed app associations remain unverified. The same
+  credential and derivation recover the same wallet on every surface; development
+  is not an isolated wallet namespace. Do not change this identity without a
+  reviewed migration/recovery strategy. Matching usernames alone do not establish
+  account continuity.
 - Do not persist PRF output, mnemonic, seed or private key in the first slice.
   Keep only validated credential metadata, address and derivation version locally.
   Store this privacy-sensitive metadata behind a dedicated storage adapter, with
@@ -74,9 +78,10 @@ that all external security keys or browser-supported providers work natively.
   approved signature. Keep secrets out of React state, logs and serialized errors.
 - Show a remembered address only as a locked account, not proof of authentication.
   App/backend session state and wallet signing capability are different states.
-- Recommend raising the passkey-enabled app floor to iOS 18 / Android API 28, plus
-  runtime provider checks. Alternatively retain lower installation floors with an
-  explicit unsupported-access screen. Product must select the supported audience.
+- Freeze native passkey support at iOS 18+ / Android API 28+, with PRF provider
+  checks still required. P0 retains existing demo installation floors; P1 must
+  reject unsupported OS/provider configurations before any native ceremony. The
+  unsupported-access presentation belongs to P2.
 - Use test accounts only until recovery and production-readiness gates are met.
 
 The official mobile demo instead saves PRF output in authentication-gated
@@ -88,11 +93,11 @@ it needs separate invalidation, backup/reinstall and physical-device testing.
 ## Placeholder configuration and mocked development
 
 The user authorized placeholders so scaffolding and functional tests can proceed
-before real signing/hosting details are available. Planned values:
+before real signing/hosting details are available. Recorded values:
 
 | Input                            | Value for now                             | Status                                                  |
 | -------------------------------- | ----------------------------------------- | ------------------------------------------------------- |
-| Product domain / planned RP ID   | `gizu.io`                                 | User supplied; association hosting unverified           |
+| Product domain / planned RP ID   | `gizu.io`                                 | Frozen across environments/surfaces; hosting unverified |
 | iOS development bundle ID        | `com.example.gizu.dev`                    | Existing app configuration; release identity unresolved |
 | Android development package      | `com.example.gizu.dev`                    | Existing app configuration; release identity unresolved |
 | Apple Team ID                    | `REPLACE_WITH_APPLE_TEAM_ID`              | Nonfunctional placeholder                               |
@@ -123,8 +128,9 @@ our actual devices or enables real funding/signing against fixture transactions.
 ### P0 — Freeze identity and configuration
 
 - [x] Record the user-supplied domain `gizu.io` and placeholder configuration policy.
-- [ ] Finalize exact RP host/environment separation and web/mobile sharing policy.
-- [ ] Prepare mock adapter scenarios and association templates with explicit placeholders.
+- [x] Freeze `gizu.io` across environments and share web/mobile RP and derivation.
+- [x] Prepare mock adapter scenario specifications and association templates with
+      explicit placeholders; scenario execution belongs to P1/P2 tests.
 - [ ] Supply Apple Team ID, signed app identifiers and Android signing certificate
       SHA-256 fingerprints. Current development IDs can be used for a prototype
       if correctly associated; select release identities before production.
@@ -135,19 +141,28 @@ our actual devices or enables real funding/signing against fixture transactions.
 - [ ] Verify both files are public HTTPS JSON without redirects. Include only the
       intended apps/certificates for that environment; account for Play app signing
       separately from the upload certificate when moving to production.
-- [ ] Add Expo `ios.associatedDomains` using `webcredentials:<rpId>`, validate config
-      at startup, and freeze OS support, salt and derivation version.
+- [x] Add Expo `ios.associatedDomains` using `webcredentials:gizu.io`, validate mode
+      at build/startup, and freeze passkey OS support, salt and derivation version.
+- [x] Add local config/template checks and an explicit hosted-association verifier.
+      Placeholder metadata is rejected before network verification.
+
+Local implementation details, mock scenarios and the remaining external gate are
+in [PASSKEY_CONFIGURATION.md](PASSKEY_CONFIGURATION.md).
 
 Exit: domain association is verified for both signed development builds. Do not
 use Mera's demo domain or copy its app identifiers as our integration identity.
 
 ### P1 — Prove compatibility in a native development build
 
-- [ ] Install pinned Mera/native-passkey, Expo-compatible Crypto and the selected
+- [x] Install pinned Mera/native-passkey, Expo-compatible Crypto and the selected
       metadata storage dependency. Add BIP-32/BIP-39 dependencies from the documented
       recipe; do not depend on the unpublished demo-shared workspace package.
-- [ ] Verify Metro/Hermes, package exports, TypeScript, New Architecture, iOS and
-      Android builds. Rebuild development clients; Expo Go is not acceptance evidence.
+- [x] Verify TypeScript, Metro/Hermes exports and the iOS New Architecture native
+      development build. Transitive package-export warnings are recorded in the probe doc.
+- [ ] Complete Android native build and both signed physical-device checks.
+      Expo Go is not acceptance evidence.
+- [x] Implement the isolated create/recover/fixed-message-sign probe, ephemeral
+      derivation, metadata storage and automated boundary/functional tests.
 - [ ] Create one test passkey, derive the address, end the session, then select that
       same passkey and verify the same address is recovered.
 - [ ] Sign a clearly scoped non-transaction test message and independently verify
@@ -264,18 +279,18 @@ acceptance must separately demonstrate repeated address recovery, signing proof,
 provider selection, lifecycle and chosen recovery. Simulators and Jest cannot
 establish production passkey-provider/biometric behavior.
 
-No packages were installed, credentials created, domains published or app code
-changed for this planning task. The plan is based on documentation, published
-package metadata and source inspection, not a successful Mera runtime experiment.
+P0 delivered configuration, templates, checks and documentation. P1 now installs
+the pinned dependencies and implements an isolated probe. No real credentials
+were created and nothing was published. Automated and simulator checks do not
+establish successful real-device Mera ceremonies; see the probe acceptance matrix.
 
 ## Inputs needed before implementation reaches device acceptance
 
-1. Access to publish association files on `gizu.io`, and final confirmation of any
-   dedicated/development RP subdomain before real credential creation.
+1. Access to publish association files on the frozen RP host `gizu.io`.
 2. Real Apple Team ID, release app identifiers when needed, and Android signing
    fingerprints to replace the placeholders.
-3. Eventual target chain and whether web/mobile share wallets. One EVM wallet is
-   confirmed; no PRF/private-key persistence and metadata-only storage are confirmed.
+3. Eventual target chain. Shared web/mobile wallets, one EVM account, no
+   PRF/private-key persistence and metadata-only storage are confirmed.
 4. Supported device/provider policy and physical devices available for testing.
 5. Recovery expectations before funding; whether backend user sessions belong in
    the first release or follow the native wallet proof.

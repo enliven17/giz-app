@@ -50,6 +50,14 @@ Custom icons, fonts and launch artwork remain future product work.
 
 ## Commands
 
+Passkey P0 configuration and the pending real-device gate are documented in
+[PASSKEY_CONFIGURATION.md](docs/PASSKEY_CONFIGURATION.md). `npm run passkeys:check`
+checks mock-mode configuration; `npm run passkeys:templates` prepares review files;
+`npm run passkeys:verify-domain` verifies hosted associations after real signing
+metadata is supplied. Nothing is published automatically.
+The isolated [P1 native probe](docs/MERA_NATIVE_PROBE.md) uses
+`EXPO_PUBLIC_PASSKEY_MODE=probe`; restart Metro and use a rebuilt development client.
+
 Run inside `mobile/`, or use `npm --prefix mobile` from the root.
 
 | Command                                                                                          | Scope                                                          |

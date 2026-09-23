@@ -4,13 +4,14 @@ export default function Sparkline({
   width = 60,
   height = 24,
   fluid = false,
+  gradientId,
 }: {
   series: number[]
   up: boolean
   width?: number
   height?: number
-  /** stretch to the container width */
   fluid?: boolean
+  gradientId?: string
 }) {
   const min = Math.min(...series)
   const max = Math.max(...series)
@@ -31,8 +32,19 @@ export default function Sparkline({
     return `${acc} C${c1x.toFixed(2)},${c1y.toFixed(2)} ${c2x.toFixed(2)},${c2y.toFixed(2)} ${p.x.toFixed(2)},${p.y.toFixed(2)}`
   }, '')
   const area = `${d} L${width},${height} L0,${height} Z`
-  const color = up ? '#31c47e' : '#c4576a'
-  const id = `sp-${up ? 'u' : 'd'}-${width}`
+  let color = '#c4576a'
+  if (up) {
+    color = '#31c47e'
+  }
+  let id = `sp-w${width}-h${height}`
+  if (gradientId) {
+    id = gradientId
+  }
+  if (up) {
+    id = `${id}-up`
+  } else {
+    id = `${id}-down`
+  }
 
   return (
     <svg

@@ -38,18 +38,11 @@ async function main() {
       resolve(destination, "apple-app-site-association.json"),
       `${JSON.stringify(files.apple, null, 2)}\n`,
     );
-    writeFileSync(
-      resolve(destination, "assetlinks.json"),
-      `${JSON.stringify(files.android, null, 2)}\n`,
-    );
-    console.log("Wrote review templates only. Nothing published; placeholders are nonfunctional.");
+    console.log("Wrote the iOS association review template. Nothing published.");
   } else if (command === "verify-domain") {
     validateNativeIdentity();
-    const [apple, android] = await Promise.all([
-      readAssociation("apple-app-site-association"),
-      readAssociation("assetlinks.json"),
-    ]);
-    validateAssociationFiles(apple, android);
+    const apple = await readAssociation("apple-app-site-association");
+    validateAssociationFiles(apple);
     console.log(
       "Hosted association files match configured development identities. Signed-device verification is still required.",
     );

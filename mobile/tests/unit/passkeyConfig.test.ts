@@ -38,22 +38,22 @@ test("mock is explicit and invalid/native modes cannot silently use demo success
   expect(validatePasskeyMode("mock")).toBe("mock");
   expect(validatePasskeyMode("probe")).toBe("probe");
   expect(() => validatePasskeyMode("typo")).toThrow("PASSKEY_MODE");
-  expect(() => validatePasskeyMode("native")).toThrow("Apple Team ID");
+  expect(() => validatePasskeyMode("native")).toThrow("not implemented");
 });
 
-test("native metadata rejects placeholders, empty fingerprints and RP drift", () => {
-  expect(() => validateNativeIdentity()).toThrow("Apple Team ID");
-  expect(() => validateNativeIdentity({ ...fixture, androidSha256Fingerprints: [] })).toThrow(
-    "SHA-256",
+test("iOS identity rejects placeholders and RP drift but ignores deferred Android metadata", () => {
+  expect(validateNativeIdentity()).toEqual(identity);
+  expect(identity.appleTeamId).toBe("588X2UZY3L");
+  expect(() =>
+    validateNativeIdentity({ ...fixture, appleTeamId: "REPLACE_WITH_APPLE_TEAM_ID" }),
+  ).toThrow("Apple Team ID");
+  expect(() => validateNativeIdentity({ ...fixture, rpId: "other.gizu.io" })).toThrow("frozen");
+  expect(() => validateNativeIdentity({ ...fixture, iosBundleIdentifier: "invalid" })).toThrow(
+    "identifier",
   );
   expect(() =>
-    validateNativeIdentity({ ...fixture, androidSha256Fingerprints: ["placeholder"] }),
-  ).toThrow("SHA-256");
-  expect(() => validateNativeIdentity({ ...fixture, rpId: "other.gizu.io" })).toThrow("frozen");
-  expect(() => validateNativeIdentity({ ...fixture, androidPackage: "invalid" })).toThrow(
-    "identifiers",
-  );
-  expect(validateNativeIdentity(fixture)).toEqual(fixture);
+    validateNativeIdentity({ ...fixture, androidSha256Fingerprints: [], androidPackage: "" }),
+  ).not.toThrow();
 });
 
 test("valid-looking identity still cannot enable an unimplemented native adapter", () => {
@@ -66,31 +66,12 @@ test("valid-looking identity still cannot enable an unimplemented native adapter
   }
 });
 
-test("association validation requires the matching app, relation and every certificate", () => {
+test("iOS association validation requires the exact team and app entry", () => {
   const files = associationFiles(fixture);
-  expect(() => validateAssociationFiles(files.apple, files.android, fixture)).not.toThrow();
+  expect(() => validateAssociationFiles(files.apple, fixture)).not.toThrow();
   for (const invalid of [null, {}, { webcredentials: { apps: ["OTHER.app"] } }]) {
-    expect(() => validateAssociationFiles(invalid, files.android, fixture)).toThrow("Apple");
+    expect(() => validateAssociationFiles(invalid, fixture)).toThrow("Apple");
   }
-  const entry = files.android[0]!;
-  for (const invalid of [
-    null,
-    {},
-    [],
-    [{ ...entry, relation: [] }],
-    [{ ...entry, target: { ...entry.target, package_name: "wrong.app" } }],
-  ]) {
-    expect(() => validateAssociationFiles(files.apple, invalid, fixture)).toThrow("Android");
-  }
-  expect(() =>
-    validateAssociationFiles(files.apple, files.android, {
-      ...fixture,
-      androidSha256Fingerprints: [
-        ...fixture.androidSha256Fingerprints,
-        Array(32).fill("CD").join(":"),
-      ],
-    }),
-  ).toThrow("Android");
 });
 
 test("checked-in review templates match the public identity configuration", () => {
@@ -100,5 +81,5 @@ test("checked-in review templates match the public identity configuration", () =
       readFileSync(resolve(__dirname, "../../docs/passkey-association-templates", name), "utf8"),
     );
   expect(read("apple-app-site-association.json")).toEqual(files.apple);
-  expect(read("assetlinks.json")).toEqual(files.android);
+  expect(files.apple.webcredentials.apps).toEqual(["588X2UZY3L.com.example.gizu.dev"]);
 });

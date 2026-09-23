@@ -1,7 +1,9 @@
 # Mera passkey wallet integration plan
 
 Status: P0 local identity/configuration implemented; signing and hosted association
-verification remain blocked. P1 probe implemented; real device acceptance remains pending.
+verification remain blocked. P1 probe implemented; real iPhone acceptance remains pending.
+Initial release is iOS-only (user decision). Android is deferred and is not an acceptance gate.
+Apple Team ID: `588X2UZY3L` (user supplied; signing/hosting still require verification).
 See [native compatibility probe](MERA_NATIVE_PROBE.md).
 See [P0 configuration record](PASSKEY_CONFIGURATION.md).
 Researched: 2026-09-23. Local baseline: `ed5a2b3`.
@@ -78,8 +80,8 @@ that all external security keys or browser-supported providers work natively.
   approved signature. Keep secrets out of React state, logs and serialized errors.
 - Show a remembered address only as a locked account, not proof of authentication.
   App/backend session state and wallet signing capability are different states.
-- Freeze native passkey support at iOS 18+ / Android API 28+, with PRF provider
-  checks still required. P0 retains existing demo installation floors; P1 must
+- Freeze initial native passkey support at iOS 18+, with PRF provider checks
+  still required. Android API 28+ support is deferred. P0 retains existing demo installation floors; P1 must
   reject unsupported OS/provider configurations before any native ceremony. The
   unsupported-access presentation belongs to P2.
 - Use test accounts only until recovery and production-readiness gates are met.
@@ -100,14 +102,13 @@ before real signing/hosting details are available. Recorded values:
 | Product domain / planned RP ID   | `gizu.io`                                 | Frozen across environments/surfaces; hosting unverified |
 | iOS development bundle ID        | `com.example.gizu.dev`                    | Existing app configuration; release identity unresolved |
 | Android development package      | `com.example.gizu.dev`                    | Existing app configuration; release identity unresolved |
-| Apple Team ID                    | `REPLACE_WITH_APPLE_TEAM_ID`              | Nonfunctional placeholder                               |
+| Apple Team ID                    | `588X2UZY3L`                              | User supplied; signing/hosting unverified               |
 | Android certificate fingerprints | `REPLACE_WITH_ANDROID_SHA256_FINGERPRINT` | Nonfunctional placeholder                               |
 | Release app identifiers          | Unset                                     | Must be selected before release association files       |
 
 Prepare association-file templates for
-`https://gizu.io/.well-known/apple-app-site-association` and
-`https://gizu.io/.well-known/assetlinks.json`, without publishing them. Placeholder
-Team IDs and fingerprints must fail real-mode configuration validation, rather
+`https://gizu.io/.well-known/apple-app-site-association`, without publishing it.
+Android asset links are deferred. Placeholder Apple Team IDs must fail validation, rather
 than look like valid credentials. Never invent a signing identity or certificate.
 
 Use an explicitly selected development mock adapter for create/open/sign outcomes,
@@ -131,16 +132,14 @@ our actual devices or enables real funding/signing against fixture transactions.
 - [x] Freeze `gizu.io` across environments and share web/mobile RP and derivation.
 - [x] Prepare mock adapter scenario specifications and association templates with
       explicit placeholders; scenario execution belongs to P1/P2 tests.
-- [ ] Supply Apple Team ID, signed app identifiers and Android signing certificate
-      SHA-256 fingerprints. Current development IDs can be used for a prototype
-      if correctly associated; select release identities before production.
+- [x] Record Apple Team ID `588X2UZY3L` and wire it into Expo iOS configuration.
+- [ ] Verify the signed iOS development app identifier under this team. Select the
+      release identifier before production. Android signing is deferred.
 - [ ] Serve `/.well-known/apple-app-site-association` with the app's
       `TEAM_ID.bundleIdentifier` in `webcredentials.apps`.
-- [ ] Serve `/.well-known/assetlinks.json` with the package, appropriate certificate
-      fingerprints and `delegate_permission/common.get_login_creds` relation.
-- [ ] Verify both files are public HTTPS JSON without redirects. Include only the
-      intended apps/certificates for that environment; account for Play app signing
-      separately from the upload certificate when moving to production.
+- Android association files and fingerprints are deferred; not required for iOS.
+- [ ] Verify the Apple association file is public HTTPS JSON without redirects
+      and includes the intended signed iOS app.
 - [x] Add Expo `ios.associatedDomains` using `webcredentials:gizu.io`, validate mode
       at build/startup, and freeze passkey OS support, salt and derivation version.
 - [x] Add local config/template checks and an explicit hosted-association verifier.
@@ -149,7 +148,7 @@ our actual devices or enables real funding/signing against fixture transactions.
 Local implementation details, mock scenarios and the remaining external gate are
 in [PASSKEY_CONFIGURATION.md](PASSKEY_CONFIGURATION.md).
 
-Exit: domain association is verified for both signed development builds. Do not
+Exit: domain association is verified for the signed iOS development build. Do not
 use Mera's demo domain or copy its app identifiers as our integration identity.
 
 ### P1 — Prove compatibility in a native development build
@@ -159,7 +158,7 @@ use Mera's demo domain or copy its app identifiers as our integration identity.
       recipe; do not depend on the unpublished demo-shared workspace package.
 - [x] Verify TypeScript, Metro/Hermes exports and the iOS New Architecture native
       development build. Transitive package-export warnings are recorded in the probe doc.
-- [ ] Complete Android native build and both signed physical-device checks.
+- [ ] Complete the signed physical-iPhone checks; Android native work is deferred.
       Expo Go is not acceptance evidence.
 - [x] Implement the isolated create/recover/fixed-message-sign probe, ephemeral
       derivation, metadata storage and automated boundary/functional tests.
@@ -167,10 +166,9 @@ use Mera's demo domain or copy its app identifiers as our integration identity.
       same passkey and verify the same address is recovered.
 - [ ] Sign a clearly scoped non-transaction test message and independently verify
       its signature/address. No RPC, funding or transaction submission is needed.
-- [ ] Repeat on a physical iPhone and a physical Android device with supported
-      providers. Test cancellation and unsupported PRF alongside the success path.
+- [ ] Run on a physical iPhone with a supported provider. Test cancellation and unsupported PRF alongside the success path.
 
-Exit: both native platforms pass real create/get/address/signature checks. Stop
+Exit: iOS passes real create/get/address/signature checks. Stop
 and revise compatibility assumptions before broad UI work if either fails.
 
 ### P2 — Replace access and account identity
@@ -274,7 +272,7 @@ storage failure, background/foreground, late completion, account mismatch and
 disconnect cleanup failure. Use fixed synthetic PRF inputs for derivation vectors
 and independently verify signatures; never use a real credential in fixtures.
 
-Run TypeScript, format, lint, Doctor, coverage and both platform builds. Device
+Run TypeScript, format, lint, Doctor, coverage and the iOS native build for the initial release. Device
 acceptance must separately demonstrate repeated address recovery, signing proof,
 provider selection, lifecycle and chosen recovery. Simulators and Jest cannot
 establish production passkey-provider/biometric behavior.
@@ -287,8 +285,8 @@ establish successful real-device Mera ceremonies; see the probe acceptance matri
 ## Inputs needed before implementation reaches device acceptance
 
 1. Access to publish association files on the frozen RP host `gizu.io`.
-2. Real Apple Team ID, release app identifiers when needed, and Android signing
-   fingerprints to replace the placeholders.
+2. Verify signing for supplied Team ID `588X2UZY3L`; select release app identifiers
+   when needed. Android fingerprints are deferred.
 3. Eventual target chain. Shared web/mobile wallets, one EVM account, no
    PRF/private-key persistence and metadata-only storage are confirmed.
 4. Supported device/provider policy and physical devices available for testing.

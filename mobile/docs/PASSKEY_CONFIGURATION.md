@@ -1,48 +1,42 @@
-# P0 — Passkey identity and configuration
+# Passkey identity and configuration
 
-P0 local implementation: 2026-09-23. External acceptance is **pending**. No passkeys
-were created and no association files published. P1 now provides an isolated
-[native probe](MERA_NATIVE_PROBE.md); real operations remain blocked by placeholders.
+Initial release: **iOS only**, as requested on 2026-09-23. Android is deferred.
+Apple Team ID `588X2UZY3L` is user supplied and configured in both the shared
+identity file and Expo's iOS signing configuration. No credentials were created
+and nothing was published during this configuration change.
 
 ## Frozen contract
 
 The source of truth is `src/config/passkey-identity.json`:
 
-- RP ID: `gizu.io`, shared by development, production, web and mobile, as requested.
-- RP name: Gizu. Development app IDs remain `com.example.gizu.dev`; scheme remains
-  `gizu-dev`. Production identifiers are unset and production builds remain blocked.
-- One EVM account, derivation version `mera-evm-v1`: 32-byte PRF entropy → English
-  BIP-39 mnemonic → seed with empty passphrase → BIP-32 `m/44'/60'/0'/0/0`.
+- RP ID: `gizu.io`, shared by development, production, web and mobile.
+- Apple Team ID: `588X2UZY3L`; development bundle: `com.example.gizu.dev`.
+  The bundle must be registered/signed under that team with Associated Domains.
+  Release identity is still unresolved and production builds remain blocked.
+- One EVM account, derivation `mera-evm-v1`: 32-byte PRF entropy → English BIP-39
+  mnemonic → seed with empty passphrase → BIP-32 `m/44'/60'/0'/0/0`.
 - PRF salt: SHA-256 of UTF-8 `mera.prf.salt.v1`, matching Mera's fixed default.
-  Its hex value is public configuration, not key material. A test verifies it.
-- Native passkey eligibility: iOS 18+ / Android API 28+, plus actual PRF provider
-  support. Existing demo installation floors stay unchanged in P0. P1 must check
-  eligibility before calling native APIs; P2 owns unsupported-access UI.
+- Initial native eligibility: iOS 18+ and a PRF-capable provider. Android settings
+  retained in the source are deferred scaffolding, not active release requirements.
 - Persist metadata only. No PRF, mnemonic, seed or private-key persistence.
 
-Same credential + RP + salt + derivation means the same address. Web and mobile
-must implement this exact contract; P0 has not changed the frontend's access code.
-Neither matching names nor a newly created passkey recover an existing wallet.
-Because the RP is shared across environments, a development build can select a
-production credential once associated. Use separately created test passkeys and
-unfunded accounts during P1; build mode does not isolate keys. Any future RP or
-derivation change requires an explicit migration/recovery plan.
+Same credential + RP + salt + derivation yields the same address. Development is
+not a separate wallet namespace. Use a separately created, unfunded test passkey.
+Changing the RP or derivation requires a reviewed recovery/migration strategy.
 
-## Mock mode and fail-closed configuration
+## Modes and native validation
 
-Copy `.env.example` to `.env` if explicit local configuration is desired. The
-default mode is `EXPO_PUBLIC_PASSKEY_MODE=mock`. P1 also accepts `probe` to open
-the isolated compatibility screen (its native actions still validate identity). The current
-demo access service stays unchanged. Both Expo config evaluation and app startup
-validate mode; unknown values fail, and `native` never falls back to demo success.
+The default is `EXPO_PUBLIC_PASSKEY_MODE=mock` (the existing investment demo).
+`probe` opens the isolated [P1 compatibility screen](MERA_NATIVE_PROBE.md).
+`native` integrated access remains unimplemented and fails closed. Unknown modes
+also fail at Expo config evaluation and app startup.
 
-Native mode first rejects placeholder signing metadata. Even with valid metadata,
-integrated access remains blocked until P2. Use the isolated `probe` mode for P1. No environment
-flag claims that the domain was verified. Public Expo environment variables must
-never contain secrets. Real signing IDs/fingerprints are public metadata; signing
-private keys and provisioning credentials do not belong in this JSON or the app.
+The probe requires iOS, a valid Apple Team ID and bundle identifier; it does not
+require Android signing metadata. Local validation checks configuration syntax,
+not actual ownership, signing or hosting. The native platform enforces association
+when a ceremony is attempted. No failure silently becomes mock success.
 
-## Association templates and verification
+## Apple association file
 
 Run from `mobile/`:
 
@@ -52,78 +46,46 @@ npm run passkeys:templates
 npm run passkeys:verify-domain
 ```
 
-- `check` validates the selected mode and reports the remaining native gate.
-- `templates` regenerates review-only files under `docs/passkey-association-templates/`.
-  These are outside website public directories and are not deployed automatically.
-- `verify-domain` rejects placeholders, then fetches both HTTPS files with a timeout,
-  no redirects, successful HTTP status and JSON content type. It checks the exact
-  Apple app entry, Android package, credential relation and configured fingerprints.
-  Success checks hosted metadata only; it does not prove OS association caching,
-  provisioning or provider PRF support on a signed device.
+`templates` generates only `docs/passkey-association-templates/apple-app-site-association.json`:
 
-Replace `REPLACE_WITH_APPLE_TEAM_ID` and
-`REPLACE_WITH_ANDROID_SHA256_FINGERPRINT` with actual development signing details
-in the source JSON, then regenerate templates. Preserve all intended existing
-entries if the domain already serves associations; do not overwrite other apps.
-The verifier permits unrelated entries because this RP is intentionally shared.
+```json
+{
+  "webcredentials": {
+    "apps": ["588X2UZY3L.com.example.gizu.dev"]
+  }
+}
+```
 
-Publish only after reviewing real values:
+Publish it at `https://gizu.io/.well-known/apple-app-site-association` (without the
+`.json` extension). It must return HTTP 200, `application/json`, and no redirect.
+Preserve intended existing entries if the domain already serves an association.
+The template is outside website public directories and is never auto-published.
 
-| Template                          | Required public URL                                                     |
-| --------------------------------- | ----------------------------------------------------------------------- |
-| `apple-app-site-association.json` | `https://gizu.io/.well-known/apple-app-site-association` (no extension) |
-| `assetlinks.json`                 | `https://gizu.io/.well-known/assetlinks.json`                           |
+`verify-domain` fetches and validates **only the Apple file**. No `assetlinks.json`
+is required, generated or fetched for this release. Its last run after adding the
+Team ID failed with `fetch failed`; public hosting has not been verified.
 
-Apple requires `webcredentials.apps` containing `TEAM_ID.bundleIdentifier` and
-the corresponding signed entitlement. Expo now declares `webcredentials:gizu.io`;
-rebuild the development client before testing it. Android requires
-`delegate_permission/common.get_login_creds`, the exact package and certificate
-SHA-256 fingerprint. Include only intended debug/EAS signing certificates; Play
-app-signing and upload certificates are distinct. No fabricated identity can pass
-platform verification, even if it passes local syntax checks.
+Expo declares `webcredentials:gizu.io` and the supplied team. Regenerate/rebuild
+the native development client before checking signing and association on a physical
+iPhone. Setting a Team ID is not evidence that a matching provisioning profile or
+Apple Developer app registration already exists.
 
-## Prepared mock adapter scenarios
+## Mock scenario contract
 
-These are the implementation/test contract for the later wallet adapter, not
-implemented native results. Use synthetic fixture IDs such as `mock-credential-a`
-and a fixed public test address; never save a real credential or signing secret
-in fixtures. Every result must remain explicitly marked as mock.
+Later integrated access must cover create/open/same-address recovery, fixed-message
+signing, cancellation, missing/unsupported PRF, association failure, mismatched
+credentials, partial creation, storage failure, duplicate requests and late results.
+Use synthetic fixtures and mock only external/native boundaries. Current probe
+coverage and native runtime evidence are recorded in [MERA_NATIVE_PROBE.md](MERA_NATIVE_PROBE.md).
 
-| Scenario                                         | Required outcome                                                  |
-| ------------------------------------------------ | ----------------------------------------------------------------- |
-| Create, then open the same credential            | Same synthetic address and derivation version                     |
-| Existing selection with no local metadata        | Discover existing credential; never silently create               |
-| Sign                                             | Mock proof only; no native signer and no transaction submission   |
-| Cancel or provider failure                       | No ready state; sanitized error; retry possible                   |
-| PRF unsupported or association mismatch          | Explicit unavailable/failure result, no mock fallback from native |
-| Wrong credential/address                         | Reject continuity; do not replace the remembered account          |
-| Partial create / metadata write failure          | Offer reopen; do not automatically create another credential      |
-| Duplicate request / late completion / background | Serialize the request and discard abandoned results               |
+## Remaining acceptance gate
 
-The existing demo access method does not yet implement this create/open/sign
-contract. P1 supplies a separate compatibility probe; P2 replaces access flows.
+Verify the signed iOS app under Team ID `588X2UZY3L`, publish and verify the Apple
+association file, then run real create/get/address/signature checks on a supported
+physical iPhone. Android native builds, fingerprints, asset links and physical-device
+acceptance are deferred; they do not block the initial release.
 
-## Acceptance boundary
-
-Verification on 2026-09-23:
-
-- Passed: full `npm run check`, including TypeScript, formatting, lint, Expo Doctor
-  (21/21), and 119 tests in 14 suites. Coverage thresholds passed; six tests cover
-  the new configuration, derivation constants, guard and association validation.
-- Passed: iOS/Android Metro/Hermes exports, Expo public config evaluation and
-  entitlement introspection (`webcredentials:gizu.io`). These are not native builds.
-- Passed: expected rejection of native-mode Expo configuration and domain
-  verification while placeholder signing metadata is present.
-- Blocked: live association verification, pending real signing identities and
-  publication. The verifier stops before network access with current placeholders.
-- Not run: signed native builds, physical-device association/passkey checks, or
-  Mera create/get/sign. P1 dependencies from the interrupted start were removed;
-  the original dependency lockfile was restored.
-
-P0 is locally configured but **not fully accepted** until actual Team ID and
-Android certificates are supplied, both hosted files are verified, and signed
-development builds associate successfully. Release identifiers remain a later
-release gate. Domain publishing and account/signing setup have not been performed.
-
-Reference: [Mera native recipe](https://mera.category.xyz/recipes/use-mera-with-react-native/)
-and [Expo association configuration](https://docs.expo.dev/linking/ios-universal-links/).
+Verification for this update: TypeScript, lint, Expo config evaluation and all 18
+affected configuration/adapter/functional tests passed. Expo resolves Team ID
+`588X2UZY3L` and `webcredentials:gizu.io`. The native client was not rebuilt or
+provisioned with this team during this update; hosting verification failed to fetch.

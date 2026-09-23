@@ -120,7 +120,7 @@ test("eligibility blocks old OS and placeholder identity before native requests"
   Object.defineProperty(Platform, "Version", { value: "17.5", configurable: true });
   expect(probeAvailability()).toContain("iOS 18+");
   Object.defineProperty(Platform, "Version", { value: "18.0", configurable: true });
-  Object.assign(identity, original);
+  identity.appleTeamId = "REPLACE_WITH_APPLE_TEAM_ID";
   expect(probeAvailability()).toContain("Blocked");
   expect(Passkey.createPlatformKey).not.toHaveBeenCalled();
 });
@@ -163,4 +163,12 @@ test("system-sheet inactive transition waits for active; background and timeout 
   } finally {
     spy.mockRestore();
   }
+});
+
+test("iOS eligibility does not require Android signing metadata; Android is deferred", () => {
+  identity.androidSha256Fingerprints = [];
+  expect(probeAvailability()).toBeNull();
+  Object.defineProperty(Platform, "OS", { value: "android", configurable: true });
+  expect(probeAvailability()).toContain("Android is deferred");
+  expect(Passkey.createPlatformKey).not.toHaveBeenCalled();
 });

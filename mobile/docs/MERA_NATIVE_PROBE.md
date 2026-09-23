@@ -1,14 +1,17 @@
 # P1 — Native Mera compatibility probe
 
-Implementation is available on `feature/mera-integration`. Real-device acceptance
+Implementation is available on `feature/mera-integration`. Real-iPhone acceptance
 remains pending; the probe is intentionally isolated from demo access, portfolios,
 orders and transfers. It cannot submit a transaction or accept arbitrary signing
 payloads. P2 integrated access has not started.
 
 ## Run the probe
 
+Initial release: iOS only. Apple Team ID `588X2UZY3L` is configured; Android is
+deferred and does not block this release.
+
 From `mobile/`, install dependencies with `npm ci`, then rebuild the development
-client with `npm run ios` or `npm run android`. Expo Go does not contain the native
+client with `npm run ios`. Expo Go does not contain the native
 passkey module. CocoaPods/native build tools are required for the relevant platform.
 
 Set `EXPO_PUBLIC_PASSKEY_MODE=probe` in the local `.env` (see `.env.example`), then
@@ -19,19 +22,13 @@ run `npm start -- --port 8083`. Restart Metro after changing the mode. Alternati
 EXPO_PUBLIC_PASSKEY_MODE=probe npm start -- --port 8083
 ```
 
-```powershell
-# Windows PowerShell; Android development build only
-$env:EXPO_PUBLIC_PASSKEY_MODE = "probe"
-npm start -- --port 8083
-```
-
 Use `mock` or remove the variable and restart Metro to return to the existing demo.
 `native` remains reserved for P2 access and fails closed. Release builds cannot
 perform probe ceremonies. The EAS production build guard remains in place.
 
-Current placeholders display a blocked explanation and disable native actions.
-To perform the actual experiment, supply real public signing metadata in
-`src/config/passkey-identity.json`, publish/review the P0 association files, and
+The supplied Team ID passes local validation, which does not prove domain
+association or signing. To perform the actual experiment, verify the signed iOS
+bundle under that team, publish/review the Apple association file, and
 run `npm run passkeys:verify-domain`. Rebuild for native identity/entitlement changes.
 The probe never converts a real failure into mocked success.
 
@@ -86,15 +83,15 @@ serialized until the native request settles, including after UI abandonment.
 
 ## Acceptance matrix
 
-| Check                                                   | Status                                                                              |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| Pinned install, TypeScript and SDK dependency health    | Implemented; see verification record below                                          |
-| Offline derivation/signature and rendered flow tests    | Automated, using synthetic secrets and mocked native/storage boundaries             |
-| iOS simulator native build with Hermes/New Architecture | Passed; this is not physical-device passkey acceptance                              |
-| iOS/Android JavaScript exports                          | Passed, with transitive Noble export-resolution warnings                            |
-| Physical iPhone create/get/address/signature            | Blocked: no connected device, real signing identity or verified hosting             |
-| Android native build and physical-device checks         | Blocked locally: Android SDK/JDK and device unavailable; identities/hosting pending |
-| Real provider PRF, cancellation, sync and recovery      | Not run; must be verified on each target platform/provider                          |
+| Check                                                   | Status                                                                  |
+| ------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Pinned install, TypeScript and SDK dependency health    | Implemented; see verification record below                              |
+| Offline derivation/signature and rendered flow tests    | Automated, using synthetic secrets and mocked native/storage boundaries |
+| iOS simulator native build with Hermes/New Architecture | Passed; this is not physical-device passkey acceptance                  |
+| iOS/Android JavaScript exports                          | Passed, with transitive Noble export-resolution warnings                |
+| Physical iPhone create/get/address/signature            | Pending: signed physical iPhone and verified Apple association hosting  |
+| Android native build and physical-device checks         | Deferred by product decision; not an initial-release gate               |
+| Real provider PRF, cancellation, sync and recovery      | Not run; must be verified on each target platform/provider              |
 
 Metro warns that viem/ox's transitive Noble v1 package resolves `crypto.js` through
 file fallback. Exports completed and the iOS runtime reached the probe screen;
@@ -106,10 +103,10 @@ Tests exercise the actual Mera SDK/native adapter with the platform module mocke
 plus a known public BIP-39 vector, independent signature recovery, metadata projection,
 wrong-account rejection, cancellation/PRF failure, double taps, late results,
 backgrounding and persistence failures. They do not establish OS biometric or
-passkey-provider correctness. P1 stays unchecked until both physical platforms
-pass the real experiment.
+passkey-provider correctness. P1 stays unchecked until a physical iPhone
+passes the real experiment. Android is deferred.
 
-## Native verification — 2026-09-23
+## Historical native verification — before the iOS-only scope update
 
 - Passed: full `npm run check` — TypeScript, formatting, lint, Expo Doctor 21/21,
   and 138 tests in 18 suites with coverage thresholds satisfied.

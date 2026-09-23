@@ -5,7 +5,7 @@
   "sharedDevelopmentProductionRp": true,
   "iosBundleIdentifier": "com.example.gizu.dev",
   "androidPackage": "com.example.gizu.dev",
-  "appleTeamId": "REPLACE_WITH_APPLE_TEAM_ID",
+  "appleTeamId": "588X2UZY3L",
   "androidSha256Fingerprints": ["REPLACE_WITH_ANDROID_SHA256_FINGERPRINT"],
   "derivation": {
     "version": "mera-evm-v1",
@@ -17,5 +17,8 @@
     "path": "m/44'/60'/0'/0/0",
     "accountIndex": 0
   },
-  "minimumPasskeyOs": { "iosMajor": 18, "androidApi": 28 }
+  "minimumPasskeyOs": {
+    "iosMajor": 18,
+    "androidApi": 28
+  }
 }

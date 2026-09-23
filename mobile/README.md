@@ -1,5 +1,10 @@
 # Gizu mobile
 
+Initial-release update (2026-09-23): iOS only. Apple Team ID `588X2UZY3L` is
+configured; Android passkey prerequisites and device acceptance are deferred.
+Apple association hosting and signed physical-iPhone verification remain pending.
+Earlier cross-platform verification entries below are historical evidence.
+
 Expo SDK 57 development app for iOS and Android. The current slice includes
 welcome, simulated passkey-only access, a protected four-tab shell,
 mock buy/sell and deposit/withdraw flows, and disconnect. Demo sessions live only in memory. No real funds, authentication,

@@ -10,19 +10,15 @@ import { createMeraProbeService } from "./meraProbe";
 
 export function probeAvailability(): string | null {
   if (!__DEV__) return "The passkey probe is available only in a native development build.";
-  if (Platform.OS !== "ios" && Platform.OS !== "android")
-    return "Use an iOS or Android development build.";
+  if (Platform.OS !== "ios")
+    return "The initial passkey release supports iOS only. Android is deferred.";
   const version = Number.parseInt(String(Platform.Version), 10);
-  const minimum =
-    Platform.OS === "ios"
-      ? identity.minimumPasskeyOs.iosMajor
-      : identity.minimumPasskeyOs.androidApi;
-  if (!Number.isFinite(version) || version < minimum)
-    return "Native passkeys require iOS 18+ or Android API 28+, and a PRF-capable provider.";
+  if (!Number.isFinite(version) || version < identity.minimumPasskeyOs.iosMajor)
+    return "Native passkeys require iOS 18+ and a PRF-capable provider.";
   try {
     validateNativeIdentity();
   } catch {
-    return "Blocked: supply the Apple Team ID and Android signing fingerprints, then verify gizu.io associations.";
+    return "Blocked: configure a valid Apple Team ID and iOS bundle identifier.";
   }
   if (!Passkey.isSupported()) return "This device does not support native passkeys.";
   return null;

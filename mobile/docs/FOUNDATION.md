@@ -1,5 +1,10 @@
 # Mobile foundation
 
+Initial-release update (2026-09-23): iOS only. Apple Team ID `588X2UZY3L` is
+configured; Android passkey prerequisites and device acceptance are deferred.
+Apple association hosting and signed physical-iPhone verification remain pending.
+Earlier cross-platform verification entries below are historical evidence.
+
 ## Mera P1 native probe — 2026-09-23
 
 Installed pinned Mera/native-passkey and derivation dependencies plus Expo Crypto

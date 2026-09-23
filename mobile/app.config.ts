@@ -18,6 +18,7 @@ const config: ExpoConfig = {
   userInterfaceStyle: "dark",
   ios: {
     bundleIdentifier: identity.iosBundleIdentifier,
+    appleTeamId: identity.appleTeamId,
     supportsTablet: false,
     associatedDomains: [`webcredentials:${identity.rpId}`],
   },

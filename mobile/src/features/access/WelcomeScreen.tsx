@@ -5,7 +5,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Screen } from "@/components/templates/Screen";
 import { Typography } from "@/components/atoms/Typography";
 import { Button } from "@/components/atoms/Button";
-import { AmbientArtwork } from "@/components/molecules/AmbientArtwork";
+import { WaveBackdrop } from "@/components/molecules/WaveBackdrop";
 import type { RootStackParamList } from "@/navigation/types";
 export function WelcomeScreen({
   navigation,
@@ -16,7 +16,7 @@ export function WelcomeScreen({
         <GizuLogo />
         <Typography variant="row">Gizu</Typography>
       </View>
-      <AmbientArtwork />
+      <WaveBackdrop />
       <View className="mt-auto gap-5">
         <Typography variant="title">
           <Typography variant="title" style={{ color: colors.accent }}>

@@ -61,8 +61,7 @@ export default function Portfolio() {
   return (
     <section id="portfolio" className="shell scroll-mt-28 py-24 md:py-32">
       <Reveal>
-        <p className="eyebrow">Step three</p>
-        <h2 className="mt-5 max-w-[14ch] text-[clamp(32px,4.4vw,52px)] font-semibold leading-[1.02] tracking-[-0.025em]">
+        <h2 className="max-w-[14ch] text-[clamp(32px,4.4vw,52px)] font-semibold leading-[1.02] tracking-[-0.025em]">
           Your portfolio, encrypted
         </h2>
         <p className="mt-6 max-w-[48ch] text-[17px] leading-relaxed text-white/45">

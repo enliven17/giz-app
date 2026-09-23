@@ -11,7 +11,7 @@ const STEPS: TimelineStep[] = [
     title: 'Funding account',
     chain: 'Monad',
     body: 'Your balance lands on a funding account that only your passkey controls.',
-    visual: 'deposit',
+    visual: 'funding',
   },
   {
     title: 'Confidential transfer',

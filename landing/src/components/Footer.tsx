@@ -1,6 +1,5 @@
 import { ArrowUpRight } from 'lucide-react'
 import AsciiField from './AsciiField'
-import AsciiWhales from './AsciiWhales'
 import Reveal from './Reveal'
 
 const COLUMNS = [
@@ -23,22 +22,22 @@ const SOCIAL = ['X', 'Farcaster', 'GitHub', 'Mirror']
 export default function Footer() {
   return (
     <footer className="relative overflow-hidden border-t border-white/[0.07]">
-      {/* the call to action opens the footer, on the same background */}
-      <div className="relative py-32 md:py-40">
-        <div className="pointer-events-none absolute inset-0">
-          <AsciiField fontSize={16} speed={0.4} opacity={0.8} />
-          <div className="absolute inset-0 bg-gradient-to-b from-ink via-ink/60 to-ink" />
-        </div>
+      {/* one field behind the whole footer */}
+      <div className="pointer-events-none absolute inset-0">
+        <AsciiField fontSize={16} speed={0.4} opacity={0.8} />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/80 to-ink" />
+      </div>
 
+      <div className="relative py-24 md:py-28">
         <div className="shell relative text-center">
           <Reveal>
-            <h2 className="mx-auto max-w-[14ch] text-[clamp(38px,6vw,76px)] font-semibold leading-[0.98] tracking-[-0.03em]">
+            <h2 className="mx-auto max-w-[18ch] text-[clamp(28px,3.6vw,46px)] font-semibold leading-[1.05] tracking-[-0.03em]">
               Your DeFi investments.
               <span className="block text-neon">Now private.</span>
             </h2>
           </Reveal>
           <Reveal delay={0.12}>
-            <a href="#top" className="btn-neon mt-12">
+            <a href="#top" className="btn-neon mt-9">
               Explore the app
               <ArrowUpRight size={17} strokeWidth={2.4} />
             </a>
@@ -125,11 +124,6 @@ export default function Footer() {
             ))}
           </div>
         </div>
-      </div>
-
-      {/* a school of ascii whales drifts along the bottom */}
-      <div className="relative h-[180px] md:h-[220px]">
-        <AsciiWhales />
       </div>
     </footer>
   )

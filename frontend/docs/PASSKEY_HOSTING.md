@@ -37,3 +37,15 @@ deliberately when the accepted mobile identity changes.
 
 References: [Render headers](https://render.com/docs/static-site-headers),
 [Apple associated domains](https://developer.apple.com/documentation/xcode/supporting-associated-domains).
+
+## Android local development association
+
+`public/.well-known/assetlinks.json` contains the package and public certificate
+fingerprint for the local Android development build. Deploy it alongside the
+Apple file at `https://gizu.io/.well-known/assetlinks.json`, returning HTTP 200 and
+`application/json` without redirects. Add a matching Render header rule for this
+path if needed. Preserve both files and any future approved signing identities.
+
+Only the public fingerprint is published; the private keystore stays on the
+developer's Mac. This does not configure Play production signing or enable the
+currently iOS-only mobile probe. See `mobile/docs/ANDROID_SIGNING.md` in the repo.

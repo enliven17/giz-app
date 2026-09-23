@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.example.gizu.dev",
+      "sha256_cert_fingerprints": [
+        "49:91:65:19:5C:9C:4D:2E:C2:D1:65:C8:09:19:EB:52:42:1F:50:31:0E:8C:48:60:53:32:39:F1:B1:58:A8:C6"
+      ]
+    }
+  }
+]

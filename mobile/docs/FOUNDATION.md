@@ -329,3 +329,31 @@ animations; it does not establish intermediate animation frames.
   interrupted by simulator window/element-reference errors; appearance and motion
   on iOS/Android still require verification. Existing Lottie text-font resolution
   remains platform-dependent; rendering failure falls back to native text.
+
+### Coming-soon overlay correction — 2026-09-23
+
+- Simulator inspection found the scan-only Lottie asset replaced the heading text,
+  leaving an empty area between pulses. Native text now remains rendered at all
+  times, with Lottie positioned above it as a decorative overlay. Recentered the
+  fragments and reduced their thickness, opacity and movement.
+- Passed: TypeScript, focused lint and 23 access/navigation functional tests,
+  including text presence with reduced motion enabled and disabled. iPhone 17 Pro /
+  iOS 26.5 screenshots confirm the complete heading and stable spacing. Android
+  and frame-by-frame animation timing were not verified.
+
+### Stronger coming-soon glitch — 2026-09-23
+
+- Replaced subtle scan-only motion with three clipped native text bands, opposing
+  horizontal offsets and colored edges. Shape-only Lottie fragments follow the
+  same Reanimated progress clock: two 400 ms bursts per five-second loop, with
+  readable pauses. Native text remains rendered; reduced motion, enlarged text,
+  inactive navigation/app state and animation failure retain static behavior.
+- Reviewed [Lottie's supported features](https://github.com/airbnb/lottie/blob/master/supported-features.md)
+  and the [RGB-split reference](https://lottiefiles.com/marketplace/rgb-split-alphabet).
+  Use native glyphs plus shape transforms/opacity to avoid animation font dependencies;
+  no third-party animation assets or dependencies were added.
+- Passed: TypeScript, focused ESLint and all 23 access/navigation functional tests.
+  iPhone 17 Pro / iOS 26.5 screenshots show both the clean heading and the visible
+  chromatic text-tear burst after navigating to Swap. These spot checks do not
+  establish frame pacing. Android, device reduced-motion and full-suite checks
+  were not run for this visual adjustment.

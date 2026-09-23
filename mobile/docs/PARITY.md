@@ -180,7 +180,9 @@ focused on reusable approaches. They supplement the journey statuses above.
 - Swap's coming-soon placeholder uses a fixed, non-scrolling viewport centered
   above the measured tab bar. Its heading scales for screen width with explicit
   line height to prevent glyph clipping; other content screens remain scrollable.
-- Swap's “coming soon” heading now has a dedicated Lottie glitch: brief cyan/mint
-  text offsets and scan accents in a five-second loop. Swap and body copy stay still.
+- Swap's “coming soon” heading combines three horizontally displaced native text
+  bands with cyan/magenta Lottie fragments. A shared native-driven clock produces
+  two short tear bursts per five-second loop over permanently rendered text.
+  Swap and body copy stay still.
   The effect runs only on the focused tab while the app is active; reduced motion,
   enlarged text and animation failure use native text. The screen remains fixed.

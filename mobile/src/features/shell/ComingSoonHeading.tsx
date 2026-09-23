@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { AccessibilityInfo, AppState, View, useWindowDimensions } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
-import LottieView from "lottie-react-native";
-import { comingSoonGlitch } from "@/animations/comingSoonGlitch";
+import { ComingSoonGlitch } from "./ComingSoonGlitch";
 import { Typography } from "@/components/atoms/Typography";
 import colors from "@/theme/colors.json";
 
@@ -72,19 +71,10 @@ export function ComingSoonHeading() {
             coming soon
           </Typography>
           {animate && (
-            <LottieView
-              source={comingSoonGlitch}
-              autoPlay
-              loop
-              resizeMode="stretch"
-              onAnimationFailure={() => setFailed(true)}
-              style={{
-                position: "absolute",
-                left: 0,
-                top: 0,
-                width: animationWidth,
-                height: Math.ceil(size * 1.25),
-              }}
+            <ComingSoonGlitch
+              width={animationWidth}
+              size={size}
+              onFailure={() => setFailed(true)}
             />
           )}
         </View>

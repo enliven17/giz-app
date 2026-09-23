@@ -41,50 +41,36 @@ function scanLayer(
   };
 }
 
+// Short, stepped bursts; the rest of the five-second loop is deliberately still.
 const cyanOpacity = [
   { t: 0, s: [0], h: 1 },
-  { t: 8, s: [0], h: 1 },
-  { t: 20, s: [0], h: 1 },
-  { t: 21, s: [38], h: 1 },
-  { t: 26, s: [0], h: 1 },
-  { t: 61, s: [0], h: 1 },
-  { t: 62, s: [32], h: 1 },
-  { t: 67, s: [0], h: 1 },
+  { t: 21, s: [85], h: 1 },
+  { t: 25, s: [60], h: 1 },
+  { t: 29, s: [85], h: 1 },
+  { t: 33, s: [0], h: 1 },
+  { t: 78, s: [80], h: 1 },
+  { t: 82, s: [55], h: 1 },
+  { t: 86, s: [80], h: 1 },
+  { t: 90, s: [0], h: 1 },
   { t: 150, s: [0], h: 1 },
 ] as const;
-
-const magentaOpacity = [
-  { t: 0, s: [0], h: 1 },
-  { t: 22, s: [0], h: 1 },
-  { t: 23, s: [26], h: 1 },
-  { t: 28, s: [0], h: 1 },
-  { t: 63, s: [0], h: 1 },
-  { t: 64, s: [24], h: 1 },
-  { t: 69, s: [0], h: 1 },
-  { t: 150, s: [0], h: 1 },
-] as const;
-
+const magentaOpacity = cyanOpacity;
 const cyanPositions = [
   { t: 0, s: [240, 56, 0], h: 1 },
-  { t: 21, s: [236, 56, 0], h: 1 },
-  { t: 24, s: [244, 56, 0], h: 1 },
-  { t: 26, s: [240, 56, 0], h: 1 },
-  { t: 62, s: [243, 56, 0], h: 1 },
-  { t: 65, s: [237, 56, 0], h: 1 },
-  { t: 67, s: [240, 56, 0], h: 1 },
+  { t: 21, s: [252, 56, 0], h: 1 },
+  { t: 25, s: [231, 56, 0], h: 1 },
+  { t: 29, s: [245, 56, 0], h: 1 },
+  { t: 33, s: [240, 56, 0], h: 1 },
+  { t: 78, s: [252, 56, 0], h: 1 },
+  { t: 82, s: [231, 56, 0], h: 1 },
+  { t: 86, s: [245, 56, 0], h: 1 },
+  { t: 90, s: [240, 56, 0], h: 1 },
   { t: 150, s: [240, 56, 0], h: 1 },
 ] as const;
-
-const magentaPositions = [
-  { t: 0, s: [240, 56, 0], h: 1 },
-  { t: 23, s: [244, 56, 0], h: 1 },
-  { t: 26, s: [238, 56, 0], h: 1 },
-  { t: 28, s: [240, 56, 0], h: 1 },
-  { t: 64, s: [236, 56, 0], h: 1 },
-  { t: 67, s: [243, 56, 0], h: 1 },
-  { t: 69, s: [240, 56, 0], h: 1 },
-  { t: 150, s: [240, 56, 0], h: 1 },
-] as const;
+const magentaPositions = cyanPositions.map((frame) => ({
+  ...frame,
+  s: [480 - frame.s[0], 56, 0] as const,
+}));
 
 export const comingSoonGlitch: AnimationObject = {
   v: "5.12.2",
@@ -92,17 +78,17 @@ export const comingSoonGlitch: AnimationObject = {
   ip: 0,
   op: 150,
   w: 480,
-  h: 112,
-  nm: "Gizu clean type glitch overlay",
+  h: 80,
+  nm: "Coming soon chromatic tear accents",
   ddd: 0,
   assets: [],
   layers: [
     scanLayer("Cyan fragments", 1, [0.1, 0.9, 0.85, 1], cyanOpacity, cyanPositions, [
-      [240, 38, 260, 1.5],
-      [175, 56, 88, 2],
-      [320, 74, 60, 1.5],
+      [240, 38, 310, 3],
+      [175, 56, 104, 4],
+      [320, 74, 80, 3],
     ]),
-    scanLayer("Mint fragments", 2, [0.6, 1, 0.75, 1], magentaOpacity, magentaPositions, [
+    scanLayer("Magenta fragments", 2, [0.9, 0.46, 0.79, 1], magentaOpacity, magentaPositions, [
       [245, 46, 180, 1.5],
       [150, 66, 58, 2],
     ]),

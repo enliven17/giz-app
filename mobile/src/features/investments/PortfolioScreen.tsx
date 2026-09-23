@@ -1,3 +1,4 @@
+import { useNotifications } from "@/features/notifications/NotificationProvider";
 import { useTransactions } from "@/features/transactions/TransactionProvider";
 import { OperationLink } from "@/features/transactions/OperationLink";
 import { decimal } from "@/domain/transactions";
@@ -21,6 +22,7 @@ import { profileFixture as profile } from "@/services/fixtures/profile";
 import { useInvestments } from "./InvestmentProvider";
 import { DataStatus } from "./DataStatus";
 export function PortfolioScreen({ navigation }: BottomTabScreenProps<MainTabParamList, "Home">) {
+  const { unread } = useNotifications();
   const { data } = useInvestments();
   const { account, error: balanceError } = useTransactions();
   const holdings = account && account.revision > 0 ? account.holdings : (data?.holdings ?? []);
@@ -35,7 +37,11 @@ export function PortfolioScreen({ navigation }: BottomTabScreenProps<MainTabPara
           <Typography variant="caption">{profile.member}</Typography>
           <Typography variant="row">{profile.greeting}</Typography>
         </View>
-        <IconButton icon={Bell} label="Notifications — unavailable" disabled onPress={() => {}} />
+        <IconButton
+          icon={Bell}
+          label={`Notifications, ${unread} unread`}
+          onPress={() => root.navigate("Notifications")}
+        />
       </View>
       <View className="mt-4 gap-2">
         <Typography variant="heading">Your portfolio</Typography>
@@ -82,7 +88,6 @@ export function PortfolioScreen({ navigation }: BottomTabScreenProps<MainTabPara
               onPress={() => root.navigate("Activity")}
             />
           </View>
-          <Typography variant="caption">Notifications are not available yet.</Typography>
           <View className="mt-3 flex-row flex-wrap items-center justify-between gap-2">
             <Typography variant="heading">Confidential vaults</Typography>
             <Button

@@ -1,3 +1,6 @@
+import { AccountProvider, type AccountDependencies } from "@/features/account/AccountProvider";
+import { NotificationProvider } from "@/features/notifications/NotificationProvider";
+import type { NotificationService } from "@/services/notifications";
 import { TransactionProvider } from "@/features/transactions/TransactionProvider";
 import type { TransactionService } from "@/services/transactions";
 import { EarlyAccessProvider } from "@/features/access/EarlyAccessProvider";
@@ -27,21 +30,29 @@ const theme = {
 function AppNavigation({
   investmentService,
   transactionService,
+  accountDependencies,
+  notificationService,
 }: {
   investmentService?: InvestmentService;
   transactionService?: TransactionService;
+  accountDependencies?: AccountDependencies;
+  notificationService?: NotificationService;
 }) {
   const { session } = useSession();
   return (
     <NavigationContainer
-      key={session ? "demo" : "guest"}
+      key={session ? `demo:${session.accountId ?? "default"}` : "guest"}
       theme={theme}
       linking={createLinking(!!session)}
     >
       {session ? (
         <InvestmentProvider service={investmentService}>
           <TransactionProvider service={transactionService}>
-            <RootNavigator />
+            <AccountProvider {...accountDependencies}>
+              <NotificationProvider service={notificationService}>
+                <RootNavigator />
+              </NotificationProvider>
+            </AccountProvider>
           </TransactionProvider>
         </InvestmentProvider>
       ) : (
@@ -55,11 +66,15 @@ export function AppRoot({
   earlyAccessService,
   investmentService,
   transactionService,
+  accountDependencies,
+  notificationService,
 }: {
   accessService?: AccessService;
   earlyAccessService?: EarlyAccessService;
   investmentService?: InvestmentService;
   transactionService?: TransactionService;
+  accountDependencies?: AccountDependencies;
+  notificationService?: NotificationService;
 }) {
   return (
     <SafeAreaProvider>
@@ -68,6 +83,8 @@ export function AppRoot({
           <EarlyAccessProvider service={earlyAccessService}>
             <StatusBar style="light" />
             <AppNavigation
+              accountDependencies={accountDependencies}
+              notificationService={notificationService}
               investmentService={investmentService}
               transactionService={transactionService}
             />

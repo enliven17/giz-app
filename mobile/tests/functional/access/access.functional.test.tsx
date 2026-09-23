@@ -76,16 +76,21 @@ test("prevents duplicate requests and ignores a late success after cancellation"
   expect(screen.getByRole("button", { name: "Continue with passkey" })).toBeVisible();
   expect(screen.queryByRole("header", { name: "Your portfolio" })).toBeNull();
 });
-test.each(["home", "vaults", "exchange", "settings", "wallet-picker", "garbage?token=ignored"])(
-  "signed-out deep link %s never exposes tabs",
-  async (path) => {
-    jest.mocked(Linking.getInitialURL).mockResolvedValue(`gizu-dev://${path}`);
-    renderApp();
-    expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
-    expect(screen.queryByRole("header", { name: "Your portfolio" })).toBeNull();
-    expect(screen.queryByLabelText("Settings tab")).toBeNull();
-  },
-);
+test.each([
+  "home",
+  "vaults",
+  "exchange",
+  "settings",
+  "wallet-picker",
+  "notifications",
+  "garbage?token=ignored",
+])("signed-out deep link %s never exposes tabs", async (path) => {
+  jest.mocked(Linking.getInitialURL).mockResolvedValue(`gizu-dev://${path}`);
+  renderApp();
+  expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
+  expect(screen.queryByRole("header", { name: "Your portfolio" })).toBeNull();
+  expect(screen.queryByLabelText("Settings tab")).toBeNull();
+});
 
 test("an access deep link still has a safe way back to welcome", async () => {
   jest.mocked(Linking.getInitialURL).mockResolvedValue("gizu-dev://access");
@@ -153,13 +158,13 @@ test("UI preview demonstrates action, filter and feedback states without changin
   expect(await screen.findByRole("button", { name: "Disconnect" })).toBeVisible();
 });
 
-test("new account actions remain unavailable and the selected capsule tab is accessible", async () => {
+test("account actions open secondary pages and the selected capsule tab is accessible", async () => {
   renderApp();
   await signIn();
   expect(screen.getByRole("button", { name: "Home tab", selected: true })).toBeVisible();
   expect(screen.getByRole("button", { name: "Deposit" })).toBeEnabled();
   expect(screen.getByRole("button", { name: "Withdraw" })).toBeEnabled();
-  expect(screen.getByRole("button", { name: "Notifications — unavailable" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: /Notifications, \d+ unread/ })).toBeEnabled();
   expect(screen.queryByText(/Demo mode|No real funds/)).toBeNull();
   await userEvent.press(screen.getByLabelText("Settings tab"));
   expect(screen.getByRole("button", { name: "Settings tab", selected: true })).toBeVisible();
@@ -173,8 +178,10 @@ test("new account actions remain unavailable and the selected capsule tab is acc
     "Terms and disclosures",
   ]) {
     const row = screen.getByRole("button", { name });
-    expect(row).toBeDisabled();
+    expect(row).toBeEnabled();
     await userEvent.press(row);
+    expect(await screen.findByRole("header", { name })).toBeVisible();
+    await userEvent.press(screen.getByRole("button", { name: "Back" }));
     expect(screen.getByRole("header", { name: "Account" })).toBeVisible();
   }
   await userEvent.press(screen.getByRole("button", { name: "Disconnect" }));

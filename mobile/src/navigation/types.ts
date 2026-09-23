@@ -1,3 +1,4 @@
+import type { AccountPage } from "@/features/account/pages";
 import type { OperationKind } from "@/domain/transactions";
 import type { NavigatorScreenParams } from "@react-navigation/native";
 export type MainTabParamList = {
@@ -14,5 +15,7 @@ export type RootStackParamList = {
   Preview: undefined;
   VaultDetail: { id: string };
   Activity: undefined;
+  Notifications: undefined;
+  AccountPage: { page: AccountPage };
   Transaction: { kind?: OperationKind; vaultId?: string; resume?: boolean };
 };

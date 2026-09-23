@@ -1,4 +1,11 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import mockSafeAreaContext from "react-native-safe-area-context/jest/mock";
+// Native boundaries only; preference serialization and controllers remain real.
+jest.mock("@react-native-async-storage/async-storage", () =>
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require("@react-native-async-storage/async-storage/jest/async-storage-mock"),
+);
+jest.mock("expo-clipboard", () => ({ setStringAsync: jest.fn().mockResolvedValue(true) }));
 jest.mock("react-native-safe-area-context", () => mockSafeAreaContext);
 // Native animation runtime is unavailable in Jest.
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -17,4 +24,7 @@ jest.mock("@shopify/react-native-skia", () => ({
   useClock: () => ({ value: 0 }),
   vec: (x: number, y: number) => ({ x, y }),
 }));
-beforeEach(() => jest.clearAllMocks());
+beforeEach(async () => {
+  jest.clearAllMocks();
+  await AsyncStorage.clear();
+});

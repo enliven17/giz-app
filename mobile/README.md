@@ -119,7 +119,7 @@ They do not simulate a successful operation.
 
 Balance and vault price lead their screens; demo disclosure remains visible while
 its timestamp expands on tap. Refresh uses a quiet action. Search/risk filters sit
-near the top and Clear filters appears only when needed. Header Back preserves the
+near the top and Clear filters appears only when needed. Content Back preserves the
 previous screen and falls back to the relevant tab for direct entry. Settings →
 UI preview demonstrates shared actions, metrics, filters and feedback states.
 
@@ -127,3 +127,38 @@ The iPhone 17 Pro / iOS 26.5 development app was inspected at standard and enlar
 text sizes, including native sharing and software keyboard search. Smaller native
 displays, VoiceOver, reduced motion, gestures and Android QA remain pending; see
 the foundation record for the exact scope.
+
+All top navigator bars are hidden, including access and modal screens. Each screen
+owns its content title; detail/access screens provide a scrolling Back action and
+the wallet picker retains Cancel. Bottom tabs remain available on main screens.
+The shared Screen template applies safe-area insets and keyboard spacing directly.
+
+## Frontend design parity (M3.2)
+
+The interface now uses layered rounded surfaces, compact vault tiles with sparklines,
+change badges, grouped holdings/terms/account rows, paired access cards and a floating
+bottom-tab capsule. All top navigation bars remain hidden. The capsule floats over a
+transparent overlay, with its measured height reserved in scroll-content bottom padding
+so the last items can scroll clear of it. Narrow/large-text vault layouts use one column.
+
+User-facing demo banners and prefixes are removed. The app still uses isolated mock
+services and memory-only sessions; this visual update adds no live wallet, signing,
+market feed or backend. Share payloads retain fixture provenance. Trading/transfers
+and notifications/account actions remain unavailable until M4/M5. Timestamp details,
+error/retry and stale/offline feedback remain available.
+
+System fonts are used because no mobile redistribution licence was found for the
+frontend Helvetica assets. Decorative artwork is static and supports reduced motion.
+See docs/FOUNDATION.md for the exact native and automated validation record.
+
+## Latest frontend reconciliation (M3.3)
+
+Welcome now uses the Gizu logo and “DeFi in Stealth Mode” headline. Portfolio and
+vault discovery use “Confidential vaults”; Exchange is presented as “Swap coming
+soon” while retaining its existing route. Both passkey and external-wallet access
+remain available.
+
+Request access opens a guest form with email, investment range and platform choices.
+Its isolated mock service sends and stores nothing and does not grant access or
+create a real waitlist entry. Functional tests cover validation, submission, retry,
+duplicate prevention and dismissal. Sell flows remain M4 and notifications M5.

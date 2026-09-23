@@ -1,5 +1,5 @@
 import { act, screen, userEvent } from "@testing-library/react-native";
-import { Linking } from "react-native";
+import { AccessibilityInfo, Linking } from "react-native";
 import { AccessRejectedError, type DemoSession, walletProviders } from "@/services/access";
 import { deferred, renderApp } from "../../support/renderApp";
 
@@ -10,24 +10,24 @@ async function openAccess() {
 }
 async function signIn() {
   await openAccess();
-  await userEvent.press(screen.getByRole("button", { name: "Try demo passkey" }));
+  await userEvent.press(screen.getByRole("button", { name: "Continue with passkey" }));
   expect(await screen.findByRole("header", { name: "Your portfolio" })).toBeVisible();
 }
 test("welcome, access, all tabs, UI preview and disconnect form a complete demo journey", async () => {
   renderApp();
   await signIn();
-  for (const name of ["Vaults", "Exchange", "Settings"]) {
+  for (const name of ["Vaults", "Swap", "Settings"]) {
     await userEvent.press(screen.getByLabelText(`${name} tab`));
   }
-  expect(screen.getByText("Access method: Demo passkey")).toBeVisible();
+  expect(screen.getByText("Access method: Passkey")).toBeVisible();
   await userEvent.press(screen.getByRole("button", { name: "Open UI preview" }));
   expect(await screen.findByRole("header", { name: "UI preview" })).toBeVisible();
   expect(screen.getByRole("button", { name: "Loading action" })).toBeDisabled();
   await userEvent.press(screen.getByRole("button", { name: "Back" }));
-  await userEvent.press(await screen.findByRole("button", { name: "Disconnect demo" }));
+  await userEvent.press(await screen.findByRole("button", { name: "Disconnect" }));
   expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
   expect(screen.queryByLabelText("Settings tab")).toBeNull();
-  await userEvent.press(screen.getByRole("button", { name: "I have access" }));
+  await userEvent.press(screen.getByRole("button", { name: "Get started" }));
   await userEvent.press(screen.getByRole("button", { name: "Back" }));
   expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
 });
@@ -35,7 +35,7 @@ test.each(walletProviders)("selects %s as a simulated provider", async (method) 
   const request = jest.fn().mockResolvedValue({ kind: "demo", method });
   renderApp({ request });
   await openAccess();
-  await userEvent.press(screen.getByRole("button", { name: "Choose demo wallet" }));
+  await userEvent.press(screen.getByRole("button", { name: "Choose wallet" }));
   await userEvent.press(await screen.findByRole("button", { name: method }));
   expect(await screen.findByRole("header", { name: "Your portfolio" })).toBeVisible();
   expect(request).toHaveBeenCalledWith(method);
@@ -49,13 +49,13 @@ test.each([new Error("offline"), new AccessRejectedError("rejected")])(
       .mockResolvedValue({ kind: "demo", method: "Demo passkey" });
     renderApp({ request });
     await openAccess();
-    await userEvent.press(screen.getByRole("button", { name: "Try demo passkey" }));
+    await userEvent.press(screen.getByRole("button", { name: "Continue with passkey" }));
     expect(await screen.findByRole("alert")).toHaveTextContent(
       cause instanceof AccessRejectedError
-        ? "Demo access was rejected. You can try again."
-        : "Demo access failed. Please try again.",
+        ? "Access was rejected. You can try again."
+        : "Access failed. Please try again.",
     );
-    await userEvent.press(screen.getByRole("button", { name: "Try demo passkey" }));
+    await userEvent.press(screen.getByRole("button", { name: "Continue with passkey" }));
     expect(await screen.findByRole("header", { name: "Your portfolio" })).toBeVisible();
   },
 );
@@ -64,26 +64,26 @@ test("prevents duplicate requests and ignores a late success after cancellation"
   const request = jest.fn().mockReturnValue(pending.promise);
   renderApp({ request });
   await openAccess();
-  await userEvent.press(screen.getByRole("button", { name: "Try demo passkey" }));
-  const loading = screen.getByRole("button", { name: "Opening demo access" });
+  await userEvent.press(screen.getByRole("button", { name: "Continue with passkey" }));
+  const loading = screen.getByRole("button", { name: "Opening access" });
   expect(loading).toBeDisabled();
   await userEvent.press(loading);
   expect(request).toHaveBeenCalledTimes(1);
-  await userEvent.press(screen.getByRole("button", { name: "Cancel demo access" }));
+  await userEvent.press(screen.getByRole("button", { name: "Cancel access" }));
   await act(async () => pending.resolve({ kind: "demo", method: "Demo passkey" }));
-  expect(screen.getByRole("button", { name: "Try demo passkey" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "Continue with passkey" })).toBeVisible();
   expect(screen.queryByRole("header", { name: "Your portfolio" })).toBeNull();
 });
 test("dismissing a pending wallet selection cannot later sign in", async () => {
   const pending = deferred<DemoSession>();
   renderApp({ request: () => pending.promise });
   await openAccess();
-  await userEvent.press(screen.getByRole("button", { name: "Choose demo wallet" }));
+  await userEvent.press(screen.getByRole("button", { name: "Choose wallet" }));
   await userEvent.press(await screen.findByRole("button", { name: "MetaMask" }));
-  expect(screen.getByText("Opening demo access…")).toBeVisible();
+  expect(screen.getByText("Opening access…")).toBeVisible();
   await userEvent.press(screen.getByRole("button", { name: "Cancel wallet selection" }));
   await act(async () => pending.resolve({ kind: "demo", method: "MetaMask" }));
-  expect(await screen.findByRole("button", { name: "Try demo passkey" })).toBeVisible();
+  expect(await screen.findByRole("button", { name: "Continue with passkey" })).toBeVisible();
 });
 test.each(["home", "vaults", "exchange", "settings", "garbage?token=ignored"])(
   "signed-out deep link %s never exposes tabs",
@@ -107,7 +107,7 @@ test("leaving access invalidates pending work even when the service rejects late
   const pending = deferred<DemoSession>();
   renderApp({ request: () => pending.promise });
   await openAccess();
-  await userEvent.press(screen.getByRole("button", { name: "Try demo passkey" }));
+  await userEvent.press(screen.getByRole("button", { name: "Continue with passkey" }));
   await userEvent.press(screen.getByRole("button", { name: "Back" }));
   await act(async () => pending.reject(new Error("late failure")));
   expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
@@ -121,7 +121,7 @@ test("wallet rejection can be retried or dismissed", async () => {
     .mockResolvedValue({ kind: "demo", method: "Rainbow" });
   renderApp({ request });
   await openAccess();
-  await userEvent.press(screen.getByRole("button", { name: "Choose demo wallet" }));
+  await userEvent.press(screen.getByRole("button", { name: "Choose wallet" }));
   await userEvent.press(await screen.findByRole("button", { name: "Rainbow" }));
   expect(await screen.findByRole("alert")).toBeVisible();
   await userEvent.press(screen.getByRole("button", { name: "Rainbow" }));
@@ -141,11 +141,11 @@ test("runtime links are gated before access and work only inside a demo session"
   expect(screen.queryByLabelText("Settings tab")).toBeNull();
   await signIn();
   await send("gizu-dev://settings");
-  expect(await screen.findByRole("header", { name: "Demo settings" })).toBeVisible();
-  await userEvent.press(screen.getByRole("button", { name: "Disconnect demo" }));
+  expect(await screen.findByRole("header", { name: "Account" })).toBeVisible();
+  await userEvent.press(screen.getByRole("button", { name: "Disconnect" }));
   await screen.findByRole("button", { name: "Get started" });
   await send("gizu-dev://exchange");
-  expect(screen.queryByLabelText("Exchange tab")).toBeNull();
+  expect(screen.queryByLabelText("Swap tab")).toBeNull();
 });
 
 test("UI preview demonstrates action, filter and feedback states without changing the account", async () => {
@@ -153,6 +153,8 @@ test("UI preview demonstrates action, filter and feedback states without changin
   await signIn();
   await userEvent.press(screen.getByLabelText("Settings tab"));
   await userEvent.press(screen.getByRole("button", { name: "Open UI preview" }));
+  expect(await screen.findByLabelText("Animated Gizu glitch wordmark")).toBeVisible();
+  expect(screen.getByLabelText("Animated smooth Gizu glitch wordmark")).toBeVisible();
   for (const name of [
     "Primary example",
     "Secondary example",
@@ -171,5 +173,59 @@ test("UI preview demonstrates action, filter and feedback states without changin
   await userEvent.press(screen.getByRole("button", { name: "View Helix Alpha" }));
   expect(screen.getByText("Vault card previewed.")).toBeVisible();
   await userEvent.press(screen.getByRole("button", { name: "Back" }));
-  expect(await screen.findByRole("button", { name: "Disconnect demo" })).toBeVisible();
+  expect(await screen.findByRole("button", { name: "Disconnect" })).toBeVisible();
 });
+
+test("new account actions remain unavailable and the selected capsule tab is accessible", async () => {
+  renderApp();
+  await signIn();
+  expect(screen.getByRole("button", { name: "Home tab", selected: true })).toBeVisible();
+  expect(screen.getByRole("button", { name: "Deposit" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Withdraw" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Notifications — unavailable" })).toBeDisabled();
+  expect(screen.queryByText(/Demo mode|No real funds/)).toBeNull();
+  await userEvent.press(screen.getByLabelText("Settings tab"));
+  expect(screen.getByRole("button", { name: "Settings tab", selected: true })).toBeVisible();
+  for (const name of [
+    "Passkey wallet",
+    "Transaction signing",
+    "Push alerts",
+    "Currency",
+    "Statements",
+    "Contact desk",
+    "Terms and disclosures",
+  ]) {
+    const row = screen.getByRole("button", { name });
+    expect(row).toBeDisabled();
+    await userEvent.press(row);
+    expect(screen.getByRole("header", { name: "Account" })).toBeVisible();
+  }
+  await userEvent.press(screen.getByRole("button", { name: "Disconnect" }));
+  expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
+});
+
+test("updated branding, confidential vaults and Swap availability retain navigation", async () => {
+  renderApp();
+  expect(await screen.findByRole("header", { name: /DeFi.*Stealth.*Mode/s })).toBeVisible();
+  await signIn();
+  expect(screen.getByRole("header", { name: "Confidential vaults" })).toBeVisible();
+  await userEvent.press(screen.getByLabelText("Swap tab"));
+  expect(await screen.findByRole("header", { name: /Swap.*coming soon/s })).toBeVisible();
+  expect(screen.getByText(/In-app swaps are not available yet/)).toBeVisible();
+  await userEvent.press(screen.getByLabelText("Vaults tab"));
+  expect(await screen.findByRole("header", { name: "Confidential vaults" })).toBeVisible();
+});
+
+test.each([true, false])(
+  "Swap text remains present with reduced motion %s",
+  async (reduceMotion) => {
+    jest.spyOn(AccessibilityInfo, "isReduceMotionEnabled").mockResolvedValue(reduceMotion);
+    renderApp();
+    await signIn();
+    await userEvent.press(screen.getByLabelText("Swap tab"));
+    expect(await screen.findByRole("header", { name: "Swap coming soon" })).toBeVisible();
+    expect(screen.getByText("coming soon", { includeHiddenElements: true })).toBeOnTheScreen();
+    await userEvent.press(screen.getByLabelText("Home tab"));
+    expect(await screen.findByRole("header", { name: "Your portfolio" })).toBeVisible();
+  },
+);

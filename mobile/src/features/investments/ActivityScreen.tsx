@@ -1,3 +1,4 @@
+import { BackAction } from "@/navigation/BackAction";
 import { Screen } from "@/components/templates/Screen";
 import { Typography } from "@/components/atoms/Typography";
 import { Metric } from "@/components/molecules/Metric";
@@ -7,17 +8,14 @@ export function ActivityScreen() {
   const { data } = useInvestments();
   return (
     <Screen>
-      <Typography variant="heading">Demo activity</Typography>
+      <BackAction fallback="Home" />
+      <Typography variant="heading">Activity</Typography>
       <DataStatus />
       {data && (
         <>
           {data.activity.length === 0 && <Typography>No activity yet.</Typography>}
           {data.activity.map((item) => (
-            <Metric
-              key={item.id}
-              label={`${item.month} · ${item.label}`}
-              value={`${item.value} (simulated history)`}
-            />
+            <Metric key={item.id} label={`${item.month} · ${item.label}`} value={`${item.value}`} />
           ))}
         </>
       )}

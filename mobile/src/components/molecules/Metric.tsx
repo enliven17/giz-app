@@ -10,7 +10,7 @@ export function Metric({
   emphasis?: boolean;
 }) {
   return (
-    <View className={emphasis ? "gap-2" : "gap-1 rounded-xl border border-border bg-surface p-4"}>
+    <View className={emphasis ? "gap-2" : "gap-1 rounded-3xl border border-border bg-surface p-4"}>
       <Typography variant="caption">{label}</Typography>
       <Typography variant={emphasis ? "balance" : "value"}>{value}</Typography>
     </View>

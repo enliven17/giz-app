@@ -79,17 +79,17 @@ Sources checked on 2026-09-22:
 
 ## Identity and unresolved decisions
 
-| Item                                                            | Current record                                                         | Owner / resolution point                          |
-| --------------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------- |
+| Item                                                            | Current record                                                        | Owner / resolution point                          |
+| --------------------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------- |
 | Display name                                                    | Gizu Dev approved for local development                               | Product owner, before app configuration           |
 | iOS bundle ID / Android application ID                          | com.example.gizu.dev approved for development; release IDs unresolved | Product owner, before M1 identity configuration   |
 | Deep-link scheme / associated domains                           | gizu-dev approved for development; associated domains unresolved      | Product owner + wallet/backend integration owner  |
-| Development placeholder IDs                                     | User approved Gizu Dev / com.example.gizu.dev / gizu-dev            | Approved during M1                                |
-| Portrait/tablet policy and font rights                          | Response requested; provisional defaults above                         | Product owner, before layout/assets are finalized |
-| Expo/EAS project ownership and signing credentials              | Unresolved; no external project created                                | Release owner, before hosted/signed builds        |
-| Wallet/custody/passkeys/recovery and chain/contracts            | Unresolved                                                             | Product + backend/security owners, before M6      |
-| Prices, fees, precision, limits, lockups and finality           | Fixture values only, not authoritative contracts                       | Product + backend owners, before real operations  |
-| Support, statements, push delivery, eligibility and disclosures | Unresolved service/product contracts                                   | Product owner, before related integration/release |
+| Development placeholder IDs                                     | User approved Gizu Dev / com.example.gizu.dev / gizu-dev              | Approved during M1                                |
+| Portrait/tablet policy and font rights                          | Response requested; provisional defaults above                        | Product owner, before layout/assets are finalized |
+| Expo/EAS project ownership and signing credentials              | Unresolved; no external project created                               | Release owner, before hosted/signed builds        |
+| Wallet/custody/passkeys/recovery and chain/contracts            | Unresolved                                                            | Product + backend/security owners, before M6      |
+| Prices, fees, precision, limits, lockups and finality           | Fixture values only, not authoritative contracts                      | Product + backend owners, before real operations  |
+| Support, statements, push delivery, eligibility and disclosures | Unresolved service/product contracts                                  | Product owner, before related integration/release |
 
 M0 records these unresolved decisions explicitly; it does not manufacture identity
 or security decisions. They do not block independent UI work, but any dependent
@@ -219,3 +219,141 @@ adds action hierarchy and shared header navigation, and expands the UI preview.
 
 Tests mock external boundaries; text-size regression coverage verifies state
 retention, not native text measurement or glyph layout.
+
+## Headerless navigation — 2026-09-22
+
+All top stack/tab headers are hidden. Back actions now live in scrolling screen
+content with the previous direct-entry fallback destinations. Wallet cancellation
+and bottom tabs remain available. Screen owns safe-area insets and uses the top
+inset for its keyboard offset; it no longer depends on navigator header height.
+This supersedes the earlier shared-header design and capped header-title styling.
+
+- Passed: full npm check, all 41 tests, all 21 Expo Doctor checks, formatting,
+  TypeScript and lint. The initial sandboxed Doctor metadata failure was resolved
+  by the network-enabled rerun.
+- Passed native: iPhone 17 Pro / iOS 26.5 Settings and UI preview have no title bar,
+  content clears the status bar, and the content Back action returns to Settings.
+- Not run for this change: native keyboard, large-text, swipe/modal gesture,
+  Android-device and smaller-display checks. Earlier verification is historical,
+  not proof of these behaviors after the header change.
+
+## M3.2 frontend design parity — 2026-09-22
+
+Implementation adds shared Surface, Badge, IconButton, GroupedRow, Balance, AccessCard
+and Sparkline components, responsive vault tiles, portfolio ordering, grouped details,
+account rows, a static entry background and a floating tab capsule. It removes the
+remaining brand mark and in-app demo disclosures. Mock adapters, memory-only sessions
+and share-payload provenance remain intact. No packages or font assets were added.
+
+- Passed: full npm check, all 21 Expo Doctor checks and 42 tests, including 34
+  functional tests. Coverage: 95.88% statements, 91.01% branches, 90.62% functions,
+  98.4% lines. Thresholds are unchanged.
+- Passed: all 34 functional tests with the Android preset; iOS and Android Hermes
+  exports. Exports emitted only terminal color-environment warnings.
+- Passed native: iPhone 17 Pro / iOS 26.5 entry/access/Home/Vaults/detail rendering,
+  detail Back, safe-area clearance and capsule placement, native search input and
+  Search-key keyboard dismissal. Four preferred-text-size increments changed the
+  vault grid to a readable single column; the original size was restored.
+- Font embedding blocked: repository inspection found Helvetica files but no mobile
+  redistribution licence. System typography is the selected fallback.
+- Gesture inspection blocked: Computer returned `noWindowsAvailable` during scroll
+  attempts. Native full-screen scrolling, swipe-back and modal gesture QA remains open.
+- Not run: matched-size frontend/native screenshot comparison, smaller native device,
+  VoiceOver, Android device QA, Windows/hosted CI, and physical-device testing. Static
+  artwork has no motion, but system reduced-motion settings were not exercised.
+- Initial sandboxed Expo metadata checks could not reach the network; the permitted
+  network-enabled check passed. No failed automated checks remain.
+
+The simulator still uses the previously installed development binary (displaying
+Nexum Dev in its developer menu); it loaded the current Gizu JavaScript successfully.
+A fresh native build is needed to reflect the renamed development identity in that menu.
+
+## Tab selection motion — 2026-09-23
+
+The capsule uses a measured sliding pill plus a 1.14-scale icon pop on newly
+selected tabs. Navigation state drives both effects. Initial placement/geometry
+changes snap; active-tab taps do not replay the pop. Reanimated animations respect
+system Reduce Motion and navigation is never delayed for animation completion.
+
+- Passed: full check, all 21 Expo Doctor checks and 43 tests. The new navigation
+  test covers prevented presses, repeated selection, long presses and relayout.
+- Passed: 34 functional tests with the Android preset.
+- Passed native smoke: current bundle reloaded on iPhone 17 Pro / iOS 26.5, tab
+  switching works and the indicator settles at the selected Settings destination.
+- Not verified: animation frame timing/smoothness, rapid native tap interruption,
+  native Reduce Motion setting, and Android device rendering. Mocked Jest motion
+  and settled screenshots do not establish those results.
+
+## Tab background crossfade — 2026-09-23
+
+Tab changes retain the sliding pill and icon pop, with one stationary outgoing
+background fading out in 150 ms and the moving pill fading in over 180 ms. Rapid
+changes replace the outgoing layer rather than accumulating highlights. Initial
+placement and geometry changes snap without fading. Both backgrounds ignore
+pointer input and are hidden from accessibility; all motion uses system Reduce Motion.
+
+Native crossfade timing, smoothness and reduced-motion behavior have not been
+visually verified for this change. Jest validates navigation behavior with mocked
+animations; it does not establish intermediate animation frames.
+
+## M3.3 frontend reconciliation — 2026-09-23
+
+- Adopted logo, welcome headline, confidential-vault headings, Swap placeholder,
+  roomier vault sparklines and account-row alignment from frontend `64d7cf2`.
+- Retained both passkey and external-wallet access by user decision. Request access
+  is a separate guest modal using an injected development mock with no persistence,
+  network, invitation email or real waitlist registration.
+- Passed: TypeScript, ESLint, formatting, 49 tests across 7 suites with coverage.
+  After the final responsive form-layout adjustment, TypeScript, ESLint and all
+  5 request-access functional tests passed again.
+- Native: inspected welcome/logo, Swap placeholder and two-column form on iPhone
+  17 Pro / iOS 26.5. Entered a synthetic email, selected investment range/platform,
+  and completed the mocked request through the native UI.
+- Not run for this update: Android, small-device/enlarged-text visual checks,
+  software-keyboard coverage, VoiceOver, reduced-motion and Expo Doctor.
+- Trading/transfers and notification/account functionality remain M4/M5 work.
+
+### Swap placeholder layout correction — 2026-09-23
+
+- Fixed heading clipping by matching explicit line height to responsive font size.
+  Added a fixed-content option to the screen template; only Swap opts out of scrolling.
+- Passed: TypeScript and 21 access/navigation functional tests. On iPhone 17 Pro /
+  iOS 26.5 after reload, the complete heading is visible and a scroll attempt leaves
+  the content stationary. Android and enlarged-text native checks were not run.
+
+### Coming-soon Lottie heading — 2026-09-23
+
+- Added a separate coming-soon animation asset and feature-local heading renderer;
+  retained a single accessible heading and native text fallback. No dependencies added.
+- Passed: TypeScript and lint for the new components/asset. Native preview was
+  interrupted by simulator window/element-reference errors; appearance and motion
+  on iOS/Android still require verification. Existing Lottie text-font resolution
+  remains platform-dependent; rendering failure falls back to native text.
+
+### Coming-soon overlay correction — 2026-09-23
+
+- Simulator inspection found the scan-only Lottie asset replaced the heading text,
+  leaving an empty area between pulses. Native text now remains rendered at all
+  times, with Lottie positioned above it as a decorative overlay. Recentered the
+  fragments and reduced their thickness, opacity and movement.
+- Passed: TypeScript, focused lint and 23 access/navigation functional tests,
+  including text presence with reduced motion enabled and disabled. iPhone 17 Pro /
+  iOS 26.5 screenshots confirm the complete heading and stable spacing. Android
+  and frame-by-frame animation timing were not verified.
+
+### Stronger coming-soon glitch — 2026-09-23
+
+- Replaced subtle scan-only motion with three clipped native text bands, opposing
+  horizontal offsets and colored edges. Shape-only Lottie fragments follow the
+  same Reanimated progress clock: two 400 ms bursts per five-second loop, with
+  readable pauses. Native text remains rendered; reduced motion, enlarged text,
+  inactive navigation/app state and animation failure retain static behavior.
+- Reviewed [Lottie's supported features](https://github.com/airbnb/lottie/blob/master/supported-features.md)
+  and the [RGB-split reference](https://lottiefiles.com/marketplace/rgb-split-alphabet).
+  Use native glyphs plus shape transforms/opacity to avoid animation font dependencies;
+  no third-party animation assets or dependencies were added.
+- Passed: TypeScript, focused ESLint and all 23 access/navigation functional tests.
+  iPhone 17 Pro / iOS 26.5 screenshots show both the clean heading and the visible
+  chromatic text-tear burst after navigating to Swap. These spot checks do not
+  establish frame pacing. Android, device reduced-motion and full-suite checks
+  were not run for this visual adjustment.

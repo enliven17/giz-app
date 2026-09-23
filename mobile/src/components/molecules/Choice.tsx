@@ -2,10 +2,12 @@ import { Pressable, Text, useWindowDimensions } from "react-native";
 export function Choice({
   label,
   selected,
+  disabled = false,
   onPress,
 }: {
   label: string;
   selected: boolean;
+  disabled?: boolean;
   onPress: () => void;
 }) {
   // Remeasure native text after Dynamic Type changes, including on inactive screens.
@@ -15,11 +17,12 @@ export function Choice({
     <Pressable
       accessibilityRole="radio"
       accessibilityLabel={label}
-      accessibilityState={{ checked: selected }}
+      accessibilityState={{ checked: selected, disabled }}
+      disabled={disabled}
       onPress={onPress}
-      className={`min-h-12 justify-center rounded-xl border px-4 py-3 ${selected ? "border-accent bg-surface" : "border-border"}`}
+      className={`min-h-12 justify-center rounded-full border px-4 py-3 ${selected ? "border-transparent bg-accent/10" : "border-border"}`}
     >
-      <Text key={fontScale} className={selected ? "text-base text-accent" : "text-base text-muted"}>
+      <Text key={fontScale} className={selected ? "text-sm text-accent" : "text-sm text-muted"}>
         {label}
       </Text>
     </Pressable>

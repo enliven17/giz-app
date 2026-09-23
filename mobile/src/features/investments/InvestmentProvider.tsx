@@ -41,7 +41,7 @@ export function InvestmentProvider({
         if (!active) return;
         const offline = cause instanceof OfflineError;
         setError(
-          offline ? "Offline. Reconnect and retry." : "Unable to refresh demo data. Please retry.",
+          offline ? "Offline. Reconnect and retry." : "Unable to refresh data. Please retry.",
         );
         setData((previous) =>
           previous ? { ...previous, freshness: offline ? "offline" : "stale" } : null,

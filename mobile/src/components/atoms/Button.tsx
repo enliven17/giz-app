@@ -41,7 +41,7 @@ export function Button({
       accessibilityState={{ disabled: unavailable, busy: loading }}
       disabled={unavailable}
       onPress={onPress}
-      className={`min-h-12 flex-row items-center justify-center gap-3 rounded-xl py-3 ${variant === "quiet" ? "px-2" : "px-5"} ${surface} ${disabled ? "opacity-60" : "active:opacity-80"}`}
+      className={`min-h-12 flex-row items-center justify-center gap-3 rounded-2xl py-3 ${variant === "quiet" ? "px-2" : "px-5"} ${surface} ${disabled ? "opacity-60" : "active:opacity-80"}`}
     >
       {loading && <ActivityIndicator color={variant === "primary" ? colors.ink : colors.accent} />}
       <Text

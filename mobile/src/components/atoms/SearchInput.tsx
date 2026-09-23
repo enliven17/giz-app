@@ -19,7 +19,7 @@ export function SearchInput({
       autoCorrect={false}
       autoCapitalize="none"
       returnKeyType="search"
-      className="min-h-12 rounded-xl border border-border bg-surface px-4 py-3 text-base text-text"
+      className="min-h-12 rounded-2xl border border-border bg-surface px-4 py-3 text-base text-text"
     />
   );
 }

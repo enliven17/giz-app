@@ -39,8 +39,8 @@ export function useAccessController(): AccessViewModel {
       if (id === attempt.current)
         setError(
           cause instanceof AccessRejectedError
-            ? "Demo access was rejected. You can try again."
-            : "Demo access failed. Please try again.",
+            ? "Access was rejected. You can try again."
+            : "Access failed. Please try again.",
         );
     } finally {
       if (id === attempt.current) {

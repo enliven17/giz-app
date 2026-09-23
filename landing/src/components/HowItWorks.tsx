@@ -126,31 +126,18 @@ function Rail({ progress, index }: { progress: MotionValue<number>; index: numbe
   )
 }
 
-/** Mounts the visual at rest, then lets it play, so every step animates. */
-function Card({ step, index }: { step: Step; index: number }) {
+/** Mounts the visual at rest, then lets it play, so every step animates.
+ *  The shared carrier inside each visual morphs into the next one. */
+function Frame({ visual, index }: { visual: VisualKind; index: number }) {
   const [on, setOn] = useState(false)
 
   useEffect(() => {
     setOn(false)
-    const id = window.setTimeout(() => setOn(true), 80)
+    const id = window.setTimeout(() => setOn(true), 90)
     return () => window.clearTimeout(id)
   }, [index])
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 34, scale: 0.97 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-      className="relative overflow-hidden rounded-[22px] border border-white/[0.09] bg-[linear-gradient(160deg,#101815_0%,#0a0e0c_55%)] p-3 shadow-[0_50px_120px_-60px_rgba(0,0,0,1)]"
-    >
-      <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(49,196,126,0.5),transparent)]" />
-      <StepVisual kind={step.visual} on={on} />
-      <div className="flex items-center justify-between px-2 pb-1 pt-3 text-[10px] uppercase tracking-[0.2em] text-white/25">
-        <span>gizu</span>
-        <span>{step.chain ?? 'private'}</span>
-      </div>
-    </motion.div>
-  )
+  return <StepVisual kind={visual} on={on} />
 }
 
 export default function HowItWorks() {
@@ -218,8 +205,8 @@ export default function HowItWorks() {
               </motion.div>
             </div>
 
-            <div key={`card-${index}`} className="order-1 md:order-2">
-              <Card step={step} index={index} />
+            <div className="order-1 md:order-2">
+              <Frame key={index} visual={step.visual} index={index} />
             </div>
           </div>
         </div>

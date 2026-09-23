@@ -341,11 +341,13 @@ function Route({ on }: { on: boolean }) {
       <div className="absolute inset-0 flex items-center justify-center px-5">
         <div className="flex w-full max-w-[320px] items-center">
           {/* where the value comes from */}
-          <div className="w-[62px] shrink-0 text-center">
+          <div className="relative w-[62px] shrink-0 text-center">
             <div className="rounded-lg border border-white/10 bg-[#0a0e0c] py-2 font-mono text-[11px] text-white/70">
               0x7a4f
             </div>
-            <div className="mt-2 text-[9px] uppercase tracking-[0.16em] text-white/30">public</div>
+            <div className="absolute inset-x-0 top-full mt-2 text-[9px] uppercase tracking-[0.16em] text-white/30">
+              public
+            </div>
           </div>
 
           <Wire on={on} />
@@ -368,7 +370,7 @@ function Route({ on }: { on: boolean }) {
           <Wire on={on} delay={0.55} />
 
           {/* and where it lands, with nothing of the first left on it */}
-          <div className="w-[62px] shrink-0 text-center">
+          <div className="relative w-[62px] shrink-0 text-center">
             <motion.div
               initial={false}
               animate={{
@@ -380,7 +382,9 @@ function Route({ on }: { on: boolean }) {
             >
               0xd93b
             </motion.div>
-            <div className="mt-2 text-[9px] uppercase tracking-[0.16em] text-white/30">unlinked</div>
+            <div className="absolute inset-x-0 top-full mt-2 text-[9px] uppercase tracking-[0.16em] text-white/30">
+              unlinked
+            </div>
           </div>
         </div>
 

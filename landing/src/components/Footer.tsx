@@ -1,6 +1,5 @@
 import { ArrowUpRight } from 'lucide-react'
 import AsciiField from './AsciiField'
-import Reveal from './Reveal'
 
 const COLUMNS = [
   {
@@ -28,24 +27,7 @@ export default function Footer() {
         <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/80 to-ink" />
       </div>
 
-      <div className="relative py-24 md:py-28">
-        <div className="shell relative text-center">
-          <Reveal>
-            <h2 className="mx-auto max-w-[18ch] text-[clamp(28px,3.6vw,46px)] font-semibold leading-[1.05] tracking-[-0.03em]">
-              Your DeFi investments.
-              <span className="block text-neon">Now private.</span>
-            </h2>
-          </Reveal>
-          <Reveal delay={0.12}>
-            <a href="#top" className="btn-neon mt-9">
-              Explore the app
-              <ArrowUpRight size={17} strokeWidth={2.4} />
-            </a>
-          </Reveal>
-        </div>
-      </div>
-
-      <div className="shell relative pb-20">
+      <div className="shell relative py-20">
         <div className="grid gap-14 lg:grid-cols-[1.2fr_1.8fr]">
           <div>
             <div className="flex items-center gap-2.5">

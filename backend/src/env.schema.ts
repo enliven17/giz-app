@@ -4,6 +4,8 @@ const apiEnvSchema = z.object({
   NODE_ENV: z.enum(["local", "production", "test"]),
   PORT: z.coerce.number().int().positive(),
   DATABASE_URL: z.string().min(1),
+  MERKL_API_URL: z.string().min(1),
+  MERKL_API_KEY: z.string().min(1),
 });
 
 export type ApiEnv = z.infer<typeof apiEnvSchema>;

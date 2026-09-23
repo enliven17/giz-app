@@ -9,8 +9,9 @@ const MONEY_CARDS: RailItem[] = [
     title: 'Your wallet',
     body: 'Connect the wallet you already use. Nothing about it changes.',
     icon: Wallet,
-    from: 'rgba(120,150,138,0.5)',
-    to: 'rgba(40,60,52,0.7)',
+    from: '#1f6f52',
+    via: '#3ddc97',
+    to: '#0c3c2c',
   },
   {
     step: 'Step 02',
@@ -18,8 +19,9 @@ const MONEY_CARDS: RailItem[] = [
     chain: 'Monad',
     body: 'Your balance lands on a funding account that only you control.',
     icon: Landmark,
-    from: 'rgba(49,196,126,0.55)',
-    to: 'rgba(10,60,40,0.8)',
+    from: '#2bd88a',
+    via: '#8af0c4',
+    to: '#0f6b8c',
   },
   {
     step: 'Step 03',
@@ -27,8 +29,9 @@ const MONEY_CARDS: RailItem[] = [
     chain: 'Aurora',
     body: 'Value is routed privately, unlinked from the wallet it came from.',
     icon: Shuffle,
-    from: 'rgba(80,220,170,0.55)',
-    to: 'rgba(14,44,70,0.75)',
+    from: '#19c7a0',
+    via: '#39a0ff',
+    to: '#3f2c9c',
   },
   {
     step: 'Step 04',
@@ -36,8 +39,9 @@ const MONEY_CARDS: RailItem[] = [
     chain: 'Ethereum',
     body: 'A separate account holds your positions, encrypted end to end.',
     icon: KeyRound,
-    from: 'rgba(49,196,126,0.45)',
-    to: 'rgba(30,20,70,0.8)',
+    from: '#5ce6a8',
+    via: '#2f8bff',
+    to: '#6d3bd6',
   },
 ]
 

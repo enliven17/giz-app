@@ -18,45 +18,6 @@ const EASE = [0.65, 0, 0.35, 1] as const
 // how a step turns into the next one
 const LAYOUT = { type: 'spring', stiffness: 110, damping: 20, mass: 0.7 } as const
 
-const SCRAMBLE = [
-  '6*7A0^!HIETD@6XS749%2$4L4RO$SH*8W#6OPLLF%WSKVI^PTT1PJUOS60EQL$*K53*Y#AK5GDM6XIWX79XR^DQOMEJF$F1ZNL*L0Z&#LJ4B$E97Q76VF0U#HY!37J5$GKCI0RMK$2P1F9JJYGVR@IAHYPZALXQMJ!519!GZTQSA$#BEXUYPSZ302Z*&DDWW!NI61S#!MAHJ0Y&3J8*EBIMM$#X%46NJ0*9P3L@UW5A8NCZX&98CQ75NL9XEH11NBB^E&LQ1YPZALMJ3DSUXBS9*DADQ7ND0SCI#HY!37J5$GK',
-  'Y4#!I*ZO1QCFU07QJFDVW#6$17$WW^#7MR5Q50I^2FFKJQW1&1%94ABU&$TX$RRTXT3P!4JPK3^A12&DQ15S08%Q^X*GUE761@6S5DA*HACX9@AS3B04YQ5*VD1*$XX9ECF4B9%O^^LGNDKT%FT2Y2SDC0M!GCNSPVWVNBAWEPT3Q2XK6M877&Q838ZWKGW8*SVG241H51EB2SU1QZL56OR44Q$95ZEDFOVS#AL@C%FEYKZEPI*F&EQUT^65O68J3Q9O^YACNTNVMAK4S#MRM!V@GOKPV0HO2IN$3501P^Y9K',
-  '4HM5$8&ZBKCL0G$2ZE7OAZHBUDZXDJW81WD7YDH7##HO7VM84J&@&PV^7YACYLRBWI2HDUW9@!I#H@3%HN%AD@!ED0FOPL#4N8X%LO31#T9N1!HWCAP9DY!KQ5AEMFLF6#DK#4AX70^HXSGH2Y1XJCALNF5XYZ0L28%THU@X&83MKC4R%LZ1J8B86NW1Z$Q8^6J6FP&%PXQ7#LUHV21UM^3K%LYDYO2KWZT!3&WB51UJXJ2Y8!$D7G54RUZEI78^G&1MD%8*5NGKU201%G@FY@CE8$4BG!YEBNCR0YLP@D',
-  'IZE$@GCC&9OEB%@LLRX%IJ!VILBQ$%K#XALOTXTQD1%J82QSFUS512FRQHSO@#R#MK0C0@686S$XS1EPS0YLQ!%TL374LL#Y@DL4&1G85XA6S59K99DWZ8@LEVWAK94Y99VDSXS^V$71J092U2V#AB*@*45AZXIGVM^08V1&F1#!ST5PP7WBR*RE1SZ%UCJNMHP#^DJ0O1JAZIGPB7%V7DBQ^CKZ^6B^Q510BMK8Y3TA&@HZAHYCMG1J9Y1FOQ2TS3M$A@R%5^X$71W@N@%&W100&7768Q3!8V2F6K8#R',
-]
-
-/** Character stream that keeps reshuffling behind a visual. */
-function Scrambler({ on }: { on: boolean }) {
-  const [text, setText] = useState(SCRAMBLE[0])
-  const index = useRef(0)
-
-  useEffect(() => {
-    if (!on) return
-    const id = window.setInterval(() => {
-      index.current = (index.current + 1) % SCRAMBLE.length
-      setText(SCRAMBLE[index.current])
-    }, 500)
-    return () => window.clearInterval(id)
-  }, [on])
-
-  return (
-    <p className="pointer-events-none absolute inset-x-0 top-4 select-none px-4 font-mono text-[11px] leading-4 text-white/25 opacity-40">
-      {text}
-    </p>
-  )
-}
-
-/** Fades the stream into the card edges. */
-function EdgeMask() {
-  return (
-    <>
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-[linear-gradient(to_right,#070a09_20%,transparent)]" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-[linear-gradient(to_left,#070a09_20%,transparent)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[linear-gradient(to_bottom,#070a09_28%,transparent)]" />
-    </>
-  )
-}
-
 /** The verification tick from the security card. */
 function CheckCircle({ delay = 2.3 }: { delay?: number }) {
   return (
@@ -89,20 +50,11 @@ function CheckCircle({ delay = 2.3 }: { delay?: number }) {
   )
 }
 
-/** Shared stage so every step visual has the same optical weight. */
+/** Shared stage, so every step carries the same optical weight. */
 const STAGE = 'relative mx-auto h-[268px] w-full max-w-[560px] sm:h-[320px]'
-const FRAMED = 'overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0a0e0c]'
 
-/** Same size for every step. Only the two that need a surface get a frame. */
-function Stage({ children, framed = false }: { children: React.ReactNode; framed?: boolean }) {
-  return (
-    <div className={framed ? `${STAGE} ${FRAMED}` : STAGE}>
-      {framed && (
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(90%_70%_at_50%_0%,rgba(49,196,126,0.07),transparent_70%)]" />
-      )}
-      {children}
-    </div>
-  )
+function Stage({ children }: { children: React.ReactNode }) {
+  return <div className={STAGE}>{children}</div>
 }
 
 /* ------------------------------------------------------------------ vault */
@@ -159,7 +111,6 @@ function Vault({ on }: { on: boolean }) {
       transition={{ layout: LAYOUT }}
       className={`group ${STAGE}`}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(90%_70%_at_50%_0%,rgba(49,196,126,0.07),transparent_70%)]" />
 
       {/* the safe body, corners cut like a deposit box */}
       <motion.div
@@ -417,9 +368,6 @@ const DERIVED = ['P1', 'P2', 'P3', 'P4']
 function Keys({ on }: { on: boolean }) {
   return (
     <Stage>
-      <Scrambler on={on} />
-      <EdgeMask />
-
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-4">
         {/* the master account */}
         <motion.div
@@ -556,8 +504,6 @@ const CIPHER = 'A3F91C7'
 function Encrypt({ on }: { on: boolean }) {
   return (
     <Stage>
-      <Scrambler on={on} />
-      <EdgeMask />
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-6">
         {/* every character turns over in place, plain on one face, cipher on the other */}
         <motion.div layoutId="carrier" transition={{ layout: LAYOUT }} className="flex gap-1 rounded-xl border border-white/[0.07] bg-[#0b100e] px-3 py-2">
@@ -734,7 +680,13 @@ function Shield({ on }: { on: boolean }) {
   return (
     <Stage>
       {/* the phone stands past the horizon, so it is never a floating object */}
-      <div className="absolute inset-x-0 bottom-[46px] top-0 overflow-hidden">
+      <div
+        className="absolute inset-x-0 bottom-[40px] top-0 overflow-hidden"
+        style={{
+          maskImage: 'linear-gradient(to bottom, #000 62%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, #000 62%, transparent 100%)',
+        }}
+      >
       <motion.div
         initial={false}
         animate={{ y: on ? -22 : 0 }}
@@ -792,9 +744,8 @@ function Shield({ on }: { on: boolean }) {
       </div>
 
       {/* the horizon itself */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-[46px] h-20 -translate-y-full bg-[linear-gradient(to_top,#070a09,transparent)]" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-[46px] h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-[46px] mx-auto h-24 w-2/3 -translate-y-1/2 rounded-[50%] bg-[radial-gradient(50%_50%_at_50%_50%,rgba(49,196,126,0.12),transparent_70%)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-[40px] h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-[40px] mx-auto h-20 w-2/3 -translate-y-1/2 rounded-[50%] bg-[radial-gradient(50%_50%_at_50%_50%,rgba(49,196,126,0.1),transparent_70%)]" />
     </Stage>
   )
 }

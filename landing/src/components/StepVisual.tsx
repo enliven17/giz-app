@@ -541,112 +541,97 @@ function Encrypt({ on }: { on: boolean }) {
 }
 
 const FEEDS = [
-  { y: 22, label: 'yours', mine: true },
-  { y: 56, label: '\u2022\u2022\u2022\u2022\u2022', mine: false },
-  { y: 90, label: '\u2022\u2022\u2022\u2022\u2022', mine: false },
-  { y: 124, label: '\u2022\u2022\u2022\u2022\u2022', mine: false },
+  { y: 36, label: 'yours', mine: true },
+  { y: 92, label: '\u2022\u2022\u2022\u2022\u2022', mine: false },
+  { y: 148, label: '\u2022\u2022\u2022\u2022\u2022', mine: false },
+  { y: 204, label: '\u2022\u2022\u2022\u2022\u2022', mine: false },
 ]
 
-const feedPath = (y: number) => `M 66 ${y} C 104 ${y} 108 73 126 73`
+const feedPath = (y: number) => `M 112 ${y} C 176 ${y} 196 120 264 120`
+const OUT_PATH = 'M 336 120 H 386'
 
 /** Deposits stream into one core and leave as a single batch, so nothing that
- *  comes out points back at anything that went in. */
+ *  comes out points back at anything that went in. The core is the same object
+ *  the next step opens as a vault. */
 function Batch({ on }: { on: boolean }) {
   return (
     <Stage>
-      <svg
-        className="absolute inset-0 h-full w-full"
-        viewBox="0 0 268 146"
-        fill="none"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <defs>
-          <radialGradient id="reactor-grad" fx="1">
-            <stop offset="0%" stopColor="#31c47e" />
-            <stop offset="100%" stopColor="transparent" />
-          </radialGradient>
-          <mask id="reactor-mask">
-            {FEEDS.map((f, i) => (
-              <path key={i} d={feedPath(f.y)} stroke="white" strokeWidth="2.4" fill="none" />
-            ))}
-            <path d="M 174 73 H 206" stroke="white" strokeWidth="2.4" fill="none" />
-          </mask>
-        </defs>
+      <div className="absolute inset-0 flex items-center justify-center">
+        {/* fixed box, so the drawing and the html sit in one coordinate space */}
+        <div className="relative h-[240px] w-[520px] scale-[0.56] sm:scale-[0.78] lg:scale-100">
+          <svg
+            className="absolute inset-0 h-full w-full"
+            viewBox="0 0 520 240"
+            fill="none"
+            preserveAspectRatio="none"
+          >
+            <defs>
+              <radialGradient id="reactor-grad" fx="1">
+                <stop offset="0%" stopColor="#31c47e" />
+                <stop offset="100%" stopColor="transparent" />
+              </radialGradient>
+              <mask id="reactor-mask">
+                {FEEDS.map((f, i) => (
+                  <path key={i} d={feedPath(f.y)} stroke="white" strokeWidth="3" fill="none" />
+                ))}
+                <path d={OUT_PATH} stroke="white" strokeWidth="3" fill="none" />
+              </mask>
+            </defs>
 
-        {/* the feeds */}
-        {FEEDS.map((f, i) => (
-          <g key={i}>
-            <path d={feedPath(f.y)} stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-            <rect
-              x="12"
-              y={f.y - 11}
-              width="54"
-              height="22"
-              rx="7"
-              fill={f.mine ? 'rgba(49,196,126,0.1)' : 'rgba(255,255,255,0.04)'}
-              stroke={f.mine ? 'rgba(49,196,126,0.3)' : 'rgba(255,255,255,0.08)'}
-            />
-            <text
-              x="39"
-              y={f.y + 3}
-              textAnchor="middle"
-              className="font-mono"
-              fontSize="9"
-              fill={f.mine ? '#31c47e' : 'rgba(255,255,255,0.4)'}
+            {FEEDS.map((f, i) => (
+              <path key={i} d={feedPath(f.y)} stroke="rgba(255,255,255,0.1)" strokeWidth="1.2" />
+            ))}
+            <path d={OUT_PATH} stroke="rgba(255,255,255,0.1)" strokeWidth="1.2" />
+
+            {on && (
+              <g mask="url(#reactor-mask)">
+                {FEEDS.map((_, i) => (
+                  <circle key={i} className={`reactor-in reactor-in-${i}`} r="11" fill="url(#reactor-grad)" />
+                ))}
+                <circle className="reactor-out" r="11" fill="url(#reactor-grad)" />
+              </g>
+            )}
+          </svg>
+
+          {FEEDS.map((f, i) => (
+            <span
+              key={i}
+              className={`absolute flex h-7 w-[92px] items-center justify-center rounded-lg border font-mono text-[11px] ${
+                f.mine
+                  ? 'border-neon/30 bg-neon/10 text-neon'
+                  : 'border-white/[0.08] bg-white/[0.03] text-white/40'
+              }`}
+              style={{ left: 20, top: f.y - 14 }}
             >
               {f.label}
-            </text>
-          </g>
-        ))}
+            </span>
+          ))}
 
-        {/* the output */}
-        <path d="M 174 73 H 206" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        <rect
-          x="206"
-          y="59"
-          width="50"
-          height="28"
-          rx="9"
-          fill="rgba(49,196,126,0.1)"
-          stroke="rgba(49,196,126,0.3)"
-        />
-        <text x="231" y="77" textAnchor="middle" className="font-mono" fontSize="10" fill="#31c47e">
-          batch
-        </text>
+          {/* the core, which the vault grows out of */}
+          <motion.div
+            layoutId="carrier"
+            transition={{ layout: LAYOUT }}
+            className="absolute flex h-[68px] w-[68px] items-center justify-center rounded-full border border-neon/25 bg-[#0c1712]"
+            style={{ left: 266, top: 86 }}
+          >
+            <motion.img
+              src="/gizulogo.svg"
+              alt=""
+              className="h-7 w-auto"
+              initial={false}
+              animate={{ opacity: on ? [0.7, 1, 0.7] : 0.5 }}
+              transition={{ duration: 1.8, repeat: on ? Infinity : 0, ease: 'easeInOut' }}
+            />
+          </motion.div>
 
-        {/* the core */}
-        <motion.circle
-          cx="150"
-          cy="73"
-          r="23"
-          fill="#0c1712"
-          stroke="rgba(49,196,126,0.25)"
-          initial={false}
-          animate={{ scale: on ? [1, 1.05, 1] : 1 }}
-          transition={{ duration: 2.4, repeat: on ? Infinity : 0, ease: 'easeInOut' }}
-          style={{ transformOrigin: '150px 73px' }}
-        />
-        <motion.image
-          href="/gizulogo.svg"
-          x="141.9"
-          y="61"
-          width="16.2"
-          height="22"
-          initial={false}
-          animate={{ opacity: on ? [0.65, 1, 0.65] : 0.45 }}
-          transition={{ duration: 1.6, repeat: on ? Infinity : 0, ease: 'easeInOut' }}
-        />
-
-        {/* what actually travels */}
-        {on && (
-          <g mask="url(#reactor-mask)">
-            {FEEDS.map((_, i) => (
-              <circle key={i} className={`reactor-in reactor-in-${i}`} r="9" fill="url(#reactor-grad)" />
-            ))}
-            <circle className="reactor-out" r="9" fill="url(#reactor-grad)" />
-          </g>
-        )}
-      </svg>
+          <span
+            className="absolute flex h-9 w-[104px] items-center justify-center rounded-xl border border-neon/30 bg-neon/10 font-mono text-[12px] text-neon"
+            style={{ left: 386, top: 102 }}
+          >
+            batch
+          </span>
+        </div>
+      </div>
 
       <style>{`
         .reactor-in, .reactor-out {
@@ -661,8 +646,7 @@ function Batch({ on }: { on: boolean }) {
         }`,
         ).join('')}
         .reactor-out {
-          offset-path: path("M 174 73 H 206");
-          animation: reactor-run 2.6s linear infinite;
+          offset-path: path("${OUT_PATH}");
           animation-delay: 1.3s;
         }
         @keyframes reactor-run {

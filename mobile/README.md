@@ -1,7 +1,7 @@
 # Gizu mobile
 
 Expo SDK 57 development app for iOS and Android. The current slice includes
-welcome, simulated passkey/external-wallet access, a protected four-tab shell,
+welcome, simulated passkey-only access, a protected four-tab shell,
 and disconnect. Demo sessions live only in memory. No real funds, authentication,
 biometrics or wallet connection are performed.
 
@@ -155,8 +155,7 @@ See docs/FOUNDATION.md for the exact native and automated validation record.
 
 Welcome now uses the Gizu logo and “DeFi in Stealth Mode” headline. Portfolio and
 vault discovery use “Confidential vaults”; Exchange is presented as “Swap coming
-soon” while retaining its existing route. Both passkey and external-wallet access
-remain available.
+soon” while retaining its existing route. Access supports passkeys only.
 
 Request access opens a guest form with email, investment range and platform choices.
 Its isolated mock service sends and stores nothing and does not grant access or

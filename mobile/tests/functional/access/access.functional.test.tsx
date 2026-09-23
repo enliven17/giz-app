@@ -1,6 +1,6 @@
 import { act, screen, userEvent } from "@testing-library/react-native";
-import { AccessibilityInfo, Linking } from "react-native";
-import { AccessRejectedError, type DemoSession, walletProviders } from "@/services/access";
+import { AccessibilityInfo, AppState, Linking } from "react-native";
+import { AccessRejectedError, type DemoSession } from "@/services/access";
 import { deferred, renderApp } from "../../support/renderApp";
 
 beforeEach(() => jest.spyOn(Linking, "getInitialURL").mockResolvedValue(null));
@@ -31,14 +31,16 @@ test("welcome, access, all tabs, UI preview and disconnect form a complete demo 
   await userEvent.press(screen.getByRole("button", { name: "Back" }));
   expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
 });
-test.each(walletProviders)("selects %s as a simulated provider", async (method) => {
-  const request = jest.fn().mockResolvedValue({ kind: "demo", method });
+test("access offers only passkeys and requests the passkey method", async () => {
+  const request = jest.fn().mockResolvedValue({ kind: "demo", method: "Demo passkey" });
   renderApp({ request });
   await openAccess();
-  await userEvent.press(screen.getByRole("button", { name: "Choose wallet" }));
-  await userEvent.press(await screen.findByRole("button", { name: method }));
+  expect(screen.queryByRole("button", { name: "Choose wallet" })).toBeNull();
+  expect(screen.getByText("Continue with a passkey to access Gizu.")).toBeVisible();
+  await userEvent.press(screen.getByRole("button", { name: "Continue with passkey" }));
   expect(await screen.findByRole("header", { name: "Your portfolio" })).toBeVisible();
-  expect(request).toHaveBeenCalledWith(method);
+  expect(request).toHaveBeenCalledTimes(1);
+  expect(request).toHaveBeenCalledWith("Demo passkey");
 });
 test.each([new Error("offline"), new AccessRejectedError("rejected")])(
   "recovers from access failure %s",
@@ -74,18 +76,7 @@ test("prevents duplicate requests and ignores a late success after cancellation"
   expect(screen.getByRole("button", { name: "Continue with passkey" })).toBeVisible();
   expect(screen.queryByRole("header", { name: "Your portfolio" })).toBeNull();
 });
-test("dismissing a pending wallet selection cannot later sign in", async () => {
-  const pending = deferred<DemoSession>();
-  renderApp({ request: () => pending.promise });
-  await openAccess();
-  await userEvent.press(screen.getByRole("button", { name: "Choose wallet" }));
-  await userEvent.press(await screen.findByRole("button", { name: "MetaMask" }));
-  expect(screen.getByText("Opening access…")).toBeVisible();
-  await userEvent.press(screen.getByRole("button", { name: "Cancel wallet selection" }));
-  await act(async () => pending.resolve({ kind: "demo", method: "MetaMask" }));
-  expect(await screen.findByRole("button", { name: "Continue with passkey" })).toBeVisible();
-});
-test.each(["home", "vaults", "exchange", "settings", "garbage?token=ignored"])(
+test.each(["home", "vaults", "exchange", "settings", "wallet-picker", "garbage?token=ignored"])(
   "signed-out deep link %s never exposes tabs",
   async (path) => {
     jest.mocked(Linking.getInitialURL).mockResolvedValue(`gizu-dev://${path}`);
@@ -112,20 +103,6 @@ test("leaving access invalidates pending work even when the service rejects late
   await act(async () => pending.reject(new Error("late failure")));
   expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
   expect(screen.queryByRole("alert")).toBeNull();
-});
-
-test("wallet rejection can be retried or dismissed", async () => {
-  const request = jest
-    .fn()
-    .mockRejectedValueOnce(new AccessRejectedError())
-    .mockResolvedValue({ kind: "demo", method: "Rainbow" });
-  renderApp({ request });
-  await openAccess();
-  await userEvent.press(screen.getByRole("button", { name: "Choose wallet" }));
-  await userEvent.press(await screen.findByRole("button", { name: "Rainbow" }));
-  expect(await screen.findByRole("alert")).toBeVisible();
-  await userEvent.press(screen.getByRole("button", { name: "Rainbow" }));
-  expect(await screen.findByRole("header", { name: "Your portfolio" })).toBeVisible();
 });
 
 test("runtime links are gated before access and work only inside a demo session", async () => {
@@ -227,5 +204,26 @@ test.each([true, false])(
     expect(screen.getByText("coming soon", { includeHiddenElements: true })).toBeOnTheScreen();
     await userEvent.press(screen.getByLabelText("Home tab"));
     expect(await screen.findByRole("header", { name: "Your portfolio" })).toBeVisible();
+  },
+);
+
+test.each([true, false])(
+  "welcome stays readable and actionable with reduced motion %s",
+  async (reduced) => {
+    jest.spyOn(AppState, "addEventListener").mockImplementation((_event, listener) => {
+      listener("active");
+      return { remove: jest.fn() };
+    });
+    jest.spyOn(AccessibilityInfo, "isReduceMotionEnabled").mockResolvedValue(reduced);
+    renderApp();
+    expect(await screen.findByRole("header", { name: "DeFi in Stealth Mode" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Get started" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Request access" })).toBeEnabled();
+    await openAccess();
+    expect(await screen.findByRole("button", { name: "Continue with passkey" })).toBeVisible();
+    await userEvent.press(screen.getByRole("button", { name: "Back" }));
+    expect(await screen.findByRole("header", { name: "DeFi in Stealth Mode" })).toBeVisible();
+    await userEvent.press(screen.getByRole("button", { name: "Request access" }));
+    expect(await screen.findByLabelText("Email address")).toBeVisible();
   },
 );

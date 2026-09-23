@@ -9,7 +9,6 @@ export type RootStackParamList = {
   Welcome: undefined;
   Access: undefined;
   RequestAccess: undefined;
-  WalletPicker: undefined;
   Main: NavigatorScreenParams<MainTabParamList>;
   Preview: undefined;
   VaultDetail: { id: string };

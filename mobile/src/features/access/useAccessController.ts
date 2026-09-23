@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useSession } from "@/application/SessionProvider";
-import { AccessRejectedError, type AccessMethod } from "@/services/access";
+import { AccessRejectedError } from "@/services/access";
 type AccessViewModel = {
   pending: boolean;
   error: string | null;
-  start: (method: AccessMethod) => Promise<void>;
+  start: () => Promise<void>;
   cancel: () => void;
 };
 
@@ -26,14 +26,14 @@ export function useAccessController(): AccessViewModel {
     setPending(false);
     setError(null);
   }
-  async function start(method: AccessMethod) {
+  async function start() {
     if (inFlight.current) return;
     inFlight.current = true;
     const id = ++attempt.current;
     setPending(true);
     setError(null);
     try {
-      const session = await accessService.request(method);
+      const session = await accessService.request("Demo passkey");
       if (id === attempt.current) signIn(session);
     } catch (cause) {
       if (id === attempt.current)

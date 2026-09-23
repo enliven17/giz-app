@@ -5,7 +5,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useSession } from "@/application/SessionProvider";
 import { WelcomeScreen } from "@/features/access/WelcomeScreen";
 import { AccessScreen } from "@/features/access/AccessScreen";
-import { WalletPickerScreen } from "@/features/access/WalletPickerScreen";
 import { PreviewScreen } from "@/features/shell/PreviewScreen";
 import { MainTabs } from "./MainTabs";
 import type { RootStackParamList } from "./types";
@@ -45,11 +44,6 @@ export function RootNavigator() {
             options={{ presentation: "modal" }}
           />
           <Stack.Screen name="Access" component={AccessScreen} options={{ title: "Demo access" }} />
-          <Stack.Screen
-            name="WalletPicker"
-            component={WalletPickerScreen}
-            options={{ title: "Demo wallets", presentation: "modal" }}
-          />
         </Stack.Group>
       )}
     </Stack.Navigator>

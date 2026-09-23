@@ -100,7 +100,7 @@ Paths in this table are relative to `../frontend/`.
 
 | Area                   | Reference                                            | Mobile parity target                                                                                           | Current limitation / follow-up                                                                                     |
 | ---------------------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Entry and access       | `src/components/Onboarding.tsx`, `Auth.tsx`          | Welcome, passkey-wallet path, external-wallet path, cancel/back, access to app                                 | Simulated authentication; real session, recovery, and wallet providers unselected                                  |
+| Entry and access       | `src/components/Onboarding.tsx`, `Auth.tsx`          | Welcome, passkey-only path, cancel/back, access to app                                                         | Simulated authentication; real session, recovery, and wallet providers unselected                                  |
 | App navigation         | `src/App.tsx`, `src/components/BottomNav.tsx`        | Home, Vaults, Exchange, Settings tabs; detail and secondary screens; native back behavior                      | Web currently uses component state rather than native routes                                                       |
 | Portfolio              | `src/components/Home.tsx`                            | Portfolio value, performance chart, holdings, vault shortcuts, activity, notifications, deposit/withdraw entry | Values are fixtures; period controls are currently presentation only                                               |
 | Vault discovery        | `src/components/Vaults.tsx`, `VaultCard.tsx`         | Search, risk filters, cards, no-results state, detail navigation                                               | Search currently matches name/ticker/strategy despite manager-search placeholder; advanced-filter icon is inactive |
@@ -591,7 +591,7 @@ open; headerless verification is recorded in docs/FOUNDATION.md.
 
 - [x] Adopt Gizu logo, “DeFi in Stealth Mode”, confidential-vault wording,
       Swap coming-soon presentation, chart spacing and account row alignment.
-- [x] Keep both passkey and external-wallet options by user decision.
+- [x] Use passkey-only access; supersedes the earlier decision to retain external wallets (2026-09-23).
 - [x] Add a guest request-access modal backed by an isolated development mock,
       including validation, loading, retry, duplicate prevention and dismissal.
 - [ ] During M4, use a dedicated sell tone and explicit Confirm buy / Confirm sell.

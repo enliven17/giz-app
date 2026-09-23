@@ -1,35 +1,34 @@
 import { GizuLogo } from "@/components/atoms/GizuLogo";
-import colors from "@/theme/colors.json";
-import { View } from "react-native";
+import { WelcomeHeading } from "./components/WelcomeHeading";
+import { useWelcomeMotion } from "./useWelcomeMotion";
+import { View, useWindowDimensions } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Screen } from "@/components/templates/Screen";
 import { Typography } from "@/components/atoms/Typography";
 import { Button } from "@/components/atoms/Button";
-import { AmbientArtwork } from "@/components/molecules/AmbientArtwork";
+import { WelcomeArtwork } from "./components/WelcomeArtwork";
 import type { RootStackParamList } from "@/navigation/types";
 export function WelcomeScreen({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, "Welcome">) {
+  const animate = useWelcomeMotion();
+  const { height, fontScale } = useWindowDimensions();
   return (
-    <Screen>
+    <Screen scrollable={false}>
       <View className="flex-row items-center gap-3">
         <GizuLogo />
         <Typography variant="row">Gizu</Typography>
       </View>
-      <AmbientArtwork />
-      <View className="mt-auto gap-5">
-        <Typography variant="title">
-          <Typography variant="title" style={{ color: colors.accent }}>
-            DeFi
-          </Typography>{" "}
-          in
-          {"\n"}
-          <Typography variant="title" style={{ color: colors.accent }}>
-            Stealth
-          </Typography>{" "}
-          Mode
-        </Typography>
-        <Typography>Explore curated confidential vaults and investment strategies.</Typography>
+      <View className="flex-1 justify-center gap-6">
+        {fontScale <= 1.3 && height >= 650 && (
+          <WelcomeArtwork animate={animate} height={Math.min(230, height * 0.25)} />
+        )}
+        <View className="gap-4">
+          <WelcomeHeading animate={animate} />
+          <Typography>Explore curated confidential vaults and investment strategies.</Typography>
+        </View>
+      </View>
+      <View className="gap-3">
         <Button label="Get started" onPress={() => navigation.navigate("Access")} />
         <Button
           label="Request access"

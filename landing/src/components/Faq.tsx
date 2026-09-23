@@ -1,5 +1,12 @@
-import { useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { useRef, useState } from 'react'
+import {
+  AnimatePresence,
+  motion,
+  useScroll,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from 'framer-motion'
 import { Plus } from 'lucide-react'
 import Reveal from './Reveal'
 
@@ -30,8 +37,27 @@ const ITEMS = [
   },
 ]
 
+/** The timeline spine keeps running here: each rule fills out from the middle
+ *  as the page scrolls past it. */
+function RuleFill({ p, from, to }: { p: MotionValue<number>; from: number; to: number }) {
+  const scaleX = useTransform(p, [from, to], [0, 1], { clamp: true })
+  return (
+    <motion.span
+      style={{ scaleX }}
+      className="pointer-events-none absolute inset-x-0 top-0 h-px origin-center bg-gradient-to-r from-neon/40 via-neon to-neon/40"
+    />
+  )
+}
+
 export default function Faq() {
   const [open, setOpen] = useState<number | null>(0)
+  const listRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: listRef,
+    offset: ['start 85%', 'end 60%'],
+  })
+  const p = useSpring(scrollYProgress, { stiffness: 120, damping: 28, mass: 0.4 })
+  const step = 1 / (ITEMS.length + 1)
 
   return (
     <section id="faq" className="shell scroll-mt-28 py-24 md:py-32">
@@ -43,11 +69,14 @@ export default function Faq() {
           </h2>
         </Reveal>
 
-        <div className="divide-y divide-white/[0.07] border-y border-white/[0.07]">
+        <div ref={listRef} className="relative border-b border-white/[0.07]">
           {ITEMS.map((item, i) => {
             const isOpen = open === i
             return (
               <Reveal key={item.q} delay={i * 0.04}>
+                <div className="relative border-t border-white/[0.07]">
+                  <RuleFill p={p} from={i * step} to={(i + 1) * step} />
+                </div>
                 <button
                   onClick={() => setOpen(isOpen ? null : i)}
                   className="flex w-full items-start gap-6 py-7 text-left"
@@ -82,6 +111,9 @@ export default function Faq() {
               </Reveal>
             )
           })}
+          <div className="relative">
+            <RuleFill p={p} from={ITEMS.length * step} to={1} />
+          </div>
         </div>
       </div>
     </section>

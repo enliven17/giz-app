@@ -578,11 +578,11 @@ function Shield({ on }: { on: boolean }) {
     <Stage>
       <motion.div
         initial={false}
-        animate={{ y: on ? -26 : 0 }}
+        animate={{ y: on ? -22 : 0 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className="absolute inset-x-0 top-7 mx-auto h-60 w-[216px] rounded-[32px] border border-white/10 bg-[#111714] p-1.5"
+        className="absolute inset-x-0 top-8 mx-auto h-60 w-[250px] rounded-[34px] border border-white/10 bg-[#111714] p-1.5"
       >
-        <div className="relative h-full overflow-hidden rounded-[24px] bg-[#070b09]">
+        <div className="relative h-full overflow-hidden rounded-[28px] bg-[#070b09]">
           <div className="absolute left-5 top-3 text-[9px] text-white/35">09:41</div>
           <motion.span
             initial={false}
@@ -595,32 +595,34 @@ function Shield({ on }: { on: boolean }) {
             initial={false}
             animate={
               on
-                ? { y: 46, scale: 1, filter: 'blur(0px)' }
+                ? { y: 44, scale: 1, filter: 'blur(0px)' }
                 : { y: -70, scale: 0.75, filter: 'blur(10px)' }
             }
             transition={{ duration: 0.3, ease: 'easeInOut', delay: on ? 0.1 : 0 }}
-            className="absolute inset-x-3 z-10 flex h-14 items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-white/[0.08] px-3 backdrop-blur-md"
+            className="absolute inset-x-2.5 z-10 flex items-center gap-2.5 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.08] px-2.5 py-2.5 backdrop-blur-md"
           >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-neon/15 text-[11px] font-semibold text-neon">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-neon/15 text-[12px] font-semibold text-neon">
               G
             </span>
-            <span className="min-w-0 flex-1 leading-tight">
-              <span className="flex items-baseline justify-between gap-2">
-                <span className="text-[11.5px] font-medium">Position updated</span>
-                <span className="shrink-0 text-[9px] text-white/35">now</span>
+            <span className="min-w-0 flex-1">
+              <span className="flex items-baseline gap-2">
+                <span className="flex-1 truncate text-[12px] font-medium leading-none">
+                  Position updated
+                </span>
+                <span className="shrink-0 text-[9px] leading-none text-white/35">now</span>
               </span>
-              <span className="mt-1 block truncate text-[10.5px] text-white/50">
+              <span className="mt-2 block truncate text-[11px] leading-none text-white/50">
                 Balance •••••• encrypted
               </span>
             </span>
           </motion.div>
 
           {/* home screen behind the alert */}
-          <div className="absolute inset-x-4 top-16 grid grid-cols-4 gap-3">
-            {Array.from({ length: 12 }).map((_, i) => (
+          <div className="absolute inset-x-5 top-[104px] grid grid-cols-4 gap-3">
+            {Array.from({ length: 8 }).map((_, i) => (
               <span
                 key={i}
-                className="aspect-square rounded-lg bg-gradient-to-br from-white/[0.08] to-white/[0.02]"
+                className="aspect-square rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.02]"
               />
             ))}
           </div>

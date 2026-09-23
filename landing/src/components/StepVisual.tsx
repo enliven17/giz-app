@@ -338,7 +338,7 @@ function Route({ on }: { on: boolean }) {
 
   return (
     <Stage>
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-7 px-5">
+      <div className="absolute inset-0 flex items-center justify-center px-5">
         <div className="flex w-full max-w-[320px] items-center">
           {/* where the value comes from */}
           <div className="w-[62px] shrink-0 text-center">
@@ -384,26 +384,6 @@ function Route({ on }: { on: boolean }) {
           </div>
         </div>
 
-        {/* the tie between the two addresses, cut */}
-        <div className="relative flex w-full max-w-[320px] items-center justify-center">
-          <div className="h-px w-full border-t border-dashed border-white/[0.12]" />
-          <motion.div
-            initial={false}
-            animate={{ opacity: on ? 1 : 0.3, scale: on ? 1 : 0.7 }}
-            transition={{ duration: 0.4, delay: on ? 1.2 : 0 }}
-            className="absolute flex items-center gap-2 bg-[#0a0e0c] px-3"
-          >
-            <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-              <path
-                d="M2 2 10 10 M10 2 2 10"
-                stroke={on ? '#31c47e' : 'rgba(255,255,255,0.3)'}
-                strokeWidth="1.8"
-                strokeLinecap="round"
-              />
-            </svg>
-            <span className="text-[9px] uppercase tracking-[0.16em] text-white/40">no trace</span>
-          </motion.div>
-        </div>
       </div>
     </Stage>
   )

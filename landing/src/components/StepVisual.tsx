@@ -16,7 +16,7 @@ export type VisualKind =
 const EASE = [0.65, 0, 0.35, 1] as const
 
 // how a step turns into the next one
-const LAYOUT = { type: 'spring', stiffness: 110, damping: 20, mass: 0.7 } as const
+const LAYOUT = { duration: 0.95, ease: [0.22, 1, 0.36, 1] } as const
 
 /** The verification tick from the security card. */
 function CheckCircle({ delay = 2.3 }: { delay?: number }) {
@@ -51,7 +51,7 @@ function CheckCircle({ delay = 2.3 }: { delay?: number }) {
 }
 
 /** Shared stage, so every step carries the same optical weight. */
-const STAGE = 'relative mx-auto h-[300px] w-full max-w-[680px] sm:h-[380px]'
+const STAGE = 'relative mx-auto h-[340px] w-full max-w-[820px] sm:h-[440px]'
 
 function Stage({ children }: { children: React.ReactNode }) {
   return <div className={STAGE}>{children}</div>
@@ -117,17 +117,17 @@ function Vault({ on }: { on: boolean }) {
         variants={vaultVariant}
         layoutId="carrier"
         transition={{ layout: LAYOUT }}
-        className="absolute inset-x-0 top-[104px] mx-auto h-40 w-[90%] max-w-[300px] border-t border-white/10 bg-gradient-to-b from-[#141a17] to-[#0b100e] p-6 shadow-lg"
+        className="absolute inset-x-0 top-[124px] mx-auto h-52 w-[90%] max-w-[420px] border-t border-white/10 bg-gradient-to-b from-[#141a17] to-[#0b100e] p-6 shadow-lg"
         style={{
           clipPath:
-            'polygon(30px 0%, calc(100% - 30px) 0%, 100% 30px, 100% 100%, 0% 100%, 0% 30px)',
+            'polygon(36px 0%, calc(100% - 36px) 0%, 100% 36px, 100% 100%, 0% 100%, 0% 36px)',
         }}
       />
 
       {/* the dial */}
       <motion.div
         variants={vaultVariant}
-        className="absolute inset-x-0 top-[46px] mx-auto flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-full bg-[#050806] p-1"
+        className="absolute inset-x-0 top-[52px] mx-auto flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-full bg-[#050806] p-1"
       >
         <motion.div
           variants={shineVariant}
@@ -153,18 +153,18 @@ function Vault({ on }: { on: boolean }) {
             </svg>
           </div>
         </motion.div>
-        <div className="absolute inset-x-0 top-0 mx-auto flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-full border-4 border-[#050806]" />
+        <div className="absolute inset-x-0 top-0 mx-auto flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-full border-4 border-[#050806]" />
       </motion.div>
 
       <motion.div
         variants={vaultVariant}
-        className="absolute inset-x-0 top-[46px] mx-auto flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-full border-b-[3px] border-white/10"
+        className="absolute inset-x-0 top-[52px] mx-auto flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-full border-b-[3px] border-white/10"
       />
 
       {/* the code field */}
       <motion.div
         variants={inputVariant}
-        className="absolute inset-x-0 top-[162px] mx-auto flex w-[90%] max-w-[250px] items-center justify-between rounded-md border border-white/[0.06] bg-white/[0.04] p-2 drop-shadow-[0_2px_5px_rgba(0,0,0,0.5)] transition-all duration-300 group-hover:border-neon/60 group-hover:[box-shadow:inset_0_0_6px_rgba(49,196,126,0.5)]"
+        className="absolute inset-x-0 top-[198px] mx-auto flex w-[90%] max-w-[300px] items-center justify-between rounded-md border border-white/[0.06] bg-white/[0.04] p-2 drop-shadow-[0_2px_5px_rgba(0,0,0,0.5)] transition-all duration-300 group-hover:border-neon/60 group-hover:[box-shadow:inset_0_0_6px_rgba(49,196,126,0.5)]"
       >
         <div className="ml-2 text-xs text-neon">
           {'••••••••••'.split('').map((char, index) => (
@@ -197,7 +197,7 @@ function Wallet({ on }: { on: boolean }) {
           }}
           transition={{ layout: LAYOUT, duration: 0.4, ease: EASE }}
           layoutId="carrier"
-          className="relative w-[min(348px,100%)] overflow-hidden rounded-xl border bg-gradient-to-b from-[#141a17] to-[#0b100e] p-4 shadow-lg"
+          className="relative w-[min(400px,100%)] overflow-hidden rounded-xl border bg-gradient-to-b from-[#141a17] to-[#0b100e] p-4 shadow-lg"
         >
           {/* a light sweeps across the card while it reads the wallet */}
           <motion.span
@@ -257,7 +257,7 @@ function Funding({ on }: { on: boolean }) {
             value={on ? 184204 : 0}
             format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }}
             transformTiming={{ duration: 900, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }}
-            className="font-mono text-[46px] leading-none tabular-nums"
+            className="font-mono text-[56px] leading-none tabular-nums"
           />
         </motion.div>
         <motion.div
@@ -308,9 +308,9 @@ function Route({ on }: { on: boolean }) {
   return (
     <Stage>
       <div className="absolute inset-0 flex items-center justify-center px-5">
-        <div className="flex w-full max-w-[460px] items-center">
+        <div className="flex w-full max-w-[560px] items-center">
           {/* where the value comes from */}
-          <div className="relative w-[76px] shrink-0 text-center">
+          <div className="relative w-[92px] shrink-0 text-center">
             <div className="rounded-lg border border-white/10 bg-[#0a0e0c] py-2 font-mono text-[11px] text-white/70">
               0x7a4f
             </div>
@@ -340,7 +340,7 @@ function Route({ on }: { on: boolean }) {
           <Wire on={on} delay={0.55} />
 
           {/* and where it lands, with nothing of the first left on it */}
-          <div className="relative w-[76px] shrink-0 text-center">
+          <div className="relative w-[92px] shrink-0 text-center">
             <motion.div
               initial={false}
               animate={{
@@ -385,19 +385,19 @@ function Keys({ on }: { on: boolean }) {
         </motion.div>
 
         {/* and what it derives */}
-        <div className="relative h-7 w-full max-w-[340px]">
+        <div className="relative h-7 w-full max-w-[420px]">
           <svg
             className="absolute inset-0 h-full w-full"
-            viewBox="0 0 340 28"
+            viewBox="0 0 420 28"
             fill="none"
             preserveAspectRatio="none"
           >
             {DERIVED.map((_, i) => {
-              const x = 38 + i * 88
+              const x = 46 + i * 110
               return (
                 <motion.path
                   key={i}
-                  d={`M 170 0 V 12 H ${x} V 28`}
+                  d={`M 210 0 V 12 H ${x} V 28`}
                   stroke={on ? 'rgba(49,196,126,0.45)' : 'rgba(255,255,255,0.12)'}
                   strokeWidth="1"
                   initial={false}
@@ -409,14 +409,14 @@ function Keys({ on }: { on: boolean }) {
           </svg>
         </div>
 
-        <div className="flex w-full max-w-[340px] justify-between">
+        <div className="flex w-full max-w-[420px] justify-between">
           {DERIVED.map((k, i) => (
             <motion.span
               key={k}
               initial={false}
               animate={on ? { opacity: 1, y: 0 } : { opacity: 0.35, y: 5 }}
               transition={{ duration: 0.4, delay: on ? 0.6 + i * 0.1 : 0 }}
-              className="w-[72px] rounded-lg border border-neon/25 bg-neon/10 py-1.5 text-center font-mono text-[12px] font-semibold text-neon"
+              className="w-[88px] rounded-lg border border-neon/25 bg-neon/10 py-1.5 text-center font-mono text-[12px] font-semibold text-neon"
             >
               {k}
             </motion.span>
@@ -457,7 +457,7 @@ function Deposit({ on }: { on: boolean }) {
           }}
           transition={{ layout: LAYOUT, duration: 0.4, ease: EASE }}
           layoutId="carrier"
-          className="w-[min(356px,100%)] rounded-xl border bg-gradient-to-b from-[#141a17] to-[#0b100e] p-5"
+          className="w-[min(408px,100%)] rounded-xl border bg-gradient-to-b from-[#141a17] to-[#0b100e] p-5"
         >
           <div className="text-[10px] uppercase tracking-[0.22em] text-white/35">Amount</div>
           <div className="mt-3 flex items-baseline">
@@ -465,10 +465,10 @@ function Deposit({ on }: { on: boolean }) {
               value={on ? PRESETS[pick].value : 25000}
               format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }}
               transformTiming={{ duration: 700, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }}
-              className="font-mono text-[32px] leading-none tabular-nums"
+              className="font-mono text-[38px] leading-none tabular-nums"
             />
             <motion.span
-              className="ml-0.5 text-[32px] leading-none text-neon"
+              className="ml-0.5 text-[38px] leading-none text-neon"
               animate={{ opacity: [1, 0, 1] }}
               transition={{ duration: 1.1, repeat: Infinity }}
             >
@@ -508,17 +508,17 @@ function Encrypt({ on }: { on: boolean }) {
         {/* every character turns over in place, plain on one face, cipher on the other */}
         <motion.div layoutId="carrier" transition={{ layout: LAYOUT }} className="flex gap-1 rounded-xl border border-white/[0.07] bg-[#0b100e] px-3 py-2">
           {PLAIN.split('').map((c, i) => (
-            <span key={i} className="relative block h-12 w-[30px] [perspective:400px]">
+            <span key={i} className="relative block h-14 w-[36px] [perspective:400px]">
               <motion.span
                 initial={false}
                 animate={{ rotateX: on ? -180 : 0 }}
                 transition={{ duration: 0.5, delay: on ? 0.2 + i * 0.08 : i * 0.04, ease: EASE }}
                 className="absolute inset-0 [transform-style:preserve-3d]"
               >
-                <span className="absolute inset-0 flex items-center justify-center rounded-md bg-white/[0.05] font-mono text-[26px] text-white/70 [backface-visibility:hidden]">
+                <span className="absolute inset-0 flex items-center justify-center rounded-md bg-white/[0.05] font-mono text-[31px] text-white/70 [backface-visibility:hidden]">
                   {c}
                 </span>
-                <span className="absolute inset-0 flex items-center justify-center rounded-md bg-neon/10 font-mono text-[26px] text-neon [backface-visibility:hidden] [transform:rotateX(180deg)]">
+                <span className="absolute inset-0 flex items-center justify-center rounded-md bg-neon/10 font-mono text-[31px] text-neon [backface-visibility:hidden] [transform:rotateX(180deg)]">
                   {CIPHER[i]}
                 </span>
               </motion.span>
@@ -558,7 +558,7 @@ function Batch({ on }: { on: boolean }) {
     <Stage>
       <div className="absolute inset-0 flex items-center justify-center">
         {/* fixed box, so the drawing and the html sit in one coordinate space */}
-        <div className="relative h-[240px] w-[520px] scale-[0.52] sm:scale-[0.82] lg:scale-[1.08]">
+        <div className="relative h-[240px] w-[520px] scale-[0.55] sm:scale-[0.9] lg:scale-[1.28]">
           <svg
             className="absolute inset-0 h-full w-full"
             viewBox="0 0 520 240"
@@ -676,7 +676,7 @@ function Shield({ on }: { on: boolean }) {
         animate={{ y: on ? -22 : 0 }}
         transition={{ layout: LAYOUT, duration: 0.3, ease: 'easeInOut' }}
         layoutId="carrier"
-        className="absolute inset-x-0 top-8 mx-auto h-[340px] w-[min(292px,92%)] rounded-[36px] border border-white/10 bg-[#111714] p-1.5"
+        className="absolute inset-x-0 top-8 mx-auto h-[400px] w-[min(330px,92%)] rounded-[40px] border border-white/10 bg-[#111714] p-1.5"
       >
         <div className="relative h-full overflow-hidden rounded-[28px] bg-[#070b09]">
           <div className="absolute left-5 top-3 text-[9px] text-white/35">09:41</div>

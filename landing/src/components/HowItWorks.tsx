@@ -89,7 +89,7 @@ export default function HowItWorks() {
       ref={ref}
       id="money"
       className="relative"
-      style={{ height: `${STEPS.length * 75 + 60}vh` }}
+      style={{ height: `${STEPS.length * 95 + 60}vh` }}
     >
       <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden">
         {/* depth behind everything */}
@@ -108,14 +108,14 @@ export default function HowItWorks() {
           </h2>
         </div>
 
-        <div className="shell relative flex flex-1 flex-col items-center justify-center gap-8 pb-16">
+        <div className="shell relative flex flex-1 flex-col items-center justify-center gap-6 pb-14">
           <Frame key={index} visual={step.visual} index={index} />
 
           <div key={`text-${index}`} className="text-center">
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
             >
               <h3 className="text-[clamp(24px,2.8vw,36px)] font-semibold leading-[1.1] tracking-[-0.02em]">
                 {step.title}

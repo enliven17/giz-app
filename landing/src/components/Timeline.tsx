@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { useRef, useState } from 'react'
+import { motion, useInView, useScroll, useSpring } from 'framer-motion'
 import StepVisual, { type VisualKind } from './StepVisual'
 
 export type TimelineStep = {
@@ -9,126 +9,98 @@ export type TimelineStep = {
   visual: VisualKind
 }
 
-/** One card, alternating sides, lit while it is the step in view. */
+/**
+ * One row of the timeline. The grid is symmetric, so both sides sit the same
+ * distance from the spine and every node meets the line at the card's centre.
+ */
 function Row({ step, index }: { step: TimelineStep; index: number }) {
   const ref = useRef<HTMLLIElement>(null)
-  const inView = useInView(ref, { margin: '-45% 0px -45% 0px' })
+  const inView = useInView(ref, { margin: '-40% 0px -40% 0px' })
   const [hover, setHover] = useState(false)
   const left = index % 2 === 0
   const on = inView || hover
 
+  const card = (
+    <motion.article
+      onPointerEnter={() => setHover(true)}
+      onPointerLeave={() => setHover(false)}
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className={`rounded-2xl border p-5 transition-colors duration-500 md:p-6 ${
+        on
+          ? 'border-neon/25 bg-[#0c1712] shadow-[0_30px_80px_-50px_rgba(49,196,126,0.8)]'
+          : 'border-white/[0.07] bg-ink-card'
+      }`}
+    >
+      <StepVisual kind={step.visual} on={on} />
+
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <h3 className="text-[21px] font-semibold tracking-tight">{step.title}</h3>
+        {step.chain && (
+          <span
+            className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors duration-500 ${
+              on ? 'border-neon/30 text-neon' : 'border-white/10 text-white/45'
+            }`}
+          >
+            {step.chain}
+          </span>
+        )}
+      </div>
+      <p className="mt-2.5 text-[14.5px] leading-relaxed text-white/45">{step.body}</p>
+    </motion.article>
+  )
+
   return (
     <li
       ref={ref}
-      className={`relative flex flex-col md:flex-row md:items-center ${left ? '' : 'md:flex-row-reverse'}`}
+      className="relative grid items-center gap-y-0 pl-16 md:grid-cols-[1fr_2px_1fr] md:gap-x-0 md:pl-0"
     >
-      {/* node on the spine */}
-      <span
-        className={`absolute left-[26px] top-10 z-10 h-3 w-3 -translate-x-1/2 rounded-full transition-all duration-500 md:left-1/2 ${
-          on ? 'scale-[1.6] bg-neon shadow-[0_0_0_6px_rgba(49,196,126,0.12)]' : 'bg-white/20'
-        }`}
-      />
+      {/* left column */}
+      <div className="md:pr-14">{left ? card : null}</div>
 
-      {/* connector from the spine to the card */}
-      <span
-        className={`absolute left-[26px] top-10 hidden h-px transition-colors duration-500 md:block md:left-1/2 md:w-[calc(50%-320px)] ${
-          left ? 'md:-translate-x-full' : ''
-        } ${on ? 'bg-neon/30' : 'bg-white/10'}`}
-      />
-
-      <div className="w-full pl-14 md:w-1/2 md:pl-0 md:pr-16 md:[&:nth-child(n)]:pr-16">
-        <motion.article
-          onPointerEnter={() => setHover(true)}
-          onPointerLeave={() => setHover(false)}
-          initial={{ opacity: 0, y: 28 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className={`rounded-2xl border p-5 transition-all duration-500 md:p-6 ${
-            on
-              ? 'border-neon/25 bg-[#0c1712] shadow-[0_30px_80px_-50px_rgba(49,196,126,0.8)]'
-              : 'border-white/[0.07] bg-ink-card'
-          }`}
-        >
-          <StepVisual kind={step.visual} on={on} />
-
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <h3 className="text-[21px] font-semibold tracking-tight">{step.title}</h3>
-            {step.chain && (
-              <span
-                className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors duration-500 ${
-                  on ? 'border-neon/30 text-neon' : 'border-white/10 text-white/45'
-                }`}
-              >
-                {step.chain}
-              </span>
-            )}
-          </div>
-          <p className="mt-2.5 max-w-[46ch] text-[14.5px] leading-relaxed text-white/45">
-            {step.body}
-          </p>
-        </motion.article>
+      {/* the node, always centred on the row */}
+      <div className="absolute left-6 top-1/2 -translate-y-1/2 md:static md:flex md:h-full md:items-center md:justify-center">
+        <span className="relative block">
+          <span
+            className={`block h-3 w-3 -translate-x-1/2 rounded-full transition-all duration-500 md:translate-x-0 ${
+              on ? 'scale-[1.7] bg-neon shadow-[0_0_0_7px_rgba(49,196,126,0.1)]' : 'bg-white/20'
+            }`}
+          />
+          {/* connector from the node to the card, same length on both sides */}
+          <span
+            className={`absolute top-1/2 hidden h-px w-14 -translate-y-1/2 transition-colors duration-500 md:block ${
+              left ? 'right-full' : 'left-full'
+            } ${on ? 'bg-neon/30' : 'bg-white/10'}`}
+          />
+        </span>
       </div>
 
-      <div className="hidden md:block md:w-1/2" />
+      {/* right column */}
+      <div className="md:pl-14">{left ? null : card}</div>
     </li>
   )
 }
 
 export default function Timeline({ steps }: { steps: TimelineStep[] }) {
   const ref = useRef<HTMLDivElement>(null)
-  const [height, setHeight] = useState(0)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const ro = new ResizeObserver(() => setHeight(el.offsetHeight))
-    ro.observe(el)
-    setHeight(el.offsetHeight)
-    return () => ro.disconnect()
-  }, [])
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start 65%', 'end 55%'],
+  })
+  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 28, mass: 0.4 })
 
   return (
     <div ref={ref} className="relative">
-      {/* the spine and the light that travels down it */}
-      <div className="pointer-events-none absolute left-[26px] top-0 h-full w-px bg-white/[0.08] md:left-1/2" />
-      {height > 0 && (
-        <svg
-          className="pointer-events-none absolute left-[26px] top-0 h-full w-px overflow-visible md:left-1/2"
-          viewBox={`0 0 2 ${height}`}
-          preserveAspectRatio="none"
-          fill="none"
-          aria-hidden
-        >
-          <g mask="url(#spine-mask)">
-            <circle className="spine-light" cx="0" cy="0" r="90" fill="url(#spine-grad)" />
-          </g>
-          <defs>
-            <mask id="spine-mask">
-              <path d={`M1 0 V ${height}`} stroke="white" strokeWidth="4" />
-            </mask>
-            <radialGradient id="spine-grad">
-              <stop offset="0%" stopColor="#31c47e" />
-              <stop offset="100%" stopColor="transparent" />
-            </radialGradient>
-          </defs>
-          <style>{`
-            .spine-light {
-              offset-path: path("M1 0 V ${height}");
-              animation: spine-run 9s linear infinite;
-            }
-            @keyframes spine-run {
-              0% { offset-distance: 0%; }
-              100% { offset-distance: 100%; }
-            }
-            @media (prefers-reduced-motion: reduce) {
-              .spine-light { animation: none; opacity: 0; }
-            }
-          `}</style>
-        </svg>
-      )}
+      {/* the spine, filling as the page scrolls */}
+      <div className="pointer-events-none absolute left-6 top-0 h-full w-px bg-white/[0.08] md:left-1/2 md:-translate-x-1/2" />
+      <motion.div
+        style={{ scaleY: progress }}
+        className="pointer-events-none absolute left-6 top-0 h-full w-px origin-top bg-gradient-to-b from-neon/70 via-neon to-neon/70 md:left-1/2 md:-translate-x-1/2"
+      />
 
-      <ol className="relative space-y-10 md:space-y-16">
+      <ol className="relative space-y-12 md:space-y-20">
         {steps.map((step, i) => (
           <Row key={step.title} step={step} index={i} />
         ))}

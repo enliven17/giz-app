@@ -284,28 +284,55 @@ function Funding({ on }: { on: boolean }) {
   )
 }
 
+/** Beam travelling along a routed path, adapted from the fraud card. */
 function Route({ on }: { on: boolean }) {
   return (
     <Stage>
-      <div className="absolute inset-0 flex items-center justify-between px-8">
-        <div className="h-16 w-16 rounded-xl border border-white/10 bg-white/[0.04]" />
-        <div className="relative h-px flex-1">
-          <div className="absolute inset-0 bg-white/10" />
-          {[0, 1, 2].map((i) => (
-            <motion.span
-              key={i}
-              className="absolute top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-neon"
-              initial={false}
-              animate={on ? { left: ['0%', '100%'], opacity: [0, 1, 1, 0] } : { opacity: 0 }}
-              transition={{ duration: 2.2, delay: i * 0.55, repeat: on ? Infinity : 0, ease: 'linear' }}
-            />
-          ))}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md border border-white/10 bg-[#0a0e0c] px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-white/45">
-            private
-          </div>
-        </div>
-        <div className="h-16 w-16 rounded-xl border border-neon/25 bg-neon/10" />
+      <div className="absolute inset-0">
+        <svg className="absolute inset-0 h-full w-full" viewBox="0 0 52 50" fill="none">
+          <g stroke="rgba(255,255,255,0.12)" strokeWidth="0.4">
+            <path d="M 6 6 v 12 l 20 10 l 20 -8 v 22" />
+          </g>
+          {on && (
+            <g mask="url(#route-mask)">
+              <circle className="route-beam" cx="0" cy="0" r="9" fill="url(#route-grad)" />
+            </g>
+          )}
+          <defs>
+            <mask id="route-mask">
+              <path d="M 6 6 v 12 l 20 10 l 20 -8 v 22" stroke="white" strokeWidth="0.9" />
+            </mask>
+            <radialGradient id="route-grad" fx="1">
+              <stop offset="0%" stopColor="#31c47e" />
+              <stop offset="100%" stopColor="transparent" />
+            </radialGradient>
+          </defs>
+        </svg>
+
+        <div className="absolute left-5 top-5 h-11 w-11 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/10 bg-white/[0.04]" />
+        <div className="absolute bottom-6 right-6 h-11 w-11 rounded-xl border border-neon/25 bg-neon/10" />
+
+        <motion.div
+          initial={false}
+          animate={{ opacity: on ? 1 : 0.4 }}
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md border border-white/10 bg-[#0a0e0c] px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-white/50"
+        >
+          confidential
+        </motion.div>
       </div>
+
+      <style>{`
+        .route-beam {
+          offset-anchor: 10px 0px;
+          offset-path: path("M 6 6 v 12 l 20 10 l 20 -8 v 26");
+          animation: route-run 3s cubic-bezier(0.05, 0.05, 0.05, 0.03) infinite;
+        }
+        @keyframes route-run {
+          0% { offset-distance: 0%; }
+          55% { offset-distance: 100%; }
+          100% { offset-distance: 100%; }
+        }
+      `}</style>
     </Stage>
   )
 }
@@ -452,74 +479,136 @@ function Encrypt({ on }: { on: boolean }) {
   )
 }
 
+const DOTS = [
+  { top: '38%', left: '18%' },
+  { top: '64%', left: '32%' },
+  { top: '46%', left: '74%' },
+  { top: '76%', left: '56%' },
+  { top: '30%', left: '46%' },
+  { top: '62%', left: '8%' },
+  { top: '82%', left: '24%' },
+  { top: '56%', left: '88%' },
+  { top: '26%', left: '68%' },
+]
+
+/** Radar sweep over a field of deposits, adapted from the bot detection card.
+ *  Here it says the opposite thing: no single deposit can be singled out. */
 function Batch({ on }: { on: boolean }) {
+  const [index, setIndex] = useState(0)
+
+  useEffect(() => {
+    if (!on) return
+    const id = window.setInterval(() => setIndex((v) => (v + 1) % DOTS.length), 2200)
+    return () => window.clearInterval(id)
+  }, [on])
+
   return (
     <Stage>
-      <div className="absolute inset-0 flex items-center justify-center gap-8">
-        <div className="flex flex-col gap-2">
-          {[0, 1, 2, 3].map((i) => (
-            <motion.span
-              key={i}
-              initial={false}
-              animate={on ? { x: [0, 34], opacity: [1, 0] } : { x: 0, opacity: 0.5 }}
-              transition={{ duration: 1.3, delay: i * 0.2, repeat: on ? Infinity : 0, ease: EASE }}
-              className="block h-3.5 w-12 rounded-full bg-white/15"
-            />
-          ))}
-        </div>
+      <div className="absolute inset-x-0 bottom-0 top-2">
+        {/* the sweep */}
         <motion.div
-          initial={false}
-          animate={on ? { scale: [1, 1.05, 1] } : { scale: 1 }}
-          transition={{ duration: 1.3, repeat: on ? Infinity : 0, ease: EASE }}
-          className="flex h-28 w-28 items-center justify-center rounded-2xl border border-neon/25 bg-neon/10 font-mono text-[11px] uppercase tracking-[0.18em] text-neon"
+          className="pointer-events-none absolute bottom-3 left-1/2 h-48 w-48 origin-bottom-left"
+          style={{
+            background:
+              'radial-gradient(circle at 0% 100%, rgba(49,196,126,0.28) 5%, transparent 60%)',
+          }}
+          initial={{ opacity: 0.6, rotate: -55 }}
+          animate={on ? { opacity: [0.6, 1, 0.6], rotate: [-55, -42, -50, -45, -55] } : { opacity: 0.3 }}
+          transition={{ duration: 14, repeat: on ? Infinity : 0, ease: 'easeInOut' }}
+        />
+
+        {/* range rings */}
+        <div className="absolute left-1/2 top-6 h-full w-[130%] -translate-x-1/2 rounded-full border-t border-dashed border-white/10" />
+        <div className="absolute left-1/2 top-14 h-full w-[110%] -translate-x-1/2 rounded-full border-t border-dashed border-white/10" />
+        <div className="absolute left-1/2 top-24 h-full w-[88%] -translate-x-1/2 rounded-full border-t border-dashed border-white/10" />
+
+        {/* the deposits */}
+        {DOTS.map((d, i) => (
+          <span
+            key={i}
+            className="absolute h-[5px] w-[5px] rounded-[1px] bg-white/25"
+            style={{ top: d.top, left: d.left }}
+          />
+        ))}
+
+        {/* the one the sweep is over, which still says nothing about its owner */}
+        <motion.div
+          layoutId="batch-dot"
+          className="absolute flex h-[7px] w-[7px] items-center justify-center rounded-[1px] bg-neon shadow-[0_0_10px_4px_rgba(49,196,126,0.55)]"
+          style={DOTS[index]}
+          transition={{ type: 'spring', stiffness: 300, damping: 70 }}
         >
-          batch
+          <motion.span
+            key={index}
+            className="absolute h-[300%] w-[300%] rounded-full border border-neon/70"
+            initial={{ scale: 1, opacity: 0.7 }}
+            animate={{ scale: 1.8, opacity: [0.7, 1, 0] }}
+            transition={{ duration: 1.2, ease: 'easeOut', delay: 0.6 }}
+          />
         </motion.div>
+
+        <div className="absolute bottom-1 left-1/2 h-20 w-20 -translate-x-1/2 rounded-full border border-white/10 bg-[#0a0e0c]" />
       </div>
     </Stage>
   )
 }
 
+/** Phone that lifts to reveal an alert, adapted from the notification centre. */
 function Shield({ on }: { on: boolean }) {
   return (
     <Stage>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <motion.div
-          initial={false}
-          animate={{ y: on ? -6 : 0 }}
-          transition={{ duration: 0.4, ease: EASE }}
-          className="w-[250px] rounded-lg border border-white/[0.08] bg-gradient-to-b from-[#141a17] to-[#0b100e] p-5"
-        >
-          <div className="mb-3 flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-white/40">
-            Encrypted
-            {on && <CheckCircle delay={0.6} />}
+      <motion.div
+        initial={false}
+        animate={{ y: on ? -26 : 0 }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        className="absolute inset-x-0 top-8 mx-auto h-56 w-[200px] rounded-[30px] border border-white/10 bg-[#111714] p-1.5"
+      >
+        <div className="relative h-full overflow-hidden rounded-[24px] bg-[#070b09]">
+          <div className="absolute left-5 top-3 text-[9px] text-white/35">09:41</div>
+          <motion.span
+            initial={false}
+            animate={{ backgroundColor: on ? '#31c47e' : 'rgba(255,255,255,0.12)' }}
+            transition={{ duration: 0.2 }}
+            className="absolute left-1/2 top-2.5 h-5 w-5 -translate-x-1/2 rounded-full"
+          />
+
+          <motion.div
+            initial={false}
+            animate={
+              on
+                ? { y: 46, scale: 1, filter: 'blur(0px)' }
+                : { y: -70, scale: 0.75, filter: 'blur(10px)' }
+            }
+            transition={{ duration: 0.3, ease: 'easeInOut', delay: on ? 0.1 : 0 }}
+            className="absolute inset-x-3 z-10 flex h-12 items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-white/[0.06] px-3 backdrop-blur-md"
+          >
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-neon/15 text-[11px] font-semibold text-neon">
+              G
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="flex items-center justify-between">
+                <span className="text-[11px] font-medium">Position updated</span>
+                <span className="text-[9px] text-white/35">now</span>
+              </span>
+              <span className="block truncate text-[10px] text-white/45">
+                Balance ••••••  ·  encrypted
+              </span>
+            </span>
+          </motion.div>
+
+          {/* home screen behind the alert */}
+          <div className="absolute inset-x-4 top-12 grid grid-cols-4 gap-2.5 pt-4">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <span
+                key={i}
+                className="aspect-square rounded-lg bg-gradient-to-br from-white/[0.08] to-white/[0.02]"
+              />
+            ))}
           </div>
-          {[
-            ['Balance', '••••••'],
-            ['Position', '••••••'],
-            ['Returns', '••••••'],
-          ].map(([k, v], i) => (
-            <div
-              key={k}
-              className={`flex items-center justify-between py-2.5 ${i ? 'border-t border-white/[0.06]' : ''}`}
-            >
-              <span className="text-[12px] text-white/40">{k}</span>
-              <motion.span
-                initial={false}
-                animate={
-                  on
-                    ? { opacity: 1, filter: 'blur(0px)' }
-                    : { opacity: 0.3, filter: 'blur(4px)' }
-                }
-                transition={{ duration: 0.4, delay: on ? i * 0.12 : 0 }}
-                className="font-mono text-[14px] text-neon"
-              >
-                {v}
-              </motion.span>
-            </div>
-          ))}
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-[linear-gradient(to_top,#0a0e0c_55%,transparent)]" />
     </Stage>
   )
 }

@@ -12,10 +12,20 @@ export type RailItem = {
   to: string
 }
 
+/** Hourglass outline: the further a card sits from the middle, the more its
+ *  vertical edges pinch inward, so the strip reads as one curved surface. */
+function pinch(w: number, h: number, amount: number) {
+  const k = w * 0.34 * amount
+  const c = h * 0.3
+  return (
+    `M0,0 C${k},${c} ${k},${h - c} 0,${h} ` +
+    `L${w},${h} C${w - k},${h - c} ${w - k},${c} ${w},0 Z`
+  )
+}
+
 /**
- * Horizontal rail of glossy cards. The card in the middle sits flat and the
- * ones beside it tilt away toward the edges, so the strip reads as one curved
- * surface rather than a list.
+ * Horizontal rail of glossy cards. The middle card is flat and readable, the
+ * ones beside it tilt, pinch and let their gradient bloom out of focus.
  */
 export default function GlossyRail({ items }: { items: RailItem[] }) {
   const railRef = useRef<HTMLDivElement>(null)
@@ -33,13 +43,28 @@ export default function GlossyRail({ items }: { items: RailItem[] }) {
       const reach = rect.width / 2
 
       Array.from(rail.children).forEach((node) => {
-        const el = node as HTMLElement
-        const r = el.getBoundingClientRect()
-        const d = Math.max(-1.6, Math.min(1.6, (r.left + r.width / 2 - center) / reach))
+        const card = node as HTMLElement
+        const r = card.getBoundingClientRect()
+        const d = Math.max(-1.5, Math.min(1.5, (r.left + r.width / 2 - center) / reach))
         const abs = Math.min(1, Math.abs(d))
-        el.style.transform = `perspective(1600px) rotateY(${d * -24}deg) translateZ(${-abs * 140}px) scale(${1 - abs * 0.1})`
-        el.style.opacity = String(1 - abs * 0.42)
-        el.style.zIndex = String(100 - Math.round(abs * 100))
+        const ease = abs * abs
+
+        card.style.transform = `perspective(1700px) rotateY(${d * -20}deg) translateZ(${-ease * 130}px) scale(${1 - ease * 0.06})`
+        card.style.zIndex = String(100 - Math.round(abs * 100))
+        card.style.clipPath = `path('${pinch(r.width, r.height, ease)}')`
+
+        const skin = card.querySelector<HTMLElement>('[data-skin]')
+        const body = card.querySelector<HTMLElement>('[data-body]')
+        if (skin) {
+          // the gradient blooms and smears as the card turns away
+          skin.style.filter = `blur(${ease * 26}px) saturate(${1 + ease * 0.9})`
+          skin.style.transform = `scale(${1 + ease * 0.5})`
+          skin.style.opacity = String(1 - ease * 0.15)
+        }
+        if (body) {
+          body.style.opacity = String(Math.max(0, 1 - abs * 1.5))
+          body.style.filter = `blur(${ease * 5}px)`
+        }
       })
     }
 
@@ -51,9 +76,6 @@ export default function GlossyRail({ items }: { items: RailItem[] }) {
     rail.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll)
 
-    // start centred on the first card
-    rail.scrollLeft = 0
-
     return () => {
       cancelAnimationFrame(raf)
       rail.removeEventListener('scroll', onScroll)
@@ -64,29 +86,35 @@ export default function GlossyRail({ items }: { items: RailItem[] }) {
   return (
     <div
       ref={railRef}
-      className="no-scrollbar flex snap-x snap-mandatory gap-6 overflow-x-auto px-[max(24px,calc(50vw-220px))] py-10 [perspective:1600px]"
+      className="no-scrollbar flex snap-x snap-mandatory gap-8 overflow-x-auto px-[max(24px,calc(50vw-230px))] py-12 [perspective:1700px]"
     >
       {items.map((item) => {
         const Icon = item.icon
         return (
           <article
             key={item.title}
-            className="group relative aspect-[3/4] w-[min(72vw,440px)] shrink-0 snap-center overflow-hidden rounded-[28px] border border-white/10 transition-[transform,opacity] duration-200 ease-out will-change-transform"
-            style={{
-              background: `radial-gradient(130% 110% at 18% 8%, ${item.from} 0%, transparent 58%), radial-gradient(120% 120% at 88% 92%, ${item.to} 0%, transparent 62%), #0a0f0d`,
-            }}
+            className="relative aspect-[3/4] w-[min(74vw,460px)] shrink-0 snap-center overflow-hidden rounded-[30px] bg-[#080c0a] will-change-transform"
           >
-            {/* gloss: a soft sheen across the top and a bright top edge */}
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(255,255,255,0.16),rgba(255,255,255,0.02)_38%,transparent_60%)]" />
-            <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+            <div
+              data-skin
+              className="absolute inset-0 will-change-[filter,transform]"
+              style={{
+                background: `radial-gradient(120% 100% at 22% 12%, ${item.from} 0%, transparent 62%), radial-gradient(120% 110% at 82% 88%, ${item.to} 0%, transparent 66%), radial-gradient(90% 70% at 50% 50%, rgba(255,255,255,0.08) 0%, transparent 70%)`,
+              }}
+            />
 
-            <div className="relative flex h-full flex-col p-8">
+            {/* gloss: sheen across the top, bright top edge, soft inner border */}
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(158deg,rgba(255,255,255,0.18),rgba(255,255,255,0.03)_36%,transparent_58%)]" />
+            <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/45 to-transparent" />
+            <div className="pointer-events-none absolute inset-0 rounded-[30px] ring-1 ring-inset ring-white/10" />
+
+            <div data-body className="relative flex h-full flex-col p-8">
               <div className="flex items-center justify-between">
-                <span className="text-[12px] font-semibold uppercase tracking-[0.2em] text-white/50">
+                <span className="text-[12px] font-semibold uppercase tracking-[0.2em] text-white/55">
                   {item.step}
                 </span>
                 {item.chain && (
-                  <span className="rounded-full border border-white/15 bg-black/20 px-3 py-1.5 text-[12px] font-medium backdrop-blur-md">
+                  <span className="rounded-full border border-white/15 bg-black/25 px-3 py-1.5 text-[12px] font-medium backdrop-blur-md">
                     {item.chain}
                   </span>
                 )}
@@ -99,7 +127,7 @@ export default function GlossyRail({ items }: { items: RailItem[] }) {
                 <h3 className="mt-6 text-[26px] font-semibold leading-tight tracking-[-0.02em]">
                   {item.title}
                 </h3>
-                <p className="mt-3 max-w-[30ch] text-[14px] leading-relaxed text-white/60">
+                <p className="mt-3 max-w-[30ch] text-[14px] leading-relaxed text-white/65">
                   {item.body}
                 </p>
               </div>

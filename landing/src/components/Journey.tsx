@@ -1,6 +1,45 @@
 import { motion } from 'framer-motion'
 import { Wallet, Landmark, Shuffle, Lock, Layers, Vault, KeyRound } from 'lucide-react'
 import Reveal from './Reveal'
+import GlossyRail, { type RailItem } from './GlossyRail'
+
+const MONEY_CARDS: RailItem[] = [
+  {
+    step: 'Step 01',
+    title: 'Your wallet',
+    body: 'Connect the wallet you already use. Nothing about it changes.',
+    icon: Wallet,
+    from: 'rgba(120,150,138,0.5)',
+    to: 'rgba(40,60,52,0.7)',
+  },
+  {
+    step: 'Step 02',
+    title: 'Funding account',
+    chain: 'Monad',
+    body: 'Your balance lands on a funding account that only you control.',
+    icon: Landmark,
+    from: 'rgba(49,196,126,0.55)',
+    to: 'rgba(10,60,40,0.8)',
+  },
+  {
+    step: 'Step 03',
+    title: 'Confidential transfer',
+    chain: 'Aurora',
+    body: 'Value is routed privately, unlinked from the wallet it came from.',
+    icon: Shuffle,
+    from: 'rgba(80,220,170,0.55)',
+    to: 'rgba(14,44,70,0.75)',
+  },
+  {
+    step: 'Step 04',
+    title: 'Private investing account',
+    chain: 'Ethereum',
+    body: 'A separate account holds your positions, encrypted end to end.',
+    icon: KeyRound,
+    from: 'rgba(49,196,126,0.45)',
+    to: 'rgba(30,20,70,0.8)',
+  },
+]
 
 type Step = {
   label: string
@@ -8,13 +47,6 @@ type Step = {
   icon: typeof Wallet
   private?: boolean
 }
-
-const MONEY: Step[] = [
-  { label: 'Your wallet', icon: Wallet },
-  { label: 'Funding account', chain: 'Monad', icon: Landmark },
-  { label: 'Confidential transfer', chain: 'Aurora', icon: Shuffle, private: true },
-  { label: 'Private investing account', chain: 'Ethereum', icon: KeyRound, private: true },
-]
 
 const INVESTMENT: Step[] = [
   { label: 'Your deposit', icon: Wallet },
@@ -82,7 +114,25 @@ function Track({ steps, id, title, media }: { steps: Step[]; id: string; title: 
 }
 
 export function MoneyJourney() {
-  return <Track id="money" title="Your money’s journey" steps={MONEY} media="Transfer animation" />
+  return (
+    <section id="money" className="scroll-mt-28 overflow-hidden py-24 md:py-32">
+      <div className="shell">
+        <Reveal>
+          <p className="eyebrow">Step one</p>
+          <h2 className="mt-5 max-w-[16ch] text-[clamp(32px,4.4vw,52px)] font-semibold leading-[1.02] tracking-[-0.025em]">
+            Your money’s journey
+          </h2>
+          <p className="mt-6 max-w-[48ch] text-[17px] leading-relaxed text-white/45">
+            From the wallet you already use to an investing account nobody can trace back to you.
+          </p>
+        </Reveal>
+      </div>
+
+      <Reveal delay={0.1} y={40}>
+        <GlossyRail items={MONEY_CARDS} />
+      </Reveal>
+    </section>
+  )
 }
 
 export function InvestmentJourney() {

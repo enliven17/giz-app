@@ -15,6 +15,9 @@ export type VisualKind =
 
 const EASE = [0.65, 0, 0.35, 1] as const
 
+// how a step turns into the next one
+const LAYOUT = { type: 'spring', stiffness: 110, damping: 20, mass: 0.7 } as const
+
 const SCRAMBLE = [
   '6*7A0^!HIETD@6XS749%2$4L4RO$SH*8W#6OPLLF%WSKVI^PTT1PJUOS60EQL$*K53*Y#AK5GDM6XIWX79XR^DQOMEJF$F1ZNL*L0Z&#LJ4B$E97Q76VF0U#HY!37J5$GKCI0RMK$2P1F9JJYGVR@IAHYPZALXQMJ!519!GZTQSA$#BEXUYPSZ302Z*&DDWW!NI61S#!MAHJ0Y&3J8*EBIMM$#X%46NJ0*9P3L@UW5A8NCZX&98CQ75NL9XEH11NBB^E&LQ1YPZALMJ3DSUXBS9*DADQ7ND0SCI#HY!37J5$GK',
   'Y4#!I*ZO1QCFU07QJFDVW#6$17$WW^#7MR5Q50I^2FFKJQW1&1%94ABU&$TX$RRTXT3P!4JPK3^A12&DQ15S08%Q^X*GUE761@6S5DA*HACX9@AS3B04YQ5*VD1*$XX9ECF4B9%O^^LGNDKT%FT2Y2SDC0M!GCNSPVWVNBAWEPT3Q2XK6M877&Q838ZWKGW8*SVG241H51EB2SU1QZL56OR44Q$95ZEDFOVS#AL@C%FEYKZEPI*F&EQUT^65O68J3Q9O^YACNTNVMAK4S#MRM!V@GOKPV0HO2IN$3501P^Y9K',
@@ -47,9 +50,9 @@ function Scrambler({ on }: { on: boolean }) {
 function EdgeMask() {
   return (
     <>
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-[linear-gradient(to_right,#070a09_20%,transparent)]" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-[linear-gradient(to_left,#070a09_20%,transparent)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[linear-gradient(to_bottom,#070a09_28%,transparent)]" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-[linear-gradient(to_right,#0a0e0c_20%,transparent)]" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-[linear-gradient(to_left,#0a0e0c_20%,transparent)]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[linear-gradient(to_bottom,#0a0e0c_28%,transparent)]" />
     </>
   )
 }
@@ -87,9 +90,21 @@ function CheckCircle({ delay = 2.3 }: { delay?: number }) {
 }
 
 /** Shared stage so every step visual has the same optical weight. */
+const STAGE =
+  'relative mx-auto h-[268px] w-full max-w-[560px] overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0a0e0c] sm:h-[320px]'
+
+/** Every step is played inside the same frame, so only the content changes. */
 function Stage({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative mx-auto h-[230px] w-full max-w-[540px] sm:h-[290px]">{children}</div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.45, ease: EASE }}
+      className={STAGE}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(90%_70%_at_50%_0%,rgba(49,196,126,0.07),transparent_70%)]" />
+      {children}
+    </motion.div>
   )
 }
 
@@ -144,14 +159,17 @@ function Vault({ on }: { on: boolean }) {
     <motion.div
       initial="close"
       animate={on ? 'open' : 'close'}
-      className="group relative mx-auto h-[230px] w-full max-w-[540px] sm:h-[290px]"
+      transition={{ layout: LAYOUT }}
+      className={`group ${STAGE}`}
     >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(90%_70%_at_50%_0%,rgba(49,196,126,0.07),transparent_70%)]" />
 
       {/* the safe body, corners cut like a deposit box */}
       <motion.div
         variants={vaultVariant}
         layoutId="carrier"
-        className="absolute inset-x-0 top-[86px] mx-auto h-36 w-[90%] max-w-[300px] border-t border-white/10 bg-gradient-to-b from-[#141a17] to-[#0b100e] p-6 shadow-lg"
+        transition={{ layout: LAYOUT }}
+        className="absolute inset-x-0 top-[104px] mx-auto h-40 w-[90%] max-w-[300px] border-t border-white/10 bg-gradient-to-b from-[#141a17] to-[#0b100e] p-6 shadow-lg"
         style={{
           clipPath:
             'polygon(30px 0%, calc(100% - 30px) 0%, 100% 30px, 100% 100%, 0% 100%, 0% 30px)',
@@ -161,7 +179,7 @@ function Vault({ on }: { on: boolean }) {
       {/* the dial */}
       <motion.div
         variants={vaultVariant}
-        className="absolute inset-x-0 top-8 mx-auto flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-full bg-[#050806] p-1"
+        className="absolute inset-x-0 top-[46px] mx-auto flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-full bg-[#050806] p-1"
       >
         <motion.div
           variants={shineVariant}
@@ -192,13 +210,13 @@ function Vault({ on }: { on: boolean }) {
 
       <motion.div
         variants={vaultVariant}
-        className="absolute inset-x-0 top-8 mx-auto flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-full border-b-[3px] border-white/10"
+        className="absolute inset-x-0 top-[46px] mx-auto flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-full border-b-[3px] border-white/10"
       />
 
       {/* the code field */}
       <motion.div
         variants={inputVariant}
-        className="absolute inset-x-0 top-[140px] mx-auto flex w-[90%] max-w-[230px] items-center justify-between rounded-md border border-white/[0.06] bg-white/[0.04] p-2 drop-shadow-[0_2px_5px_rgba(0,0,0,0.5)] transition-all duration-300 group-hover:border-neon/60 group-hover:[box-shadow:inset_0_0_6px_rgba(49,196,126,0.5)]"
+        className="absolute inset-x-0 top-[162px] mx-auto flex w-[90%] max-w-[250px] items-center justify-between rounded-md border border-white/[0.06] bg-white/[0.04] p-2 drop-shadow-[0_2px_5px_rgba(0,0,0,0.5)] transition-all duration-300 group-hover:border-neon/60 group-hover:[box-shadow:inset_0_0_6px_rgba(49,196,126,0.5)]"
       >
         <div className="ml-2 text-xs text-neon">
           {'••••••••••'.split('').map((char, index) => (
@@ -229,9 +247,9 @@ function Wallet({ on }: { on: boolean }) {
             y: on ? -6 : 0,
             borderColor: on ? 'rgba(49,196,126,0.28)' : 'rgba(255,255,255,0.08)',
           }}
-          transition={{ duration: 0.4, ease: EASE }}
+          transition={{ layout: LAYOUT, duration: 0.4, ease: EASE }}
           layoutId="carrier"
-          className="relative w-[min(288px,100%)] overflow-hidden rounded-xl border bg-gradient-to-b from-[#141a17] to-[#0b100e] p-4 shadow-lg"
+          className="relative w-[min(316px,100%)] overflow-hidden rounded-xl border bg-gradient-to-b from-[#141a17] to-[#0b100e] p-4 shadow-lg"
         >
           {/* a light sweeps across the card while it reads the wallet */}
           <motion.span
@@ -291,7 +309,7 @@ function Funding({ on }: { on: boolean }) {
             value={on ? 184204 : 0}
             format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }}
             transformTiming={{ duration: 900, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }}
-            className="font-mono text-[34px] leading-none tabular-nums"
+            className="font-mono text-[40px] leading-none tabular-nums"
           />
         </motion.div>
         <motion.div
@@ -342,9 +360,9 @@ function Route({ on }: { on: boolean }) {
   return (
     <Stage>
       <div className="absolute inset-0 flex items-center justify-center px-5">
-        <div className="flex w-full max-w-[320px] items-center">
+        <div className="flex w-full max-w-[400px] items-center">
           {/* where the value comes from */}
-          <div className="relative w-[62px] shrink-0 text-center">
+          <div className="relative w-[76px] shrink-0 text-center">
             <div className="rounded-lg border border-white/10 bg-[#0a0e0c] py-2 font-mono text-[11px] text-white/70">
               0x7a4f
             </div>
@@ -362,7 +380,7 @@ function Route({ on }: { on: boolean }) {
               borderColor: on ? 'rgba(49,196,126,0.4)' : 'rgba(255,255,255,0.1)',
               backgroundColor: on ? '#0c1712' : '#0a0e0c',
             }}
-            transition={{ duration: 0.4 }}
+            transition={{ layout: LAYOUT, duration: 0.4 }}
             layoutId="carrier"
             className="shrink-0 rounded-full border px-3 py-2 text-center"
           >
@@ -374,7 +392,7 @@ function Route({ on }: { on: boolean }) {
           <Wire on={on} delay={0.55} />
 
           {/* and where it lands, with nothing of the first left on it */}
-          <div className="relative w-[62px] shrink-0 text-center">
+          <div className="relative w-[76px] shrink-0 text-center">
             <motion.div
               initial={false}
               animate={{
@@ -410,7 +428,7 @@ function Keys({ on }: { on: boolean }) {
         <motion.div
           initial={false}
           animate={{ y: on ? 0 : 6, opacity: on ? 1 : 0.55 }}
-          transition={{ duration: 0.5, ease: EASE }}
+          transition={{ layout: LAYOUT, duration: 0.5, ease: EASE }}
           layoutId="carrier"
           className="flex items-center gap-2.5 rounded-xl border border-neon/25 bg-[#0c1712] px-3.5 py-2"
         >
@@ -422,19 +440,19 @@ function Keys({ on }: { on: boolean }) {
         </motion.div>
 
         {/* and what it derives */}
-        <div className="relative h-7 w-full max-w-[236px]">
+        <div className="relative h-7 w-full max-w-[300px]">
           <svg
             className="absolute inset-0 h-full w-full"
-            viewBox="0 0 236 28"
+            viewBox="0 0 300 28"
             fill="none"
             preserveAspectRatio="none"
           >
             {DERIVED.map((_, i) => {
-              const x = 30 + i * 59
+              const x = 34 + i * 77
               return (
                 <motion.path
                   key={i}
-                  d={`M 118 0 V 12 H ${x} V 28`}
+                  d={`M 150 0 V 12 H ${x} V 28`}
                   stroke={on ? 'rgba(49,196,126,0.45)' : 'rgba(255,255,255,0.12)'}
                   strokeWidth="1"
                   initial={false}
@@ -446,14 +464,14 @@ function Keys({ on }: { on: boolean }) {
           </svg>
         </div>
 
-        <div className="flex w-full max-w-[236px] justify-between">
+        <div className="flex w-full max-w-[300px] justify-between">
           {DERIVED.map((k, i) => (
             <motion.span
               key={k}
               initial={false}
               animate={on ? { opacity: 1, y: 0 } : { opacity: 0.35, y: 5 }}
               transition={{ duration: 0.4, delay: on ? 0.6 + i * 0.1 : 0 }}
-              className="w-[52px] rounded-lg border border-neon/25 bg-neon/10 py-1.5 text-center font-mono text-[12px] font-semibold text-neon"
+              className="w-[64px] rounded-lg border border-neon/25 bg-neon/10 py-1.5 text-center font-mono text-[12px] font-semibold text-neon"
             >
               {k}
             </motion.span>
@@ -492,9 +510,9 @@ function Deposit({ on }: { on: boolean }) {
             y: on ? -6 : 0,
             borderColor: on ? 'rgba(49,196,126,0.5)' : 'rgba(255,255,255,0.08)',
           }}
-          transition={{ duration: 0.4, ease: EASE }}
+          transition={{ layout: LAYOUT, duration: 0.4, ease: EASE }}
           layoutId="carrier"
-          className="w-[min(300px,100%)] rounded-xl border bg-gradient-to-b from-[#141a17] to-[#0b100e] p-5"
+          className="w-[min(324px,100%)] rounded-xl border bg-gradient-to-b from-[#141a17] to-[#0b100e] p-5"
         >
           <div className="text-[10px] uppercase tracking-[0.22em] text-white/35">Amount</div>
           <div className="mt-3 flex items-baseline">
@@ -502,10 +520,10 @@ function Deposit({ on }: { on: boolean }) {
               value={on ? PRESETS[pick].value : 25000}
               format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }}
               transformTiming={{ duration: 700, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }}
-              className="font-mono text-[28px] leading-none tabular-nums"
+              className="font-mono text-[32px] leading-none tabular-nums"
             />
             <motion.span
-              className="ml-0.5 text-[28px] leading-none text-neon"
+              className="ml-0.5 text-[32px] leading-none text-neon"
               animate={{ opacity: [1, 0, 1] }}
               transition={{ duration: 1.1, repeat: Infinity }}
             >
@@ -545,19 +563,19 @@ function Encrypt({ on }: { on: boolean }) {
       <EdgeMask />
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-6">
         {/* every character turns over in place, plain on one face, cipher on the other */}
-        <motion.div layoutId="carrier" className="flex gap-1 rounded-xl border border-white/[0.07] bg-[#0b100e] px-3 py-2">
+        <motion.div layoutId="carrier" transition={{ layout: LAYOUT }} className="flex gap-1 rounded-xl border border-white/[0.07] bg-[#0b100e] px-3 py-2">
           {PLAIN.split('').map((c, i) => (
-            <span key={i} className="relative block h-9 w-[22px] [perspective:400px]">
+            <span key={i} className="relative block h-11 w-[26px] [perspective:400px]">
               <motion.span
                 initial={false}
                 animate={{ rotateX: on ? -180 : 0 }}
                 transition={{ duration: 0.5, delay: on ? 0.2 + i * 0.08 : i * 0.04, ease: EASE }}
                 className="absolute inset-0 [transform-style:preserve-3d]"
               >
-                <span className="absolute inset-0 flex items-center justify-center rounded-md bg-white/[0.05] font-mono text-[20px] text-white/70 [backface-visibility:hidden]">
+                <span className="absolute inset-0 flex items-center justify-center rounded-md bg-white/[0.05] font-mono text-[23px] text-white/70 [backface-visibility:hidden]">
                   {c}
                 </span>
-                <span className="absolute inset-0 flex items-center justify-center rounded-md bg-neon/10 font-mono text-[20px] text-neon [backface-visibility:hidden] [transform:rotateX(180deg)]">
+                <span className="absolute inset-0 flex items-center justify-center rounded-md bg-neon/10 font-mono text-[23px] text-neon [backface-visibility:hidden] [transform:rotateX(180deg)]">
                   {CIPHER[i]}
                 </span>
               </motion.span>
@@ -721,9 +739,9 @@ function Shield({ on }: { on: boolean }) {
       <motion.div
         initial={false}
         animate={{ y: on ? -22 : 0 }}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        transition={{ layout: LAYOUT, duration: 0.3, ease: 'easeInOut' }}
         layoutId="carrier"
-        className="absolute inset-x-0 top-8 mx-auto h-60 w-[min(250px,92%)] rounded-[34px] border border-white/10 bg-[#111714] p-1.5"
+        className="absolute inset-x-0 top-10 mx-auto h-[272px] w-[min(268px,92%)] rounded-[36px] border border-white/10 bg-[#111714] p-1.5"
       >
         <div className="relative h-full overflow-hidden rounded-[28px] bg-[#070b09]">
           <div className="absolute left-5 top-3 text-[9px] text-white/35">09:41</div>
@@ -772,7 +790,7 @@ function Shield({ on }: { on: boolean }) {
         </div>
       </motion.div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-[linear-gradient(to_top,#070a09_55%,transparent)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-[linear-gradient(to_top,#0a0e0c_55%,transparent)]" />
     </Stage>
   )
 }

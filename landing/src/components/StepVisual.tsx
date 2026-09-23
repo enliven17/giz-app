@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, type Variants } from 'framer-motion'
+import NumberFlow from '@number-flow/react'
 
 export type VisualKind =
   | 'wallet'
@@ -227,17 +228,41 @@ function Wallet({ on }: { on: boolean }) {
       <div className="absolute inset-0 flex items-center justify-center">
         <motion.div
           initial={false}
-          animate={{ y: on ? -6 : 0 }}
+          animate={{
+            y: on ? -6 : 0,
+            borderColor: on ? 'rgba(49,196,126,0.28)' : 'rgba(255,255,255,0.08)',
+          }}
           transition={{ duration: 0.4, ease: EASE }}
-          className="w-[240px] rounded-lg border border-white/[0.08] bg-gradient-to-b from-[#141a17] to-[#0b100e] p-4 shadow-lg"
+          className="relative w-[248px] overflow-hidden rounded-xl border bg-gradient-to-b from-[#141a17] to-[#0b100e] p-4 shadow-lg"
         >
-          <div className="flex items-center gap-3">
+          {/* a light sweeps across the card while it reads the wallet */}
+          <motion.span
+            initial={false}
+            animate={on ? { x: ['-60%', '160%'] } : { x: '-60%' }}
+            transition={{
+              duration: 2.4,
+              repeat: on ? Infinity : 0,
+              ease: 'easeInOut',
+              repeatDelay: 1,
+            }}
+            className="pointer-events-none absolute inset-y-0 w-1/3 bg-[linear-gradient(90deg,transparent,rgba(49,196,126,0.12),transparent)]"
+          />
+
+          <div className="relative flex items-center gap-3">
             <span className="h-9 w-9 rounded-full bg-gradient-to-br from-neon/70 to-neon/20" />
-            <div className="min-w-0">
-              <div className="h-2 w-24 rounded-full bg-white/15" />
-              <div className="mt-2 h-2 w-16 rounded-full bg-white/[0.08]" />
+            <div className="min-w-0 flex-1">
+              <div className="font-mono text-[12px] text-white/70">0x7a4f...9c2e</div>
+              <div className="mt-1.5 h-1.5 w-16 rounded-full bg-white/[0.08]" />
             </div>
+            <motion.span
+              initial={false}
+              animate={{ opacity: on ? 1 : 0, scale: on ? 1 : 0.6 }}
+              transition={{ duration: 0.3, delay: on ? 0.5 : 0 }}
+            >
+              <CheckCircle delay={on ? 0.55 : 0} />
+            </motion.span>
           </div>
+
           <motion.div
             initial={false}
             animate={{
@@ -245,7 +270,7 @@ function Wallet({ on }: { on: boolean }) {
               color: on ? '#05140d' : 'rgba(255,255,255,0.5)',
             }}
             transition={{ duration: 0.4 }}
-            className="mt-4 flex h-9 items-center justify-center rounded-md text-[12px] font-semibold"
+            className="relative mt-4 flex h-9 items-center justify-center rounded-md text-[12px] font-semibold"
           >
             {on ? 'Connected' : 'Connect wallet'}
           </motion.div>
@@ -260,19 +285,12 @@ function Funding({ on }: { on: boolean }) {
     <Stage>
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
         <div className="text-[11px] uppercase tracking-[0.22em] text-white/35">Funding account</div>
-        <div className="flex items-end gap-1 font-mono text-[34px] leading-none">
-          <span className="text-white/40">$</span>
-          {'184,204'.split('').map((c, i) => (
-            <motion.span
-              key={i}
-              initial={false}
-              animate={on ? { y: [10, 0], opacity: [0, 1] } : { opacity: 0.35 }}
-              transition={{ duration: 0.4, delay: i * 0.05, ease: EASE }}
-            >
-              {c}
-            </motion.span>
-          ))}
-        </div>
+        <NumberFlow
+          value={on ? 184204 : 0}
+          format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }}
+          transformTiming={{ duration: 900, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }}
+          className="font-mono text-[34px] leading-none tabular-nums"
+        />
         <motion.div
           initial={false}
           animate={{ opacity: on ? 1 : 0.3, width: on ? 120 : 40 }}
@@ -423,21 +441,45 @@ function Keys({ on }: { on: boolean }) {
   )
 }
 
+const PRESETS = [
+  { label: '25%', value: 12500 },
+  { label: '50%', value: 25000 },
+  { label: '75%', value: 37500 },
+  { label: 'Max', value: 50000 },
+]
+
 function Deposit({ on }: { on: boolean }) {
+  const [pick, setPick] = useState(1)
+
+  // the amount keeps choosing itself, so the card is never static
+  useEffect(() => {
+    if (!on) return
+    const id = window.setInterval(() => setPick((v) => (v + 1) % PRESETS.length), 2400)
+    return () => window.clearInterval(id)
+  }, [on])
+
   return (
     <Stage>
       <div className="absolute inset-0 flex items-center justify-center">
         <motion.div
           initial={false}
-          animate={{ y: on ? -6 : 0, borderColor: on ? 'rgba(49,196,126,0.5)' : 'rgba(255,255,255,0.08)' }}
+          animate={{
+            y: on ? -6 : 0,
+            borderColor: on ? 'rgba(49,196,126,0.5)' : 'rgba(255,255,255,0.08)',
+          }}
           transition={{ duration: 0.4, ease: EASE }}
-          className="w-[240px] rounded-lg border bg-gradient-to-b from-[#141a17] to-[#0b100e] p-5"
+          className="w-[248px] rounded-xl border bg-gradient-to-b from-[#141a17] to-[#0b100e] p-5"
         >
           <div className="text-[10px] uppercase tracking-[0.22em] text-white/35">Amount</div>
-          <div className="mt-3 font-mono text-[28px] leading-none">
-            $25,000
+          <div className="mt-3 flex items-baseline">
+            <NumberFlow
+              value={on ? PRESETS[pick].value : 25000}
+              format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }}
+              transformTiming={{ duration: 700, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }}
+              className="font-mono text-[28px] leading-none tabular-nums"
+            />
             <motion.span
-              className="ml-0.5 text-neon"
+              className="ml-0.5 text-[28px] leading-none text-neon"
               animate={{ opacity: [1, 0, 1] }}
               transition={{ duration: 1.1, repeat: Infinity }}
             >
@@ -445,13 +487,20 @@ function Deposit({ on }: { on: boolean }) {
             </motion.span>
           </div>
           <div className="mt-4 flex gap-1.5">
-            {['25%', '50%', '75%', 'Max'].map((p) => (
-              <span
-                key={p}
-                className="flex-1 rounded-md bg-white/[0.05] py-1.5 text-center text-[10px] text-white/45"
+            {PRESETS.map((preset, i) => (
+              <motion.span
+                key={preset.label}
+                initial={false}
+                animate={{
+                  backgroundColor:
+                    on && i === pick ? 'rgba(49,196,126,0.16)' : 'rgba(255,255,255,0.05)',
+                  color: on && i === pick ? '#31c47e' : 'rgba(255,255,255,0.45)',
+                }}
+                transition={{ duration: 0.3 }}
+                className="flex-1 rounded-md py-1.5 text-center text-[10px]"
               >
-                {p}
-              </span>
+                {preset.label}
+              </motion.span>
             ))}
           </div>
         </motion.div>
@@ -460,39 +509,45 @@ function Deposit({ on }: { on: boolean }) {
   )
 }
 
-const CIPHER = '8F2A9C41D7B3E5A6'
+const PLAIN = '$25,000'
+const CIPHER = 'A3F91C7'
 
 function Encrypt({ on }: { on: boolean }) {
   return (
     <Stage>
       <Scrambler on={on} />
       <EdgeMask />
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-5">
-        <motion.span
-          initial={false}
-          animate={{ opacity: on ? 0.25 : 0.7, filter: on ? 'blur(3px)' : 'blur(0px)' }}
-          transition={{ duration: 0.5 }}
-          className="font-mono text-[24px]"
-        >
-          $25,000
-        </motion.span>
-        <div className="flex flex-wrap justify-center gap-1 px-8">
-          {CIPHER.split('').map((c, i) => (
-            <motion.span
-              key={i}
-              initial={false}
-              animate={
-                on
-                  ? { opacity: 1, filter: 'blur(0px)', scale: 1 }
-                  : { opacity: 0, filter: 'blur(10px)', scale: 1.02 }
-              }
-              transition={{ duration: 0.5, delay: on ? 0.25 + i * 0.06 : 0, ease: 'easeInOut' }}
-              className="rounded bg-neon/10 px-1.5 py-1 font-mono text-[15px] text-neon"
-            >
-              {c}
-            </motion.span>
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-6">
+        {/* every character turns over in place, plain on one face, cipher on the other */}
+        <div className="flex gap-1">
+          {PLAIN.split('').map((c, i) => (
+            <span key={i} className="relative block h-9 w-[22px] [perspective:400px]">
+              <motion.span
+                initial={false}
+                animate={{ rotateX: on ? -180 : 0 }}
+                transition={{ duration: 0.5, delay: on ? 0.2 + i * 0.08 : i * 0.04, ease: EASE }}
+                className="absolute inset-0 [transform-style:preserve-3d]"
+              >
+                <span className="absolute inset-0 flex items-center justify-center rounded-md bg-white/[0.05] font-mono text-[20px] text-white/70 [backface-visibility:hidden]">
+                  {c}
+                </span>
+                <span className="absolute inset-0 flex items-center justify-center rounded-md bg-neon/10 font-mono text-[20px] text-neon [backface-visibility:hidden] [transform:rotateX(180deg)]">
+                  {CIPHER[i]}
+                </span>
+              </motion.span>
+            </span>
           ))}
         </div>
+
+        <motion.div
+          initial={false}
+          animate={{ opacity: on ? 1 : 0.25 }}
+          transition={{ duration: 0.4, delay: on ? 0.9 : 0 }}
+          className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-white/40"
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-neon" />
+          encrypted on chain
+        </motion.div>
       </div>
     </Stage>
   )

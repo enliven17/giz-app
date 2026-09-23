@@ -1,5 +1,11 @@
 # P1 — Native Mera compatibility probe
 
+Current Android scope update: the isolated P1 probe now permits Android API 28+
+with valid package/certificate metadata and native passkey support. Real PRF,
+signing, lifecycle and recovery acceptance remain pending. Earlier iOS-only and
+Android-deferred statements below describe the previous baseline; Android
+production support is not established. See [Android setup](ANDROID_SIGNING.md).
+
 Implementation is available on `feature/mera-integration`. Real-iPhone acceptance
 remains pending; the probe is intentionally isolated from demo access, portfolios,
 orders and transfers. It cannot submit a transaction or accept arbitrary signing

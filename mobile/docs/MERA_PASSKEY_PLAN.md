@@ -1,5 +1,11 @@
 # Mera passkey wallet integration plan
 
+Current Android scope update: the isolated P1 probe now permits Android API 28+
+with valid package/certificate metadata and native passkey support. Real PRF,
+signing, lifecycle and recovery acceptance remain pending. Earlier iOS-only and
+Android-deferred statements below describe the previous baseline; Android
+production support is not established. See [Android setup](ANDROID_SIGNING.md).
+
 Status: P0 local identity/configuration implemented; signing and hosted association
 verification remain blocked. P1 probe implemented; real iPhone acceptance remains pending.
 Initial release is iOS-only (user decision). Android is deferred and is not an acceptance gate.

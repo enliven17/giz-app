@@ -3,22 +3,31 @@ import { reactNativeWebAuthnClient } from "@category-labs/mera/react-native-weba
 import { AppState, Platform } from "react-native";
 import { Passkey } from "react-native-passkey";
 import { hexToBytes } from "viem";
-import { identity, validateNativeIdentity } from "@/config/passkeys";
+import { identity, validateAndroidIdentity, validateNativeIdentity } from "@/config/passkeys";
 import { ProbeError } from "@/domain/probeWallet";
 import { probeWalletStorage } from "@/storage/probeWallet";
 import { createMeraProbeService } from "./meraProbe";
 
 export function probeAvailability(): string | null {
   if (!__DEV__) return "The passkey probe is available only in a native development build.";
-  if (Platform.OS !== "ios")
-    return "The initial passkey release supports iOS only. Android is deferred.";
+  if (Platform.OS !== "ios" && Platform.OS !== "android")
+    return "The native passkey probe supports iOS and Android only.";
+  const android = Platform.OS === "android";
   const version = Number.parseInt(String(Platform.Version), 10);
-  if (!Number.isFinite(version) || version < identity.minimumPasskeyOs.iosMajor)
-    return "Native passkeys require iOS 18+ and a PRF-capable provider.";
+  const minimum = android
+    ? identity.minimumPasskeyOs.androidApi
+    : identity.minimumPasskeyOs.iosMajor;
+  if (!Number.isFinite(version) || version < minimum)
+    return android
+      ? "Native passkeys require Android 9+ (API 28+) and a PRF-capable provider."
+      : "Native passkeys require iOS 18+ and a PRF-capable provider.";
   try {
-    validateNativeIdentity();
+    if (android) validateAndroidIdentity();
+    else validateNativeIdentity();
   } catch {
-    return "Blocked: configure a valid Apple Team ID and iOS bundle identifier.";
+    return android
+      ? "Blocked: configure a valid Android package and signing certificate SHA-256 fingerprint."
+      : "Blocked: configure a valid Apple Team ID and iOS bundle identifier.";
   }
   if (!Passkey.isSupported()) return "This device does not support native passkeys.";
   return null;
@@ -65,7 +74,7 @@ async function ceremony<T>(operation: () => Promise<T>): Promise<T> {
 // event; a full background transition or timeout abandons the operation.
 export async function waitForProbeForeground(): Promise<void> {
   if (AppState.currentState === "active") return;
-  if (AppState.currentState === "background")
+  if (AppState.currentState === "background" && Platform.OS !== "android")
     throw new ProbeError("Probe abandoned while the app was in the background.");
   await new Promise<void>((resolve, reject) => {
     const finish = (active: boolean) => {
@@ -75,7 +84,8 @@ export async function waitForProbeForeground(): Promise<void> {
       else reject(new ProbeError("Return to the app and retry after the system prompt closes."));
     };
     const subscription = AppState.addEventListener("change", (state) => {
-      if (state === "active" || state === "background") finish(state === "active");
+      if (state === "active" || (state === "background" && Platform.OS !== "android"))
+        finish(state === "active");
     });
     const timer = setTimeout(() => finish(false), 5000);
   });

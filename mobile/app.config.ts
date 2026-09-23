@@ -24,7 +24,13 @@ const config: ExpoConfig = {
   },
   android: { package: identity.androidPackage },
   plugins: [
-    ["expo-splash-screen", { backgroundColor: "#050706" }],
+    [
+      "expo-splash-screen",
+      {
+        backgroundColor: "#050706",
+        android: { image: "./assets/splash-logo.png", imageWidth: 80 },
+      },
+    ],
     "expo-secure-store",
     "./plugins/withAndroidDevelopmentSigning.cjs",
   ],

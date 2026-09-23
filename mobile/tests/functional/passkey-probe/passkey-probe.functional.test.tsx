@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
-import { AppState } from "react-native";
+import { AppState, Platform } from "react-native";
 import { webcrypto } from "node:crypto";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { PasskeyProbeScreen } from "@/features/passkey-probe/PasskeyProbeScreen";
@@ -82,6 +82,8 @@ test("cancellation and unknown failures are safe to retry without leaking native
 });
 
 test("duplicate taps and a backgrounded native prompt cannot sign in with a late result", async () => {
+  const originalOs = Object.getOwnPropertyDescriptor(Platform, "OS")!;
+  Object.defineProperty(Platform, "OS", { value: "ios", configurable: true });
   const deps = probeBoundaries();
   const pending = deferred<{ credentialId: string; prfOutput: Uint8Array }>();
   deps.ceremonies.create.mockReturnValueOnce(pending.promise);
@@ -109,5 +111,48 @@ test("duplicate taps and a backgrounded native prompt cannot sign in with a late
     expect(screen.getByRole("button", { name: "Open existing test passkey" })).not.toBeDisabled();
   } finally {
     spy.mockRestore();
+    Object.defineProperty(Platform, "OS", originalOs);
+  }
+});
+
+test("Android provider Activity can background and resume without abandoning the wallet", async () => {
+  const originalOs = Object.getOwnPropertyDescriptor(Platform, "OS")!;
+  Object.defineProperty(Platform, "OS", { value: "android", configurable: true });
+  const deps = probeBoundaries();
+  let active = true;
+  deps.isActive = () => active;
+  const pending = deferred<{ credentialId: string; prfOutput: Uint8Array }>();
+  deps.ceremonies.get.mockReturnValueOnce(pending.promise);
+  let change: (state: "background" | "active") => void = () => {};
+  const spy = jest.spyOn(AppState, "addEventListener").mockImplementation((_event, listener) => {
+    change = listener;
+    return { remove: jest.fn() };
+  });
+  try {
+    show(deps);
+    await screen.findByText("Ready for an unfunded test passkey.");
+    press("Open existing test passkey");
+    await waitFor(() => expect(deps.ceremonies.get).toHaveBeenCalledTimes(1));
+    act(() => {
+      active = false;
+      change("background");
+    });
+    expect(deps.storage.write).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "Create test passkey" })).toBeDisabled();
+    act(() => {
+      active = true;
+      change("active");
+    });
+    const secret = new Uint8Array(32);
+    await act(async () =>
+      pending.resolve({ credentialId: testProbeWallet.credentialId, prfOutput: secret }),
+    );
+    await screen.findByText(testProbeWallet.address);
+    expect(deps.storage.write).toHaveBeenCalledTimes(1);
+    expect(deps.ceremonies.create).not.toHaveBeenCalled();
+    expect(secret.every((byte) => byte === 0)).toBe(true);
+  } finally {
+    spy.mockRestore();
+    Object.defineProperty(Platform, "OS", originalOs);
   }
 });

@@ -20,6 +20,24 @@ function validateNativeIdentity(value = identity) {
   return value;
 }
 
+/** Validate Android metadata without requiring Apple signing configuration. */
+function validateAndroidIdentity(value = identity) {
+  if (value.rpId !== "gizu.io") throw new Error("The frozen passkey RP ID must be gizu.io.");
+  if (!/^[a-zA-Z][\w]*(\.[a-zA-Z][\w]*)+$/.test(value.androidPackage)) {
+    throw new Error("Supply a valid Android package identifier.");
+  }
+  if (
+    !Array.isArray(value.androidSha256Fingerprints) ||
+    value.androidSha256Fingerprints.length === 0 ||
+    !value.androidSha256Fingerprints.every((fingerprint) =>
+      /^(?:[A-Fa-f0-9]{2}:){31}[A-Fa-f0-9]{2}$/.test(fingerprint),
+    )
+  ) {
+    throw new Error("Supply the Android signing certificate SHA-256 fingerprint.");
+  }
+  return value;
+}
+
 /** @param {string | undefined} mode */
 function validatePasskeyMode(mode) {
   if (mode === undefined || mode === "mock") return "mock";
@@ -53,6 +71,7 @@ function validateAssociationFiles(apple, value = identity) {
 module.exports = {
   identity,
   validateNativeIdentity,
+  validateAndroidIdentity,
   validatePasskeyMode,
   associationFiles,
   validateAssociationFiles,

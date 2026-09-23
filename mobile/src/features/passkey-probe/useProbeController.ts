@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { AppState } from "react-native";
+import { AppState, Platform } from "react-native";
 import { ProbeError, type ProbeResult, type ProbeWallet } from "@/domain/probeWallet";
 import type { MeraProbeService, ProbeAction } from "@/services/meraProbe";
 
@@ -44,6 +44,12 @@ export function useProbeController(service: MeraProbeService) {
       });
     const subscription = AppState.addEventListener("change", (state) => {
       if (state === "background") {
+        // Android credential providers open another Activity. Preserve only the
+        // pending ceremony; the service still requires foreground before key use.
+        if (Platform.OS === "android" && service.awaitingPasskey()) {
+          setResult(null);
+          return;
+        }
         abandonAttempt();
         setResult(null);
         setMessage(

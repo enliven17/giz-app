@@ -1,5 +1,11 @@
 # Passkey identity and configuration
 
+Current Android scope update: the isolated P1 probe now permits Android API 28+
+with valid package/certificate metadata and native passkey support. Real PRF,
+signing, lifecycle and recovery acceptance remain pending. Earlier iOS-only and
+Android-deferred statements below describe the previous baseline; Android
+production support is not established. See [Android setup](ANDROID_SIGNING.md).
+
 Initial release: **iOS only**, as requested on 2026-09-23. Android is deferred.
 Android local signing and the frontend association file have since been prepared
 at the user's request; see [Android signing](ANDROID_SIGNING.md). Android runtime

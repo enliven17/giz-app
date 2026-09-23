@@ -12,6 +12,7 @@ export interface MeraProbeService {
   read(): Promise<ProbeWallet | null>;
   run(action: ProbeAction): Promise<ProbeResult>;
   abandon(): void;
+  awaitingPasskey(): boolean;
   forget(): Promise<void>;
   selfCheck(): Promise<void>;
 }
@@ -30,6 +31,7 @@ export function createMeraProbeService({
   waitForForeground?: () => Promise<void>;
 }): MeraProbeService {
   let busy = false;
+  let awaitingPasskey = false;
   let generation = 0;
   function requireCurrent(attempt: number) {
     if (attempt !== generation || !isActive())
@@ -39,6 +41,7 @@ export function createMeraProbeService({
   }
   return {
     availability,
+    awaitingPasskey: () => awaitingPasskey,
     read: () => storage.read(),
     abandon() {
       generation++;
@@ -77,11 +80,13 @@ export function createMeraProbeService({
           throw new ProbeError("Forget local test metadata before selecting a different wallet.");
         if ((action === "recover" || action === "sign") && !stored)
           throw new ProbeError("Create or open a test passkey first.");
+        awaitingPasskey = true;
         result =
           action === "create"
             ? await ceremonies.create()
             : await ceremonies.get(stored?.credentialId);
         await waitForForeground();
+        awaitingPasskey = false;
         requireCurrent(attempt);
         const derived = await deriveProbeWallet(
           result.prfOutput,
@@ -95,6 +100,7 @@ export function createMeraProbeService({
         requireCurrent(attempt);
         return { ...derived, recovered: stored !== null };
       } finally {
+        awaitingPasskey = false;
         result?.prfOutput.fill(0);
         busy = false;
       }

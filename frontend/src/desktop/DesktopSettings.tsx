@@ -38,8 +38,12 @@ export default function DesktopSettings({ onOpen }: { onOpen: (id: string) => vo
         <p className="mt-1 text-[13px] text-white/40">Member since September 2026, desk coverage EMEA.</p>
       </motion.div>
 
-      <div className="mt-5 grid min-h-0 flex-1 grid-cols-3 gap-5">
-        <SpotlightCard className="h-fit rounded-[28px] p-6">
+      <div className="mt-5 grid min-h-0 flex-1 grid-cols-3 items-start gap-5">
+        <section>
+          <div className="mb-3 px-1 font-mono text-[10px] uppercase tracking-[0.25em] text-white/30">
+            Profile
+          </div>
+          <SpotlightCard className="rounded-3xl p-6">
           <div className="flex items-center gap-4">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-neon/10 font-mono text-[17px] text-neon">
               CP
@@ -52,7 +56,7 @@ export default function DesktopSettings({ onOpen }: { onOpen: (id: string) => vo
               <Copy size={14} />
             </button>
           </div>
-          <div className="mt-6 space-y-3 font-mono text-[12px]">
+            <div className="mt-6 space-y-3 font-mono text-[12px]">
             {[
               ['Network', 'Monad'],
               ['Wallet', 'Passkey'],
@@ -63,10 +67,11 @@ export default function DesktopSettings({ onOpen }: { onOpen: (id: string) => vo
                 <span className="text-white/70">{v}</span>
               </div>
             ))}
-          </div>
-        </SpotlightCard>
+            </div>
+          </SpotlightCard>
+        </section>
 
-        <div className="col-span-2 space-y-4">
+        <div className="col-span-2 space-y-5">
           {groups.map((g, gi) => (
             <motion.section
               key={g.title}
@@ -85,7 +90,7 @@ export default function DesktopSettings({ onOpen }: { onOpen: (id: string) => vo
                       key={r.id}
                       role={'toggle' in r ? undefined : 'button'}
                       onClick={() => !('toggle' in r) && onOpen(r.id)}
-                      className="flex items-center gap-4 px-6 py-3.5 text-left hover:bg-white/[0.02]"
+                      className="flex min-h-[58px] items-center gap-4 px-6 text-left hover:bg-white/[0.02]"
                     >
                       <Icon size={16} className="shrink-0 text-white/40" />
                       <span className="flex-1 truncate text-[14px] text-white/85">{r.label}</span>
@@ -102,6 +107,9 @@ export default function DesktopSettings({ onOpen }: { onOpen: (id: string) => vo
                             className={`h-5 w-5 rounded-full bg-ink ${alerts ? 'ml-auto' : ''}`}
                           />
                         </button>
+                      ) : null}
+                      {'toggle' in r ? (
+                        <span className="w-[15px]" />
                       ) : (
                         <>
                           {'value' in r && r.value && (

@@ -8,11 +8,13 @@ export default function VaultCard({
   onClick,
   delay = 0,
   className = 'aspect-square',
+  chartHeight = 40,
 }: {
   vault: Vault
   onClick: () => void
   delay?: number
   className?: string
+  chartHeight?: number
 }) {
   const up = v.change24h >= 0
   return (
@@ -35,13 +37,13 @@ export default function VaultCard({
         </div>
       </div>
 
-      <div className="-mx-1 flex justify-center">
-        <Sparkline series={v.series} up={up} width={130} height={40} />
+      <div className="-mx-1 my-3 flex min-h-0 flex-1 items-center">
+        <Sparkline series={v.series} up={up} width={130} height={chartHeight} fluid />
       </div>
 
       <div>
         <div className="truncate text-[14px] font-medium leading-tight">{v.name}</div>
-        <div className="mt-1 flex items-baseline justify-between">
+        <div className="mt-1.5 flex items-baseline justify-between">
           <span className="truncate font-mono text-[9px] uppercase tracking-wider text-white/30">
             {v.tvl} tvl
           </span>

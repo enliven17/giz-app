@@ -12,12 +12,17 @@ export interface ParticleDotOrbProps {
   distance?: number;
   /** how far particles fly on burst */
   spread?: number;
+  /** dot size multiplier */
+  dotScale?: number;
+  /** how many dots on the sphere */
+  count?: number;
 }
 
 const particleVertexShader = `
 uniform float uTime;
 uniform float uBurst;
 uniform float uSpread;
+uniform float uDotScale;
 attribute float aSize;
 attribute vec3 aDir;
 varying float vAlpha;
@@ -75,7 +80,7 @@ void main() {
   vec4 mvPosition = modelViewMatrix * vec4(displaced, 1.0);
   gl_Position = projectionMatrix * mvPosition;
 
-  gl_PointSize = aSize * (13.5 / -mvPosition.z) * (1.0 + uBurst * 0.6);
+  gl_PointSize = aSize * uDotScale * (13.5 / -mvPosition.z) * (1.0 + uBurst * 0.6);
   vAlpha = (smoothstep(-1.1, 1.0, norm.z) * 0.72 + 0.28) * (1.0 - smoothstep(0.6, 1.0, uBurst));
 }
 `;
@@ -102,6 +107,8 @@ export default function ParticleDotOrb({
   burst = false,
   distance = 4.4,
   spread = 5.0,
+  dotScale = 1,
+  count = 190,
 }: ParticleDotOrbProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
@@ -136,8 +143,7 @@ export default function ParticleDotOrb({
     const group = new THREE.Group();
     scene.add(group);
 
-    // 190 crisp dots with Fibonacci sphere distribution
-    const count = 190;
+    // Fibonacci sphere distribution
     const positions = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     const dirs = new Float32Array(count * 3);
@@ -180,6 +186,7 @@ export default function ParticleDotOrb({
         uTime: { value: 0 },
         uBurst: { value: 0 },
         uSpread: { value: spread },
+        uDotScale: { value: dotScale },
         uColor: { value: new THREE.Color(color) },
       },
       transparent: true,
@@ -265,7 +272,7 @@ export default function ParticleDotOrb({
       material.dispose();
       renderer.dispose();
     };
-  }, [size, speed, color, distance, spread]);
+  }, [size, speed, color, distance, spread, dotScale, count]);
 
   return (
     <div className={`flex items-center justify-center ${className}`}>

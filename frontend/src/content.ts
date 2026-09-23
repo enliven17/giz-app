@@ -128,7 +128,7 @@ export const subpages: Record<string, SubPageContent> = {
     title: 'Terms and disclosures',
     sections: [
       {
-        body: 'Private vaults are offered to qualified members only. Capital is at risk, past performance does not indicate future results, and redemption windows may be suspended under stressed conditions.',
+        body: 'Confidential vaults are offered to qualified members only. Capital is at risk, past performance does not indicate future results, and redemption windows may be suspended under stressed conditions.',
       },
       {
         title: 'Documents',

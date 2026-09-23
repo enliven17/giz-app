@@ -62,7 +62,10 @@ export default function SwapSheet({
         className="glass relative w-full overflow-hidden rounded-t-[36px] px-5 pb-8 pt-5"
       >
         <div className="mb-5 flex items-center justify-between">
-          <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-neon/70">
+          <div
+            className="font-mono text-[10px] uppercase tracking-[0.3em]"
+            style={{ color: side === 'sell' ? 'rgba(196,87,106,0.8)' : 'rgba(49,196,126,0.75)' }}
+          >
             <Scramble text={side === 'buy' ? 'buy order' : 'sell order'} />
           </div>
           <button onClick={onClose} className="glass-soft flex h-9 w-9 items-center justify-center rounded-xl text-white/50">
@@ -143,15 +146,18 @@ export default function SwapSheet({
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={confirm}
-          className="neon-btn relative mt-5 flex h-16 w-full items-center justify-center overflow-hidden rounded-3xl text-[15px] font-semibold"
+          className={`relative mt-5 flex h-16 w-full items-center justify-center overflow-hidden rounded-3xl text-[15px] font-semibold ${
+            side === 'sell' ? 'sell-btn' : 'neon-btn'
+          }`}
         >
-          <span className="relative">Confirm swap</span>
+          <span className="relative">{side === 'sell' ? 'Confirm sell' : 'Confirm buy'}</span>
         </motion.button>
 
         <AnimatePresence>
           {state !== 'edit' && (
             <SignOverlay
               state={state}
+              tone={side === 'sell' ? 'negative' : 'positive'}
               doneLabel="order filled"
               detail={`${units.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${getToken}`}
               onCancel={reject}

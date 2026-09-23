@@ -4,21 +4,19 @@ import DesktopEntry from './DesktopEntry'
 import DesktopShell from './DesktopShell'
 import DesktopHome from './DesktopHome'
 import DesktopVaults from './DesktopVaults'
-import DesktopExchange from './DesktopExchange'
+import ComingSoon from '../components/ComingSoon'
 import DesktopSettings from './DesktopSettings'
 import DesktopVaultDetail from './DesktopVaultDetail'
-import Notifications from '../components/Notifications'
 import SubPage from '../components/SubPage'
 import TransferSheet from '../components/TransferSheet'
 import type { Vault } from '../data'
 
-type Screen = 'entry' | 'app' | 'vault' | 'notifications' | 'sub'
+type Screen = 'entry' | 'app' | 'vault' | 'sub'
 type Tab = 'home' | 'vaults' | 'swap' | 'settings'
 
 const fade = {
   initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -12 },
 }
 
 export default function DesktopApp() {
@@ -47,14 +45,12 @@ export default function DesktopApp() {
         setTab(id as Tab)
         setScreen('app')
       }}
-      onNotifications={() => setScreen('notifications')}
       onDisconnect={() => {
         setTab('home')
         setScreen('entry')
       }}
     >
-      <AnimatePresence mode="wait">
-        <motion.div
+      <motion.div
           key={screen === 'app' ? tab : screen === 'sub' ? `sub-${sub}` : screen}
           {...fade}
           transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
@@ -69,15 +65,10 @@ export default function DesktopApp() {
             />
           )}
           {screen === 'app' && tab === 'vaults' && <DesktopVaults onOpenVault={openVault} />}
-          {screen === 'app' && tab === 'swap' && <DesktopExchange />}
+          {screen === 'app' && tab === 'swap' && <ComingSoon />}
           {screen === 'app' && tab === 'settings' && <DesktopSettings onOpen={openSub} />}
           {screen === 'vault' && vault && (
             <DesktopVaultDetail vault={vault} onBack={() => setScreen('app')} />
-          )}
-          {screen === 'notifications' && (
-            <div className="mx-auto flex min-h-0 w-full max-w-[760px] flex-1 flex-col px-12">
-              <Notifications onBack={() => setScreen('app')} />
-            </div>
           )}
           {screen === 'sub' && (
             <div className="mx-auto flex min-h-0 w-full max-w-[760px] flex-1 flex-col px-12">
@@ -85,7 +76,6 @@ export default function DesktopApp() {
             </div>
           )}
         </motion.div>
-      </AnimatePresence>
 
       <AnimatePresence>
         {transfer && (

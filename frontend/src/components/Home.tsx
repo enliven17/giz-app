@@ -88,7 +88,7 @@ export default function Home({
 
       <motion.section custom={4} variants={fade} initial="hidden" animate="show" className="mt-9">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-[20px] font-medium tracking-tight">Private vaults</h3>
+          <h3 className="text-[20px] font-medium tracking-tight">Confidential vaults</h3>
           <button onClick={onSeeAllVaults} className="font-mono text-[10px] uppercase tracking-widest text-neon/70">see all</button>
         </div>
 

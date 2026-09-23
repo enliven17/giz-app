@@ -635,13 +635,15 @@ function Batch({ on }: { on: boolean }) {
 
       <style>{`
         /* a dash running along the path, which the compositor keeps up with */
+        /* the staged reveal sets an animation on every child, so this one
+           has to state that it keeps its own */
         .reactor-flow {
           stroke-dasharray: 0.14 1;
-          animation: reactor-flow 2.6s linear infinite;
+          animation: reactor-flow 2.6s linear infinite !important;
         }
         ${FEEDS.map((_, i) => `
-        .reactor-flow-${i} { animation-delay: ${(i * 0.32).toFixed(2)}s; }`).join('')}
-        .reactor-flow-out { animation-delay: 1.3s; }
+        .reactor-flow-${i} { animation-delay: ${(i * 0.32).toFixed(2)}s !important; }`).join('')}
+        .reactor-flow-out { animation-delay: 1.3s !important; }
         @keyframes reactor-flow {
           from { stroke-dashoffset: 1.14; }
           to { stroke-dashoffset: 0; }

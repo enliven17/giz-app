@@ -1,5 +1,7 @@
 import { ArrowUpRight } from 'lucide-react'
+import AsciiField from './AsciiField'
 import AsciiWhales from './AsciiWhales'
+import Reveal from './Reveal'
 
 const COLUMNS = [
   {
@@ -21,7 +23,30 @@ const SOCIAL = ['X', 'Farcaster', 'GitHub', 'Mirror']
 export default function Footer() {
   return (
     <footer className="relative overflow-hidden border-t border-white/[0.07]">
-      <div className="shell py-20">
+      {/* the call to action opens the footer, on the same background */}
+      <div className="relative py-32 md:py-40">
+        <div className="pointer-events-none absolute inset-0">
+          <AsciiField fontSize={16} speed={0.4} opacity={0.8} />
+          <div className="absolute inset-0 bg-gradient-to-b from-ink via-ink/60 to-ink" />
+        </div>
+
+        <div className="shell relative text-center">
+          <Reveal>
+            <h2 className="mx-auto max-w-[14ch] text-[clamp(38px,6vw,76px)] font-semibold leading-[0.98] tracking-[-0.03em]">
+              Your DeFi investments.
+              <span className="block text-neon">Now private.</span>
+            </h2>
+          </Reveal>
+          <Reveal delay={0.12}>
+            <a href="#top" className="btn-neon mt-12">
+              Explore the app
+              <ArrowUpRight size={17} strokeWidth={2.4} />
+            </a>
+          </Reveal>
+        </div>
+      </div>
+
+      <div className="shell relative pb-20">
         <div className="grid gap-14 lg:grid-cols-[1.2fr_1.8fr]">
           <div>
             <div className="flex items-center gap-2.5">
@@ -102,17 +127,9 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* a school of ascii whales drifts under the wordmark */}
-      <div className="relative h-[260px] md:h-[300px]">
-        <div className="absolute inset-0">
-          <AsciiWhales />
-        </div>
-        <div
-          aria-hidden
-          className="pointer-events-none relative select-none px-6 text-center text-[clamp(90px,19vw,260px)] font-semibold leading-[0.8] tracking-[-0.05em] text-white/[0.035]"
-        >
-          Gizu
-        </div>
+      {/* a school of ascii whales drifts along the bottom */}
+      <div className="relative h-[180px] md:h-[220px]">
+        <AsciiWhales />
       </div>
     </footer>
   )

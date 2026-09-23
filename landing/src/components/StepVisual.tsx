@@ -50,9 +50,9 @@ function Scrambler({ on }: { on: boolean }) {
 function EdgeMask() {
   return (
     <>
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-[linear-gradient(to_right,#0a0e0c_20%,transparent)]" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-[linear-gradient(to_left,#0a0e0c_20%,transparent)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[linear-gradient(to_bottom,#0a0e0c_28%,transparent)]" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-[linear-gradient(to_right,#070a09_20%,transparent)]" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-[linear-gradient(to_left,#070a09_20%,transparent)]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[linear-gradient(to_bottom,#070a09_28%,transparent)]" />
     </>
   )
 }
@@ -90,21 +90,18 @@ function CheckCircle({ delay = 2.3 }: { delay?: number }) {
 }
 
 /** Shared stage so every step visual has the same optical weight. */
-const STAGE =
-  'relative mx-auto h-[268px] w-full max-w-[560px] overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0a0e0c] sm:h-[320px]'
+const STAGE = 'relative mx-auto h-[268px] w-full max-w-[560px] sm:h-[320px]'
+const FRAMED = 'overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0a0e0c]'
 
-/** Every step is played inside the same frame, so only the content changes. */
-function Stage({ children }: { children: React.ReactNode }) {
+/** Same size for every step. Only the two that need a surface get a frame. */
+function Stage({ children, framed = false }: { children: React.ReactNode; framed?: boolean }) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.45, ease: EASE }}
-      className={STAGE}
-    >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(90%_70%_at_50%_0%,rgba(49,196,126,0.07),transparent_70%)]" />
+    <div className={framed ? `${STAGE} ${FRAMED}` : STAGE}>
+      {framed && (
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(90%_70%_at_50%_0%,rgba(49,196,126,0.07),transparent_70%)]" />
+      )}
       {children}
-    </motion.div>
+    </div>
   )
 }
 
@@ -160,7 +157,7 @@ function Vault({ on }: { on: boolean }) {
       initial="close"
       animate={on ? 'open' : 'close'}
       transition={{ layout: LAYOUT }}
-      className={`group ${STAGE}`}
+      className={`group ${STAGE} ${FRAMED}`}
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(90%_70%_at_50%_0%,rgba(49,196,126,0.07),transparent_70%)]" />
 
@@ -735,7 +732,7 @@ function Batch({ on }: { on: boolean }) {
 
 function Shield({ on }: { on: boolean }) {
   return (
-    <Stage>
+    <Stage framed>
       <motion.div
         initial={false}
         animate={{ y: on ? -22 : 0 }}

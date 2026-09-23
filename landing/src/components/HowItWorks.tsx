@@ -131,10 +131,10 @@ function Rail({ progress, index }: { progress: MotionValue<number>; index: numbe
 function Frame({ visual, index }: { visual: VisualKind; index: number }) {
   const [on, setOn] = useState(false)
 
+  // one frame at rest is all the reveals need, so nothing visibly resets
   useEffect(() => {
-    setOn(false)
-    const id = window.setTimeout(() => setOn(true), 90)
-    return () => window.clearTimeout(id)
+    const id = requestAnimationFrame(() => setOn(true))
+    return () => cancelAnimationFrame(id)
   }, [index])
 
   return <StepVisual kind={visual} on={on} />

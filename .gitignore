@@ -4,6 +4,10 @@ dist
 *.local
 .DS_Store
 tsconfig.tsbuildinfo
+.env
+.env.*
+!.env.example
+coverage/
 
 # Expo mobile generated artifacts
 mobile/.expo/

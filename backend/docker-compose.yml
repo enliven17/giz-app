@@ -1,0 +1,9 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: private_investment
+      POSTGRES_PASSWORD: private_investment
+      POSTGRES_DB: private_investment
+    ports:
+      - "54329:5432"

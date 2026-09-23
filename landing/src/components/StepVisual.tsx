@@ -673,10 +673,10 @@ function Shield({ on }: { on: boolean }) {
     <Stage>
       {/* the phone stands past the horizon, so it is never a floating object */}
       <div
-        className="absolute inset-x-0 bottom-[22px] top-0 overflow-hidden"
+        className="absolute inset-x-0 bottom-[14px] top-0 overflow-hidden"
         style={{
-          maskImage: 'linear-gradient(to bottom, #000 86%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, #000 86%, transparent 100%)',
+          maskImage: 'linear-gradient(to bottom, #000 90%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, #000 90%, transparent 100%)',
         }}
       >
       <motion.div
@@ -685,7 +685,7 @@ function Shield({ on }: { on: boolean }) {
         transition={{ layout: LAYOUT, duration: 0.3, ease: 'easeInOut' }}
         layoutId="carrier"
       data-carrier
-        className="absolute inset-x-0 top-8 mx-auto h-[400px] w-[min(330px,92%)] rounded-[40px] border border-white/10 bg-[#111714] p-1.5"
+        className="absolute inset-x-0 top-[74px] mx-auto h-[400px] w-[min(330px,92%)] rounded-[40px] border border-white/10 bg-[#111714] p-1.5"
       >
         <div className="relative h-full overflow-hidden rounded-[28px] bg-[#070b09]">
           <div className="absolute left-5 top-3 text-[9px] text-white/35">09:41</div>
@@ -737,8 +737,8 @@ function Shield({ on }: { on: boolean }) {
       </div>
 
       {/* the horizon itself */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-[22px] h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-[22px] mx-auto h-20 w-2/3 -translate-y-1/2 rounded-[50%] bg-[radial-gradient(50%_50%_at_50%_50%,rgba(49,196,126,0.1),transparent_70%)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-[14px] h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-[14px] mx-auto h-20 w-2/3 -translate-y-1/2 rounded-[50%] bg-[radial-gradient(50%_50%_at_50%_50%,rgba(49,196,126,0.1),transparent_70%)]" />
     </Stage>
   )
 }

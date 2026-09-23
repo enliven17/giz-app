@@ -157,7 +157,7 @@ function Vault({ on }: { on: boolean }) {
       initial="close"
       animate={on ? 'open' : 'close'}
       transition={{ layout: LAYOUT }}
-      className={`group ${STAGE} ${FRAMED}`}
+      className={`group ${STAGE}`}
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(90%_70%_at_50%_0%,rgba(49,196,126,0.07),transparent_70%)]" />
 
@@ -732,13 +732,15 @@ function Batch({ on }: { on: boolean }) {
 
 function Shield({ on }: { on: boolean }) {
   return (
-    <Stage framed>
+    <Stage>
+      {/* the phone stands past the horizon, so it is never a floating object */}
+      <div className="absolute inset-x-0 bottom-[46px] top-0 overflow-hidden">
       <motion.div
         initial={false}
         animate={{ y: on ? -22 : 0 }}
         transition={{ layout: LAYOUT, duration: 0.3, ease: 'easeInOut' }}
         layoutId="carrier"
-        className="absolute inset-x-0 top-10 mx-auto h-[272px] w-[min(268px,92%)] rounded-[36px] border border-white/10 bg-[#111714] p-1.5"
+        className="absolute inset-x-0 top-8 mx-auto h-[300px] w-[min(268px,92%)] rounded-[36px] border border-white/10 bg-[#111714] p-1.5"
       >
         <div className="relative h-full overflow-hidden rounded-[28px] bg-[#070b09]">
           <div className="absolute left-5 top-3 text-[9px] text-white/35">09:41</div>
@@ -787,7 +789,12 @@ function Shield({ on }: { on: boolean }) {
         </div>
       </motion.div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-[linear-gradient(to_top,#0a0e0c_55%,transparent)]" />
+      </div>
+
+      {/* the horizon itself */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-[46px] h-20 -translate-y-full bg-[linear-gradient(to_top,#070a09,transparent)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-[46px] h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-[46px] mx-auto h-24 w-2/3 -translate-y-1/2 rounded-[50%] bg-[radial-gradient(50%_50%_at_50%_50%,rgba(49,196,126,0.12),transparent_70%)]" />
     </Stage>
   )
 }

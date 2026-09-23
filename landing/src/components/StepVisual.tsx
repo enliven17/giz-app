@@ -303,96 +303,108 @@ function Funding({ on }: { on: boolean }) {
 }
 
 /** Beam travelling along a routed path, adapted from the fraud card. */
+const GLYPHS = '8F2A9C41D7B3E5A6'
+
+/** One wire with a pulse running along it. */
+function Wire({ on, delay = 0 }: { on: boolean; delay?: number }) {
+  return (
+    <div className="relative h-px flex-1 overflow-hidden bg-white/[0.12]">
+      <motion.span
+        initial={false}
+        animate={on ? { x: ['-120%', '260%'] } : { x: '-120%' }}
+        transition={{
+          duration: 1.5,
+          repeat: on ? Infinity : 0,
+          repeatDelay: 1.1,
+          delay,
+          ease: 'easeInOut',
+        }}
+        className="absolute inset-y-0 w-1/2 bg-[linear-gradient(90deg,transparent,#31c47e,transparent)]"
+      />
+    </div>
+  )
+}
+
 function Route({ on }: { on: boolean }) {
-  // the path starts and ends at the edge of each node, never under it
-  const path = 'M 26 24 L 50 24 L 50 54 L 74 54'
+  const [tick, setTick] = useState(0)
+
+  useEffect(() => {
+    if (!on) return
+    const id = window.setInterval(() => setTick((v) => v + 1), 90)
+    return () => window.clearInterval(id)
+  }, [on])
+
+  const cipher = Array.from({ length: 4 }, (_, i) => GLYPHS[(tick + i * 5) % GLYPHS.length])
 
   return (
     <Stage>
-      <div className="absolute inset-0">
-        <svg
-          className="absolute inset-0 h-full w-full"
-          viewBox="0 0 100 78"
-          fill="none"
-          preserveAspectRatio="none"
-        >
-          <path d={path} stroke="rgba(255,255,255,0.12)" strokeWidth="0.7" />
-          {on && (
-            <g mask="url(#route-mask)">
-              <circle className="route-beam" cx="0" cy="0" r="10" fill="url(#route-grad)" />
-            </g>
-          )}
-          <defs>
-            <mask id="route-mask">
-              <path d={path} stroke="white" strokeWidth="1.4" />
-            </mask>
-            <radialGradient id="route-grad" fx="1">
-              <stop offset="0%" stopColor="#31c47e" />
-              <stop offset="100%" stopColor="transparent" />
-            </radialGradient>
-          </defs>
-        </svg>
-
-        {/* the address that goes in */}
-        <div
-          className="absolute -translate-x-1/2 -translate-y-1/2 text-center"
-          style={{ left: '14%', top: '31%' }}
-        >
-          <div className="rounded-xl border border-white/10 bg-[#0a0e0c] px-3 py-2.5">
-            <div className="font-mono text-[11px] text-white/70">0x7a4f</div>
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-7 px-5">
+        <div className="flex w-full max-w-[320px] items-center">
+          {/* where the value comes from */}
+          <div className="w-[62px] shrink-0 text-center">
+            <div className="rounded-lg border border-white/10 bg-[#0a0e0c] py-2 font-mono text-[11px] text-white/70">
+              0x7a4f
+            </div>
+            <div className="mt-2 text-[9px] uppercase tracking-[0.16em] text-white/30">public</div>
           </div>
-          <div className="mt-2 text-[9px] uppercase tracking-[0.18em] text-white/30">public</div>
-        </div>
 
-        {/* and the unrelated one that comes out */}
-        <div
-          className="absolute -translate-x-1/2 -translate-y-1/2 text-center"
-          style={{ left: '86%', top: '69%' }}
-        >
+          <Wire on={on} />
+
+          {/* the part nobody gets to read */}
           <motion.div
             initial={false}
-            animate={
-              on
-                ? { borderColor: 'rgba(49,196,126,0.35)', backgroundColor: '#0c1712' }
-                : { borderColor: 'rgba(255,255,255,0.1)', backgroundColor: '#0a0e0c' }
-            }
-            transition={{ duration: 0.4, delay: on ? 1.2 : 0 }}
-            className="rounded-xl border px-3 py-2.5"
+            animate={{
+              borderColor: on ? 'rgba(49,196,126,0.4)' : 'rgba(255,255,255,0.1)',
+              backgroundColor: on ? '#0c1712' : '#0a0e0c',
+            }}
+            transition={{ duration: 0.4 }}
+            className="shrink-0 rounded-full border px-3 py-2 text-center"
           >
+            <div className="font-mono text-[12px] tracking-[0.1em] text-neon">
+              {on ? cipher.join('') : '••••'}
+            </div>
+          </motion.div>
+
+          <Wire on={on} delay={0.55} />
+
+          {/* and where it lands, with nothing of the first left on it */}
+          <div className="w-[62px] shrink-0 text-center">
             <motion.div
               initial={false}
-              animate={{ opacity: on ? 1 : 0.45, color: on ? '#31c47e' : 'rgba(255,255,255,0.45)' }}
-              transition={{ duration: 0.4, delay: on ? 1.2 : 0 }}
-              className="font-mono text-[11px]"
+              animate={{
+                borderColor: on ? 'rgba(49,196,126,0.35)' : 'rgba(255,255,255,0.1)',
+                color: on ? '#31c47e' : 'rgba(255,255,255,0.45)',
+              }}
+              transition={{ duration: 0.4, delay: on ? 1 : 0 }}
+              className="rounded-lg border bg-[#0a0e0c] py-2 font-mono text-[11px]"
             >
               0xd93b
             </motion.div>
-          </motion.div>
-          <div className="mt-2 text-[9px] uppercase tracking-[0.18em] text-white/30">unlinked</div>
+            <div className="mt-2 text-[9px] uppercase tracking-[0.16em] text-white/30">unlinked</div>
+          </div>
         </div>
 
-        <motion.div
-          initial={false}
-          animate={{ opacity: on ? 1 : 0.4 }}
-          className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-md border border-white/10 bg-[#0a0e0c] px-2.5 py-1.5 text-[9px] uppercase tracking-[0.2em] text-white/50"
-          style={{ left: '50%', top: '50%' }}
-        >
-          confidential
-        </motion.div>
+        {/* the tie between the two addresses, cut */}
+        <div className="relative flex w-full max-w-[320px] items-center justify-center">
+          <div className="h-px w-full border-t border-dashed border-white/[0.12]" />
+          <motion.div
+            initial={false}
+            animate={{ opacity: on ? 1 : 0.3, scale: on ? 1 : 0.7 }}
+            transition={{ duration: 0.4, delay: on ? 1.2 : 0 }}
+            className="absolute flex items-center gap-2 bg-[#0a0e0c] px-3"
+          >
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+              <path
+                d="M2 2 10 10 M10 2 2 10"
+                stroke={on ? '#31c47e' : 'rgba(255,255,255,0.3)'}
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
+            </svg>
+            <span className="text-[9px] uppercase tracking-[0.16em] text-white/40">no trace</span>
+          </motion.div>
+        </div>
       </div>
-
-      <style>{`
-        .route-beam {
-          offset-anchor: 10px 0px;
-          offset-path: path("M 26 24 L 50 24 L 50 54 L 74 54");
-          animation: route-run 3s cubic-bezier(0.05, 0.05, 0.05, 0.03) infinite;
-        }
-        @keyframes route-run {
-          0% { offset-distance: 0%; }
-          60% { offset-distance: 100%; }
-          100% { offset-distance: 100%; }
-        }
-      `}</style>
     </Stage>
   )
 }
@@ -661,19 +673,6 @@ function Batch({ on }: { on: boolean }) {
           initial={false}
           animate={{ scale: on ? [1, 1.05, 1] : 1 }}
           transition={{ duration: 2.4, repeat: on ? Infinity : 0, ease: 'easeInOut' }}
-          style={{ transformOrigin: '150px 73px' }}
-        />
-        <motion.circle
-          cx="150"
-          cy="73"
-          r="29"
-          fill="none"
-          stroke="rgba(49,196,126,0.3)"
-          strokeWidth="1"
-          strokeDasharray="4 7"
-          initial={false}
-          animate={{ rotate: on ? 360 : 0 }}
-          transition={{ duration: 14, repeat: on ? Infinity : 0, ease: 'linear' }}
           style={{ transformOrigin: '150px 73px' }}
         />
         <motion.image

@@ -9,6 +9,8 @@ const apiEnv = {
   NODE_ENV: "local",
   PORT: "3000",
   DATABASE_URL: databaseUrl,
+  MERKL_API_URL: "https://api.merkl.xyz",
+  MERKL_API_KEY: "merkl-api-key",
 };
 
 test("parses a complete api env", () => {
@@ -16,6 +18,8 @@ test("parses a complete api env", () => {
     NODE_ENV: "local",
     PORT: 3000,
     DATABASE_URL: databaseUrl,
+    MERKL_API_URL: "https://api.merkl.xyz",
+    MERKL_API_KEY: "merkl-api-key",
   });
 });
 

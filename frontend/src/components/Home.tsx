@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion'
 import { ArrowDownLeft, ArrowUpRight, MoreHorizontal, Bell } from 'lucide-react'
 import Chart from './Chart'
-import VaultCard from './VaultCard'
+import OpportunityCard from './OpportunityCard'
 import Scramble from './Scramble'
-import { holdings, portfolioSeries, vaults, type Vault } from '../data'
+import { holdings, portfolioSeries, type Vault } from '../data'
+import { MONAD_MAINNET_CHAIN_ID } from '../opportunities'
+import { useOpportunities } from '../useOpportunities'
 
 const fade = {
   hidden: { opacity: 0, y: 16 },
@@ -11,7 +13,6 @@ const fade = {
 }
 
 export default function Home({
-  onOpenVault,
   onNotifications,
   onSeeAllVaults,
   onTransfer,
@@ -25,6 +26,12 @@ export default function Home({
 }) {
   const total = holdings.reduce((a, h) => a + h.value, 0)
   const [whole, cents] = total.toFixed(2).split('.')
+  const vaults = useOpportunities({
+    search: '',
+    page: 0,
+    items: 4,
+    chainId: MONAD_MAINNET_CHAIN_ID,
+  })
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-36 pt-14">
@@ -87,16 +94,33 @@ export default function Home({
       </motion.section>
 
       <motion.section custom={4} variants={fade} initial="hidden" animate="show" className="mt-9">
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex items-center justify-between gap-3">
           <h3 className="text-[20px] font-medium tracking-tight">Confidential vaults</h3>
           <button onClick={onSeeAllVaults} className="font-mono text-[10px] uppercase tracking-widest text-neon/70">see all</button>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          {vaults.map((v, i) => (
-            <VaultCard key={v.id} vault={v} delay={0.3 + 0.05 * i} onClick={() => onOpenVault(v)} />
-          ))}
-        </div>
+        {vaults.kind === 'loading' && (
+          <div className="mt-8 text-center font-mono text-[11px] uppercase tracking-[0.25em] text-white/25">
+            Loading vaults
+          </div>
+        )}
+        {vaults.kind === 'failed' && (
+          <div className="mt-8 text-center font-mono text-[11px] uppercase tracking-[0.25em] text-white/25">
+            {vaults.message}
+          </div>
+        )}
+        {vaults.kind === 'ready' && vaults.page.list.length === 0 && (
+          <div className="mt-8 text-center font-mono text-[11px] uppercase tracking-[0.25em] text-white/25">
+            No vaults
+          </div>
+        )}
+        {vaults.kind === 'ready' && (
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {vaults.page.list.map((opportunity, i) => (
+              <OpportunityCard key={opportunity.id} opportunity={opportunity} delay={0.3 + 0.05 * i} />
+            ))}
+          </div>
+        )}
       </motion.section>
 
       <motion.section custom={10} variants={fade} initial="hidden" animate="show" className="mt-9">

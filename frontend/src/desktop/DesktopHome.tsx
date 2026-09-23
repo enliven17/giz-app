@@ -1,13 +1,14 @@
 import { motion } from 'framer-motion'
 import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
 import Chart from '../components/Chart'
-import VaultCard from '../components/VaultCard'
+import OpportunityCard from '../components/OpportunityCard'
 import SpotlightCard from '../components/SpotlightCard'
 import useSize from '../useSize'
-import { holdings, portfolioSeries, vaults, type Vault } from '../data'
+import { holdings, portfolioSeries, type Vault } from '../data'
+import { MONAD_MAINNET_CHAIN_ID } from '../opportunities'
+import { useOpportunities } from '../useOpportunities'
 
 export default function DesktopHome({
-  onOpenVault,
   onTransfer,
   onActivity,
   onSeeAllVaults,
@@ -20,6 +21,12 @@ export default function DesktopHome({
   const total = holdings.reduce((a, h) => a + h.value, 0)
   const [whole, cents] = total.toFixed(2).split('.')
   const chart = useSize<HTMLDivElement>()
+  const vaults = useOpportunities({
+    search: '',
+    page: 0,
+    items: 4,
+    chainId: MONAD_MAINNET_CHAIN_ID,
+  })
 
   return (
     <div className="mx-auto flex min-h-0 w-full max-w-[1520px] flex-1 flex-col px-14 pb-6 pt-7">
@@ -154,27 +161,45 @@ export default function DesktopHome({
       </div>
 
       <section className="mt-6 shrink-0">
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-3 flex items-center justify-between gap-4">
           <h2 className="text-[18px] font-medium tracking-tight">Confidential vaults</h2>
-          <button
-            onClick={onSeeAllVaults}
-            className="font-mono text-[10px] uppercase tracking-widest text-neon/70"
-          >
-            see all
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={onSeeAllVaults}
+              className="font-mono text-[10px] uppercase tracking-widest text-neon/70"
+            >
+              see all
+            </button>
+          </div>
         </div>
-        <div className="grid grid-cols-4 gap-5">
-          {vaults.map((v, i) => (
-            <VaultCard
-              key={v.id}
-              vault={v}
-              delay={0.05 * i}
-              className="h-[196px]"
-              chartHeight={60}
-              onClick={() => onOpenVault(v)}
-            />
-          ))}
-        </div>
+        {vaults.kind === 'loading' && (
+          <div className="py-10 text-center font-mono text-[11px] uppercase tracking-[0.25em] text-white/25">
+            Loading vaults
+          </div>
+        )}
+        {vaults.kind === 'failed' && (
+          <div className="py-10 text-center font-mono text-[11px] uppercase tracking-[0.25em] text-white/25">
+            {vaults.message}
+          </div>
+        )}
+        {vaults.kind === 'ready' && vaults.page.list.length === 0 && (
+          <div className="py-10 text-center font-mono text-[11px] uppercase tracking-[0.25em] text-white/25">
+            No vaults
+          </div>
+        )}
+        {vaults.kind === 'ready' && (
+          <div className="grid grid-cols-4 gap-5">
+            {vaults.page.list.map((opportunity, i) => (
+              <OpportunityCard
+                key={opportunity.id}
+                opportunity={opportunity}
+                delay={0.05 * i}
+                className="h-[196px]"
+                chartHeight={60}
+              />
+            ))}
+          </div>
+        )}
       </section>
     </div>
   )

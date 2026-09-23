@@ -1,301 +1,415 @@
-// Builds the Earn cycle diagram in the Gizu design language.
-// Usage: node brand/diagrams/earn-cycle.mjs  (writes earn-cycle.svg next to it)
+// Earn cycle diagram, Gizu design language.
+// Card sizing follows the portfolio component library: 12px radius, hairline
+// border, 32px padding, one vertical rhythm. Every block lays itself out, so
+// nothing can drift out of alignment.
+// Usage: node brand/diagrams/earn-cycle.mjs
+
 import { writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 
-const W = 1680
-const H = 1120
+/* -------------------------------------------------------------- tokens */
 
-const INK = '#050706'
+const W = 2440
+const H = 1520
+
+const INK = '#070a09'
+const CARD = '#0d1211'
+const CARD_PRIVATE = '#0c1712'
 const NEON = '#31c47e'
-const SURFACE = 'rgba(14,19,16,0.9)'
-const LINE = 'rgba(255,255,255,0.07)'
-const TEXT = '#dfe8e3'
-const MUTED = 'rgba(223,232,227,0.45)'
-const FAINT = 'rgba(223,232,227,0.3)'
-const SANS = 'Helvetica Neue, Helvetica, Arial, sans-serif'
+const TEXT = '#f2f7f4'
+const MUTED = 'rgba(242,247,244,0.58)'
+const FAINT = 'rgba(242,247,244,0.34)'
+const HAIR = 'rgba(255,255,255,0.1)'
+const HAIR_SOFT = 'rgba(255,255,255,0.06)'
+const PRIVATE_EDGE = 'rgba(49,196,126,0.3)'
+const FLOW = 'rgba(242,247,244,0.3)'
+const FLOW_PRIVATE = 'rgba(49,196,126,0.55)'
+const SANS = 'Helvetica Neue'
+
+const PAD = 32
+const ROW = 26
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+const out = []
+const add = (...s) => out.push(...s)
+
+/* --------------------------------------------------------------- atoms */
 
 const text = (x, y, s, o = {}) =>
-  `<text x="${x}" y="${y}" font-family="${SANS}" font-size="${o.size ?? 14}" font-weight="${o.weight ?? 400}" fill="${o.fill ?? TEXT}" letter-spacing="${o.ls ?? 0}" text-anchor="${o.anchor ?? 'start'}">${esc(s)}</text>`
+  `<text x="${x}" y="${y}" font-family="${SANS}" font-size="${o.size ?? 15}" font-weight="${o.weight ?? 400}" fill="${o.fill ?? TEXT}" letter-spacing="${o.ls ?? 0}" text-anchor="${o.anchor ?? 'start'}">${esc(s)}</text>`
 
-const mono = (x, y, s, o = {}) =>
-  text(x, y, String(s).toUpperCase(), {
-    size: 10,
-    fill: FAINT,
-    ls: 2.2,
-    weight: 500,
-    ...o,
-  })
+const label = (x, y, s, o = {}) =>
+  text(x, y, String(s).toUpperCase(), { size: 11, fill: FAINT, ls: 1.8, weight: 600, ...o })
 
-const card = (x, y, w, h, o = {}) => {
-  const fill = o.private ? 'rgba(49,196,126,0.07)' : SURFACE
-  const stroke = o.private ? 'rgba(49,196,126,0.28)' : LINE
-  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${o.r ?? 18}" fill="${fill}" stroke="${stroke}"/>`
+const G = {
+  wallet: `<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/><circle cx="17" cy="14.5" r="1.1" fill="currentColor" stroke="none"/>`,
+  file: `<path d="M13 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9l-6-6Z"/><path d="M13 3v6h6"/>`,
+  lock: `<rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>`,
+  ledger: `<ellipse cx="12" cy="6.5" rx="7" ry="2.8"/><path d="M5 6.5v11c0 1.6 3.1 2.8 7 2.8s7-1.2 7-2.8v-11"/><path d="M5 12c0 1.6 3.1 2.8 7 2.8s7-1.2 7-2.8"/>`,
+  coin: `<circle cx="12" cy="12" r="8"/><path d="M12 8v8M14 9.8c-.5-.6-1.3-.9-2.2-.9-1.3 0-2.3.7-2.3 1.7s.9 1.5 2.3 1.7 2.4.6 2.4 1.7-1 1.7-2.4 1.7c-1 0-1.8-.3-2.3-1"/>`,
+  user: `<circle cx="12" cy="8.5" r="3.6"/><path d="M5.5 19.5a6.5 6.5 0 0 1 13 0"/>`,
+  route: `<circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><path d="M6.6 12h4.4"/><path d="M11 12l7 -4.5"/><path d="M11 12l7 4.5"/>`,
+  exit: `<path d="M13.5 5H17a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3.5"/><path d="M9.5 8.5 6 12l3.5 3.5"/><path d="M6 12h7.5"/>`,
 }
 
-const chip = (x, y, w, h, label, o = {}) =>
-  `${card(x, y, w, h, { r: 12, ...o })}${text(x + w / 2, y + h / 2 + 5, label, { size: o.size ?? 13, weight: 500, anchor: 'middle', fill: o.fill ?? TEXT })}`
-
-const badge = (x, y, n) =>
-  `<circle cx="${x}" cy="${y}" r="15" fill="${NEON}"/>${text(x, y + 5, n, { size: 14, weight: 700, fill: '#04150c', anchor: 'middle' })}`
-
-const arrow = (x1, y1, x2, y2, o = {}) =>
-  `<path d="M${x1},${y1} L${x2},${y2}" stroke="${o.stroke ?? 'rgba(223,232,227,0.35)'}" stroke-width="${o.w ?? 1.4}" marker-end="url(#head${o.neon ? 'Neon' : ''})" fill="none"/>`
-
-const elbow = (x1, y1, x2, y2, o = {}) => {
-  const midY = o.midY ?? (y1 + y2) / 2
-  return `<path d="M${x1},${y1} V${midY} H${x2} V${y2}" stroke="${o.stroke ?? NEON}" stroke-opacity="${o.op ?? 0.45}" stroke-width="1.4" fill="none" marker-end="url(#headNeon)"/>`
+const glyph = (x, y, name, o = {}) => {
+  const size = o.size ?? 40
+  const tone = o.private ? NEON : 'rgba(242,247,244,0.7)'
+  const scale = (size - 16) / 24
+  return (
+    `<rect x="${x}" y="${y}" width="${size}" height="${size}" rx="10" fill="${o.private ? 'rgba(49,196,126,0.12)' : 'rgba(255,255,255,0.045)'}" stroke="${o.private ? 'rgba(49,196,126,0.22)' : HAIR_SOFT}"/>` +
+    `<g transform="translate(${x + 8} ${y + 8}) scale(${scale})" color="${tone}" stroke="${tone}" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round">${G[name]}</g>`
+  )
 }
 
-const walletIcon = (x, y) =>
-  `<g transform="translate(${x} ${y})" stroke="${NEON}" stroke-opacity="0.85" fill="none" stroke-width="1.5">
-     <rect x="0" y="0" width="22" height="16" rx="4"/>
-     <path d="M0 5 H22"/>
-     <circle cx="16.5" cy="10.5" r="1.6" fill="${NEON}" stroke="none"/>
-   </g>`
+const stepDot = (x, y, n) =>
+  `<circle cx="${x + 13}" cy="${y + 13}" r="13" fill="${NEON}"/>` +
+  text(x + 13, y + 18, n, { size: 13, weight: 700, fill: '#06170e', anchor: 'middle' })
 
-const docIcon = (x, y) =>
-  `<g transform="translate(${x} ${y})" stroke="${NEON}" stroke-opacity="0.8" fill="none" stroke-width="1.4">
-     <path d="M2 0 H12 L17 5 V18 H2 Z"/>
-     <path d="M12 0 V5 H17"/>
-     <path d="M5.5 9 H13.5 M5.5 13 H11"/>
-   </g>`
+const chipRow = (x, y, w, items, o = {}) => {
+  const gap = 12
+  const cw = (w - gap * (items.length - 1)) / items.length
+  return items
+    .map(
+      (s, i) =>
+        `<rect x="${x + i * (cw + gap)}" y="${y}" width="${cw}" height="44" rx="10" fill="${o.private ? 'rgba(49,196,126,0.07)' : 'rgba(255,255,255,0.035)'}" stroke="${o.private ? 'rgba(49,196,126,0.18)' : HAIR_SOFT}"/>` +
+        text(x + i * (cw + gap) + cw / 2, y + 28, s, { size: 13.5, weight: 500, anchor: 'middle' }),
+    )
+    .join('')
+}
 
-const lockIcon = (x, y) =>
-  `<g transform="translate(${x} ${y})" stroke="${NEON}" fill="none" stroke-width="1.6">
-     <rect x="0" y="7" width="16" height="11" rx="3"/>
-     <path d="M3.5 7 V4.5 a4.5 4.5 0 0 1 9 0 V7"/>
-   </g>`
+/**
+ * Self-measuring card. Content flows top down on a fixed rhythm, so a block can
+ * never overlap the one below it.
+ */
+function block(x, y, w, spec) {
+  const body = []
+  let cur = y + PAD
 
-const parts = []
+  if (spec.step || spec.title) {
+    if (spec.step) body.push(stepDot(x + PAD, cur, spec.step))
+    const tx = spec.step ? x + PAD + 40 : x + PAD
+    body.push(text(tx, cur + 17, spec.title, { size: 20, weight: 600, ls: -0.3 }))
+    if (spec.sub) body.push(text(tx, cur + 41, spec.sub, { size: 14, fill: MUTED }))
+    cur += spec.sub ? 62 : 40
+  }
 
-// ---------------------------------------------------------------- background
-parts.push(`<rect width="${W}" height="${H}" fill="${INK}"/>`)
-parts.push(
-  `<radialGradient id="glow" cx="50%" cy="0%" r="70%"><stop offset="0%" stop-color="${NEON}" stop-opacity="0.07"/><stop offset="100%" stop-color="${NEON}" stop-opacity="0"/></radialGradient>`,
+  if (spec.rows) {
+    body.push(`<path d="M${x + PAD},${cur} H${x + w - PAD}" stroke="${HAIR_SOFT}"/>`)
+    cur += 26
+    if (spec.rowsLabel) {
+      body.push(label(x + PAD, cur, spec.rowsLabel, { fill: NEON }))
+      cur += 24
+    }
+    spec.rows.forEach(([k, v]) => {
+      body.push(text(x + PAD, cur, k, { size: 13.5, weight: 600, fill: NEON }))
+      body.push(text(x + PAD + 112, cur, v, { size: 13.5, fill: MUTED }))
+      cur += ROW
+    })
+    cur += 6
+  }
+
+  if (spec.glyphs) {
+    spec.glyphs.forEach((g, i) => body.push(glyph(x + PAD + i * 52, cur, g, { private: spec.private })))
+    if (spec.glyphNote) body.push(text(x + PAD + spec.glyphs.length * 52 + 12, cur + 25, spec.glyphNote, { size: 13.5, fill: MUTED }))
+    cur += 56
+  }
+
+  if (spec.chips) {
+    body.push(chipRow(x + PAD, cur, w - PAD * 2, spec.chips, { private: spec.private }))
+    cur += 56
+  }
+
+  if (spec.note) {
+    body.push(label(x + PAD, cur + 6, spec.note, { fill: spec.noteNeon ? NEON : FAINT }))
+    cur += 22
+  }
+
+  const h = cur + PAD - y - 8
+  add(
+    `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="${spec.private ? CARD_PRIVATE : CARD}" stroke="${spec.private ? PRIVATE_EDGE : HAIR}"/>`,
+  )
+  add(...body)
+  return { x, y, w, h, cx: x + w / 2, cy: y + h / 2, right: x + w, bottom: y + h }
+}
+
+/** Compact tile used for wallets and deposit addresses. */
+function tile(x, y, w, name, caption, o = {}) {
+  const h = 104
+  add(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="${CARD}" stroke="${HAIR}"/>`)
+  add(glyph(x + w / 2 - 20, y + 18, name, o))
+  add(text(x + w / 2, y + 82, caption, { size: 15, weight: 600, anchor: 'middle' }))
+  return { x, y, w, h, cx: x + w / 2, bottom: y + h, right: x + w }
+}
+
+function zone(x, y, w, h, title, o = {}) {
+  add(
+    `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="16" fill="rgba(255,255,255,0.014)" stroke="${o.stroke ?? HAIR_SOFT}"/>`,
+  )
+  add(label(x + 28, y + 34, title, { fill: o.fill ?? MUTED }))
+}
+
+const flowV = (x, y1, y2, o = {}) =>
+  `<path d="M${x},${y1} V${y2}" stroke="${o.private ? FLOW_PRIVATE : FLOW}" stroke-width="1.5" fill="none" marker-end="url(#${o.private ? 'tipP' : 'tipN'})"/>`
+
+const flowH = (y, x1, x2, o = {}) =>
+  `<path d="M${x1},${y} H${x2}" stroke="${o.private ? FLOW_PRIVATE : FLOW}" stroke-width="1.5" fill="none" marker-end="url(#${o.private ? 'tipP' : 'tipN'})"/>`
+
+/** Orthogonal path through waypoints, rounded corners, single arrow head. */
+const route = (pts, o = {}) => {
+  const r = o.r ?? 12
+  let d = `M${pts[0][0]},${pts[0][1]}`
+  for (let i = 1; i < pts.length - 1; i++) {
+    const [px, py] = pts[i - 1]
+    const [cx, cy] = pts[i]
+    const [nx, ny] = pts[i + 1]
+    const dx1 = Math.sign(cx - px)
+    const dy1 = Math.sign(cy - py)
+    const dx2 = Math.sign(nx - cx)
+    const dy2 = Math.sign(ny - cy)
+    d += ` L${cx - dx1 * r},${cy - dy1 * r} Q${cx},${cy} ${cx + dx2 * r},${cy + dy2 * r}`
+  }
+  const last = pts[pts.length - 1]
+  d += ` L${last[0]},${last[1]}`
+  return `<path d="${d}" stroke="${o.private ? FLOW_PRIVATE : FLOW}" stroke-width="1.5" fill="none" marker-end="url(#${o.private ? 'tipP' : 'tipN'})"/>`
+}
+
+const tag = (cx, cy, s) => {
+  const w = s.length * 6.6 + 28
+  return (
+    `<rect x="${cx - w / 2}" y="${cy - 14}" width="${w}" height="28" rx="14" fill="${INK}" stroke="${HAIR}"/>` +
+    text(cx, cy + 5, s, { size: 12, fill: MUTED, anchor: 'middle' })
+  )
+}
+
+/* -------------------------------------------------------------- canvas */
+
+add(`<rect width="${W}" height="${H}" fill="${INK}"/>`)
+add(text(120, 96, 'One passkey. The complete Earn cycle.', { size: 46, weight: 700, ls: -1.2 }))
+add(
+  `<text x="120" y="138" font-family="${SANS}" font-size="20" fill="${MUTED}">Monad <tspan fill="${NEON}" font-weight="600">&#8250;</tspan> confidential balance <tspan fill="${NEON}" font-weight="600">&#8250;</tspan> Ethereum vaults <tspan fill="${NEON}" font-weight="600">&#8250;</tspan> fresh Monad wallets</text>`,
 )
-parts.push(`<rect width="${W}" height="${H}" fill="url(#glow)"/>`)
+add(`<path d="M120,178 H2320" stroke="${HAIR_SOFT}"/>`)
 
-// ---------------------------------------------------------------- title
-parts.push(
-  text(W / 2, 74, 'One passkey. The complete Earn cycle.', {
-    size: 40,
-    weight: 700,
-    anchor: 'middle',
-    ls: -0.8,
-  }),
-)
-parts.push(
-  `<text x="${W / 2}" y="112" font-family="${SANS}" font-size="19" fill="${MUTED}" text-anchor="middle">Monad <tspan fill="${NEON}">&#8594;</tspan> confidential balance <tspan fill="${NEON}">&#8594;</tspan> Ethereum vaults <tspan fill="${NEON}">&#8594;</tspan> fresh Monad wallets</text>`,
-)
+/* --------------------------------------------------------------- zones */
 
-// ---------------------------------------------------------------- row 1
-// investor
-parts.push(
-  `<g transform="translate(58 196)" stroke="${TEXT}" stroke-opacity="0.65" fill="none" stroke-width="2">
-     <circle cx="20" cy="14" r="12"/>
-     <path d="M0 52 a20 22 0 0 1 40 0"/>
-   </g>`,
-)
-parts.push(mono(78, 286, 'Investor', { anchor: 'middle', fill: MUTED }))
+const Z1 = { x: 120, y: 216, w: 620, h: 560 }
+const Z2 = { x: 800, y: 216, w: 700, h: 1160 }
+const Z3 = { x: 1560, y: 216, w: 760, h: 1160 }
+const Z4 = { x: 120, y: 816, w: 620, h: 560 }
 
-// 1 login
-parts.push(card(158, 178, 320, 214))
-parts.push(badge(190, 210, '1'))
-parts.push(text(216, 206, 'Log in with Mera', { size: 17, weight: 600 }))
-parts.push(text(216, 226, 'One master passkey', { size: 12, fill: MUTED }))
-parts.push(`<path d="M182,246 H454" stroke="${LINE}"/>`)
-parts.push(mono(182, 268, 'Locally derived keys', { fill: NEON }))
-const keys = [
-  ['F', 'Funding wallet'],
-  ['C', 'Confidential account signer'],
-  ['A1 – A4', 'Investment wallets'],
-  ['R1 – R3', 'Fresh withdrawal wallets'],
-]
-keys.forEach(([k, v], i) => {
-  const y = 292 + i * 20
-  parts.push(text(182, y, k, { size: 12, weight: 600, fill: NEON }))
-  parts.push(text(268, y, v, { size: 12, fill: MUTED }))
+zone(Z1.x, Z1.y, Z1.w, Z1.h, 'Monad · source chain')
+zone(Z2.x, Z2.y, Z2.w, Z2.h, 'Confidential layer · FAR private ledger', {
+  stroke: 'rgba(49,196,126,0.22)',
+  fill: NEON,
 })
-parts.push(text(182, 372, 'One unlock · separate signatures · no wallet switching', { size: 11, fill: FAINT }))
+zone(Z3.x, Z3.y, Z3.w, Z3.h, 'Ethereum · vault chain')
+zone(Z4.x, Z4.y, Z4.w, Z4.h, 'Monad · payout')
 
-// 2 fund wallet
-parts.push(card(520, 214, 210, 118))
-parts.push(badge(552, 246, '2'))
-parts.push(text(578, 242, 'Fund wallet F', { size: 16, weight: 600 }))
-parts.push(text(578, 262, 'USDC on Monad', { size: 12, fill: MUTED }))
-parts.push(`<circle cx="562" cy="298" r="14" fill="none" stroke="${NEON}" stroke-opacity="0.6"/>`)
-parts.push(text(562, 303, '$', { size: 14, weight: 700, fill: NEON, anchor: 'middle' }))
-parts.push(text(586, 303, 'USDC', { size: 13, weight: 500 }))
+/* ------------------------------------------------------------ column 1 */
 
-// deposit address
-parts.push(card(772, 214, 216, 118))
-parts.push(text(796, 248, 'Generated Monad', { size: 14, weight: 600 }))
-parts.push(text(796, 268, 'deposit address', { size: 14, weight: 600 }))
-parts.push(docIcon(796, 288))
-parts.push(text(822, 305, '0xABCD . . . 1234', { size: 12, fill: MUTED }))
-
-// 3 confidential balance
-parts.push(card(1030, 200, 262, 148, { private: true }))
-parts.push(badge(1062, 232, '3'))
-parts.push(text(1088, 228, 'Confidential balance C', { size: 16, weight: 600 }))
-parts.push(text(1088, 248, 'Aurora deposit route → FAR credit', { size: 11.5, fill: MUTED }))
-parts.push(`<g transform="translate(1058 272)" fill="none" stroke="${NEON}" stroke-width="1.6" stroke-opacity="0.85">
-    <ellipse cx="14" cy="6" rx="14" ry="6"/><path d="M0 6 V20 a14 6 0 0 0 28 0 V6"/>
-  </g>`)
-parts.push(lockIcon(1112, 272))
-parts.push(mono(1058, 330, 'FAR · private ledger', { fill: NEON }))
-
-// 4 intents
-parts.push(card(1330, 200, 292, 148, { private: true }))
-parts.push(badge(1362, 232, '4'))
-parts.push(text(1388, 228, 'Aurora Confidential Intents', { size: 15, weight: 600 }))
-parts.push(text(1388, 248, 'One payout quote per recipient', { size: 11.5, fill: MUTED }))
-parts.push(
-  `<g stroke="${NEON}" stroke-width="1.8" fill="none" marker-end="url(#headNeon)" stroke-opacity="0.75">
-     <path d="M1372,300 H1436"/><path d="M1436,300 L1476,282"/><path d="M1436,300 L1476,318"/>
-   </g>`,
-)
-
-// row 1 arrows
-parts.push(arrow(104, 272, 150, 272))
-parts.push(arrow(486, 272, 512, 272))
-parts.push(arrow(738, 272, 764, 272))
-parts.push(arrow(996, 272, 1022, 272))
-parts.push(arrow(1300, 272, 1322, 272))
-
-// ---------------------------------------------------------------- chain divider
-parts.push(
-  `<path d="M20,466 H520 C640,466 700,392 860,390 H1660" stroke="${NEON}" stroke-opacity="0.25" stroke-dasharray="7 9" fill="none"/>`,
-)
-parts.push(mono(1004, 428, 'Ethereum', { anchor: 'end', fill: NEON }))
-parts.push(mono(40, 452, 'Monad', { fill: NEON }))
-
-// ---------------------------------------------------------------- investment wallets
-const walletsX = [1032, 1180, 1328, 1476]
-walletsX.forEach((x, i) => {
-  parts.push(card(x, 404, 120, 74, { r: 14 }))
-  parts.push(walletIcon(x + 49, 420))
-  parts.push(text(x + 60, 462, `A${i + 1}`, { size: 15, weight: 600, anchor: 'middle' }))
-  parts.push(arrow(x + 60, 478, x + 60, 528, { neon: true, stroke: `rgba(49,196,126,0.5)` }))
-  if (i < 3) parts.push(text(x + 68, 502, 'Approve + deposit', { size: 10, fill: FAINT }))
-})
-parts.push(elbow(1161, 348, 1092, 404, { midY: 380 }))
-parts.push(elbow(1161, 348, 1240, 404, { midY: 380 }))
-parts.push(elbow(1476, 348, 1388, 404, { midY: 380 }))
-parts.push(elbow(1476, 348, 1536, 404, { midY: 380 }))
-
-// ---------------------------------------------------------------- 5 invest in vaults
-parts.push(card(1006, 540, 620, 138, { private: true }))
-parts.push(badge(1040, 574, '5'))
-parts.push(text(1066, 570, 'Invest in vaults', { size: 17, weight: 600 }))
-parts.push(text(1066, 590, 'Morpho / Aave / compatible Zama application', { size: 12, fill: MUTED }))
-walletsX.forEach((x, i) => {
-  parts.push(chip(x - 6, 614, 132, 44, `A${i + 1} position`, { size: 12.5 }))
+const login = block(Z1.x + 30, Z1.y + 64, Z1.w - 60, {
+  step: '1',
+  title: 'Log in with Mera',
+  sub: 'One master passkey, no wallet switching',
+  rowsLabel: 'Locally derived keys',
+  rows: [
+    ['F', 'Funding wallet'],
+    ['C', 'Confidential account signer'],
+    ['A1 – A4', 'Investment wallets'],
+    ['R1 – R3', 'Fresh withdrawal wallets'],
+  ],
 })
 
-// ---------------------------------------------------------------- 6 withdrawal
-parts.push(card(1006, 716, 620, 92))
-parts.push(badge(1040, 750, '6'))
-parts.push(text(1066, 746, 'User requests a partial withdrawal', { size: 16, weight: 600 }))
-parts.push(text(1066, 766, 'Redeem from each position; remaining positions stay invested', { size: 11.5, fill: MUTED }))
-walletsX.forEach((x) => parts.push(arrow(x + 60, 678, x + 60, 712, { neon: true, stroke: 'rgba(49,196,126,0.5)' })))
-
-// redeem row
-walletsX.forEach((x, i) => {
-  parts.push(arrow(x + 60, 808, x + 60, 844, { neon: true, stroke: 'rgba(49,196,126,0.5)' }))
-  parts.push(text(x + 68, 832, 'Redeem', { size: 10, fill: FAINT }))
-  parts.push(card(x, 850, 120, 70, { r: 14 }))
-  parts.push(walletIcon(x + 49, 864))
-  parts.push(text(x + 60, 904, `A${i + 1}`, { size: 15, weight: 600, anchor: 'middle' }))
-  parts.push(arrow(x + 60, 920, x + 60, 946, { neon: true, stroke: 'rgba(49,196,126,0.5)' }))
-  parts.push(card(x - 8, 950, 136, 48, { r: 12 }))
-  parts.push(docIcon(x + 6, 962))
-  parts.push(text(x + 34, 980, `Deposit D${i + 1}`, { size: 12.5, weight: 500 }))
+const fund = block(Z1.x + 30, login.bottom + 28, 270, {
+  step: '2',
+  title: 'Fund wallet F',
+  sub: 'USDC on Monad',
+  glyphs: ['coin'],
+  glyphNote: 'Public transfer',
 })
-parts.push(text(1316, 1052, 'Same investment wallets · separate Ethereum deposit addresses', { size: 11.5, fill: FAINT, anchor: 'middle' }))
 
-// ---------------------------------------------------------------- 7 return routes
-parts.push(card(560, 828, 300, 150, { private: true }))
-parts.push(badge(592, 862, '7'))
-parts.push(text(618, 858, 'Aurora confidential', { size: 16, weight: 600 }))
-parts.push(text(618, 878, 'return routes', { size: 16, weight: 600 }))
-parts.push(text(592, 902, 'One return route per investment wallet', { size: 11, fill: MUTED }))
-parts.push(
-  `<g stroke="${NEON}" stroke-width="1.8" fill="none" marker-end="url(#headNeon)" stroke-opacity="0.75">
-     <path d="M600,944 H664"/><path d="M664,944 L704,926"/><path d="M664,944 L704,962"/>
-   </g>`,
+const deposit = block(Z1.x + 320, login.bottom + 28, 270, {
+  title: 'Deposit address',
+  sub: '0xABCD . . . 1234',
+  glyphs: ['file'],
+  glyphNote: 'Generated',
+})
+
+add(flowV(login.x + 40, login.bottom, fund.y))
+add(flowH(fund.y + 60, fund.right, deposit.x))
+
+/* ------------------------------------------------------------ column 2 */
+
+const balance = block(Z2.x + 30, Z2.y + 64, Z2.w - 60, {
+  step: '3',
+  title: 'Confidential balance C',
+  sub: 'The Aurora deposit route credits the FAR ledger',
+  private: true,
+  glyphs: ['ledger', 'lock'],
+  glyphNote: 'Balances never leave the private ledger',
+})
+
+const intents = block(Z2.x + 30, balance.bottom + 28, Z2.w - 60, {
+  step: '4',
+  title: 'Aurora Confidential Intents',
+  sub: 'One payout quote per recipient wallet',
+  private: true,
+  chips: ['A1 route', 'A2 route', 'A3 route', 'A4 route'],
+})
+
+const returns = block(Z2.x + 30, intents.bottom + 120, Z2.w - 60, {
+  step: '7',
+  title: 'Aurora confidential return routes',
+  sub: 'One return route per investment wallet',
+  private: true,
+  chips: ['D1 › C', 'D2 › C', 'D3 › C', 'D4 › C'],
+})
+
+const balance2 = block(Z2.x + 30, returns.bottom + 28, Z2.w - 60, {
+  title: 'Confidential balance C',
+  sub: 'Same account, credited by every return route',
+  private: true,
+  glyphs: ['ledger'],
+  glyphNote: 'FAR · private ledger',
+})
+
+const quotes = block(Z2.x + 30, balance2.bottom + 28, Z2.w - 60, {
+  step: '8',
+  title: 'Aurora confidential payout quotes',
+  sub: 'One quote per fresh withdrawal wallet',
+  private: true,
+  chips: ['R1 quote', 'R2 quote', 'R3 quote'],
+})
+
+add(flowV(balance.cx, balance.bottom, intents.y, { private: true }))
+add(flowV(returns.cx, returns.bottom, balance2.y, { private: true }))
+add(flowV(balance2.cx, balance2.bottom, quotes.y, { private: true }))
+
+// deposit address feeds the confidential balance
+add(route([[deposit.right, deposit.y + 60], [Z2.x - 30, deposit.y + 60], [Z2.x - 30, balance.cy], [balance.x, balance.cy]], { private: true }))
+
+/* ------------------------------------------------------------ column 3 */
+
+const AX = [Z3.x + 30, Z3.x + 210, Z3.x + 390, Z3.x + 570]
+const AW = 160
+
+const wallets = AX.map((x, i) => tile(x, Z3.y + 64, AW, 'wallet', `A${i + 1}`))
+
+const invest = block(Z3.x + 30, wallets[0].bottom + 86, Z3.w - 60, {
+  step: '5',
+  title: 'Invest in vaults',
+  sub: 'Morpho / Aave / compatible Zama application',
+  chips: ['A1 position', 'A2 position', 'A3 position', 'A4 position'],
+})
+
+const exitStep = block(Z3.x + 30, invest.bottom + 64, Z3.w - 60, {
+  step: '6',
+  title: 'Partial withdrawal',
+  sub: 'Redeem part of each position, the rest stays invested',
+})
+
+const wallets2 = AX.map((x, i) => tile(x, exitStep.bottom + 86, AW, 'wallet', `A${i + 1}`))
+const deposits = AX.map((x, i) => tile(x, wallets2[0].bottom + 54, AW, 'file', `Deposit D${i + 1}`))
+
+// intents rail into the wallets
+add(
+  route(
+    [
+      [intents.right, intents.y + 60],
+      [Z3.x - 24, intents.y + 60],
+      [Z3.x - 24, Z3.y + 40],
+      [wallets[3].cx, Z3.y + 40],
+    ],
+    { private: true },
+  ),
 )
+wallets.forEach((w) => add(flowV(w.cx, Z3.y + 40, w.y, { private: true })))
 
-// deposit -> return route rails, collected under the cards
-;[0, 1, 2, 3].forEach((i) => {
-  const from = walletsX[i] + 52
-  const railY = 1004 + i * 10
-  // land under card 7 (x 560-860), evenly spaced
-  const up = 806 - i * 62
-  parts.push(
-    `<path d="M${from},998 V${railY} H${up} V980" stroke="${NEON}" stroke-opacity="0.4" stroke-width="1.4" fill="none" marker-end="url(#headNeon)"/>`,
+wallets.forEach((w) => add(flowV(w.cx, w.bottom, invest.y)))
+add(tag(wallets[0].cx + 92, wallets[0].bottom + 42, 'Approve + deposit'))
+add(tag(wallets[2].cx + 92, wallets[0].bottom + 42, 'Approve + deposit'))
+
+AX.forEach((x) => add(flowV(x + AW / 2, invest.bottom, exitStep.y)))
+wallets2.forEach((w, i) => {
+  add(flowV(w.cx, exitStep.bottom, w.y))
+  if (i === 0 || i === 2) add(tag(w.cx + 62, exitStep.bottom + 42, 'Redeem'))
+  add(flowV(w.cx, w.bottom, deposits[i].y))
+})
+add(label(Z3.x + Z3.w / 2, deposits[0].bottom + 40, 'Same investment wallets · separate Ethereum deposit addresses', { anchor: 'middle' }))
+
+// deposits return to the confidential layer
+deposits.forEach((d, i) => {
+  const lane = deposits[0].bottom + 78 + i * 16
+  add(
+    route(
+      [
+        [d.cx, d.bottom],
+        [d.cx, lane],
+        [Z3.x - 24 - i * 16, lane],
+        [Z3.x - 24 - i * 16, returns.cy],
+        [returns.right, returns.cy],
+      ],
+      { private: true },
+    ),
   )
 })
 
-// ---------------------------------------------------------------- confidential balance C (return)
-parts.push(card(70, 828, 300, 150, { private: true }))
-parts.push(`<g transform="translate(104 862)" fill="none" stroke="${NEON}" stroke-width="1.6" stroke-opacity="0.85">
-    <ellipse cx="14" cy="6" rx="14" ry="6"/><path d="M0 6 V20 a14 6 0 0 0 28 0 V6"/>
-  </g>`)
-parts.push(lockIcon(158, 862))
-parts.push(text(104, 916, 'Confidential balance C', { size: 16, weight: 600 }))
-parts.push(text(104, 936, 'Same account C', { size: 12, fill: MUTED }))
-parts.push(mono(104, 962, 'FAR · private ledger', { fill: NEON }))
-parts.push(arrow(552, 902, 382, 902, { neon: true, stroke: 'rgba(49,196,126,0.5)' }))
+/* ------------------------------------------------------------ column 4 */
 
-// ---------------------------------------------------------------- 8 payout quotes
-parts.push(card(120, 622, 300, 96))
-parts.push(badge(152, 656, '8'))
-parts.push(text(178, 652, 'Aurora confidential', { size: 15, weight: 600 }))
-parts.push(text(178, 672, 'payout quotes', { size: 15, weight: 600 }))
-parts.push(arrow(220, 820, 220, 726, { neon: true, stroke: 'rgba(49,196,126,0.5)' }))
+const RX = [Z4.x + 30, Z4.x + 220, Z4.x + 410]
+const fresh = RX.map((x, i) => tile(x, Z4.y + 64, 170, 'wallet', `R${i + 1}`))
 
-// ---------------------------------------------------------------- fresh wallets
-const freshX = [120, 226, 332]
-freshX.forEach((x, i) => {
-  parts.push(card(x, 470, 92, 74, { r: 14 }))
-  parts.push(walletIcon(x + 35, 486))
-  parts.push(text(x + 46, 528, `R${i + 1}`, { size: 15, weight: 600, anchor: 'middle' }))
-  parts.push(arrow(x + 46, 614, x + 46, 552, { neon: true, stroke: 'rgba(49,196,126,0.5)' }))
+const freshNote = block(Z4.x + 30, fresh[0].bottom + 28, Z4.w - 60, {
+  title: 'Fresh withdrawal addresses',
+  sub: 'Controlled by the same Mera passkey, no new enrolment',
+  glyphs: ['exit'],
+  glyphNote: 'One quote per address',
 })
-parts.push(text(452, 500, 'Fresh withdrawal addresses', { size: 15, weight: 600 }))
-parts.push(text(452, 522, 'Controlled by the same Mera passkey', { size: 12, fill: MUTED }))
 
-// ---------------------------------------------------------------- footer notes
-parts.push(card(70, 1058, 1540, 0.5, { r: 0 }))
-const notes = [
-  ['Same passkey controls F, C, A1-A4 and R1-R3.', 'New addresses do not require new passkeys.'],
-  ['Public: chain transfers and vault activity.', 'Private: internal FAR balances and routing.'],
-  ['Amounts and timing can still correlate activity.', 'App coordinates separate routes; execution is not atomic.'],
-]
-notes.forEach(([a, b], i) => {
-  const x = 340 + i * 500
-  parts.push(text(x, 1082, a, { size: 11.5, fill: MUTED, anchor: 'middle' }))
-  parts.push(text(x, 1100, b, { size: 11.5, fill: FAINT, anchor: 'middle' }))
-  if (i < 2) parts.push(`<path d="M${x + 250},1070 V1104" stroke="${LINE}"/>`)
+// payout quotes back to the fresh wallets
+const payoutRail = fresh[0].y - 30
+add(
+  route(
+    [
+      [quotes.x, quotes.cy],
+      [Z4.x + Z4.w + 28, quotes.cy],
+      [Z4.x + Z4.w + 28, payoutRail],
+      [fresh[2].cx, payoutRail],
+    ],
+    { private: true, r: 14 },
+  ),
+)
+fresh.forEach((f) => add(flowV(f.cx, payoutRail, f.y, { private: true })))
+
+/* ------------------------------------------------------------ footnotes */
+
+add(`<path d="M120,${H - 140} H2320" stroke="${HAIR_SOFT}"/>`)
+;[
+  ['Key custody', 'One passkey controls F, C, A1-A4 and R1-R3. New addresses never require a new passkey.'],
+  ['Visibility', 'Public: chain transfers and vault activity. Private: FAR balances and routing.'],
+  ['Limits', 'Amounts and timing can still correlate activity. Routes are coordinated, not atomic.'],
+].forEach(([head, body], i) => {
+  const x = 120 + i * 740
+  add(label(x, H - 96, head, { fill: NEON }))
+  add(text(x, H - 68, body, { size: 13.5, fill: MUTED }))
 })
+
+/* ------------------------------------------------------------------ svg */
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <defs>
-    <marker id="head" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M0,0 L8,4 L0,8 Z" fill="rgba(223,232,227,0.45)"/>
+    <marker id="tipN" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M0,1.5 L8.5,5 L0,8.5 Z" fill="${FLOW}"/>
     </marker>
-    <marker id="headNeon" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M0,0 L8,4 L0,8 Z" fill="${NEON}" fill-opacity="0.7"/>
+    <marker id="tipP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M0,1.5 L8.5,5 L0,8.5 Z" fill="${NEON}" fill-opacity="0.85"/>
     </marker>
   </defs>
-  ${parts.join('\n  ')}
+  ${out.join('\n  ')}
 </svg>`
 
 writeFileSync(join(HERE, 'earn-cycle.svg'), svg)

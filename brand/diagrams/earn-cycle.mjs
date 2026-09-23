@@ -118,6 +118,41 @@ function block(x, y, w, spec) {
     cur += 56
   }
 
+  if (spec.tree) {
+    const inner = w - PAD * 2
+    const rootW = 86
+    const rootX = x + PAD + (inner - rootW) / 2
+    body.push(
+      `<rect x="${rootX}" y="${cur}" width="${rootW}" height="40" rx="10" fill="rgba(49,196,126,0.14)" stroke="rgba(49,196,126,0.45)"/>`,
+    )
+    body.push(text(rootX + rootW / 2, cur + 26, spec.tree.root, { size: 16, weight: 700, fill: NEON, anchor: 'middle' }))
+
+    const branchY = cur + 74
+    const leafY = cur + 96
+    const n = spec.tree.leaves.length
+    const lw = (inner - 16 * (n - 1)) / n
+    const centers = spec.tree.leaves.map((_, i) => x + PAD + i * (lw + 16) + lw / 2)
+    // straight drop from M onto the branch rail, no kink
+    body.push(
+      `<path d="M${rootX + rootW / 2},${cur + 40} V${branchY}" stroke="${FLOW_PRIVATE}" stroke-width="1.5" fill="none"/>`,
+      `<path d="M${centers[0]},${branchY} H${centers[n - 1]}" stroke="${FLOW_PRIVATE}" stroke-width="1.5" fill="none"/>`,
+    )
+    centers.forEach((cxp) =>
+      body.push(
+        `<path d="M${cxp},${branchY} V${leafY - 2}" stroke="${FLOW_PRIVATE}" stroke-width="1.5" fill="none" marker-end="url(#tipP)"/>`,
+      ),
+    )
+    spec.tree.leaves.forEach(([key, note], i) => {
+      const lx = x + PAD + i * (lw + 16)
+      body.push(
+        `<rect x="${lx}" y="${leafY + 4}" width="${lw}" height="56" rx="10" fill="rgba(255,255,255,0.035)" stroke="${HAIR_SOFT}"/>`,
+      )
+      body.push(text(lx + lw / 2, leafY + 28, key, { size: 15, weight: 600, anchor: 'middle' }))
+      body.push(text(lx + lw / 2, leafY + 48, note, { size: 12, fill: MUTED, anchor: 'middle' }))
+    })
+    cur = leafY + 70
+  }
+
   if (spec.chips) {
     body.push(chipRow(x + PAD, cur, w - PAD * 2, spec.chips, { private: spec.private }))
     cur += 56
@@ -138,10 +173,11 @@ function block(x, y, w, spec) {
 
 /** Compact tile used for wallets and deposit addresses. */
 function tile(x, y, w, name, caption, o = {}) {
-  const h = 104
+  const h = o.sub ? 122 : 104
   add(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="${CARD}" stroke="${HAIR}"/>`)
   add(glyph(x + w / 2 - 20, y + 18, name, o))
   add(text(x + w / 2, y + 82, caption, { size: 15, weight: 600, anchor: 'middle' }))
+  if (o.sub) add(label(x + w / 2, y + 102, o.sub, { anchor: 'middle', fill: 'rgba(49,196,126,0.7)', ls: 1.4 }))
   return { x, y, w, h, cx: x + w / 2, bottom: y + h, right: x + w }
 }
 
@@ -174,7 +210,9 @@ const route = (pts, o = {}) => {
   }
   const last = pts[pts.length - 1]
   d += ` L${last[0]},${last[1]}`
-  return `<path d="${d}" stroke="${o.private ? FLOW_PRIVATE : FLOW}" stroke-width="1.5" fill="none" marker-end="url(#${o.private ? 'tipP' : 'tipN'})"/>`
+  // a rail that fans out carries no head of its own, the branches do
+  const head = o.head === false ? '' : ` marker-end="url(#${o.private ? 'tipP' : 'tipN'})"`
+  return `<path d="${d}" stroke="${o.private ? FLOW_PRIVATE : FLOW}" stroke-width="1.5" fill="none"${head}/>`
 }
 
 const tag = (cx, cy, s) => {
@@ -211,14 +249,15 @@ zone(Z4.x, Z4.y, Z4.w, Z4.h, 'Monad · payout')
 const login = block(Z1.x + 30, Z1.y + 64, Z1.w - 60, {
   step: '1',
   title: 'Log in with Mera',
-  sub: 'One master passkey, no wallet switching',
-  rowsLabel: 'Locally derived keys',
-  rows: [
-    ['F', 'Funding wallet'],
-    ['C', 'Confidential account signer'],
-    ['A1 – A4', 'Investment wallets'],
-    ['R1 – R3', 'Fresh withdrawal wallets'],
-  ],
+  sub: 'One master passkey. Every address below belongs to the same account',
+  tree: {
+    root: 'M',
+    leaves: [
+      ['F', 'Funding wallet'],
+      ['P1 – P4', 'Investment'],
+      ['P5 – P7', 'Withdrawal'],
+    ],
+  },
 })
 
 const fund = block(Z1.x + 30, login.bottom + 28, 270, {
@@ -243,7 +282,7 @@ add(flowH(fund.y + 60, fund.right, deposit.x))
 
 const balance = block(Z2.x + 30, Z2.y + 64, Z2.w - 60, {
   step: '3',
-  title: 'Confidential balance C',
+  title: 'Confidential balance M',
   sub: 'The Aurora deposit route credits the FAR ledger',
   private: true,
   glyphs: ['ledger', 'lock'],
@@ -255,7 +294,7 @@ const intents = block(Z2.x + 30, balance.bottom + 28, Z2.w - 60, {
   title: 'Aurora Confidential Intents',
   sub: 'One payout quote per recipient wallet',
   private: true,
-  chips: ['A1 route', 'A2 route', 'A3 route', 'A4 route'],
+  chips: ['P1 route', 'P2 route', 'P3 route', 'P4 route'],
 })
 
 const returns = block(Z2.x + 30, intents.bottom + 120, Z2.w - 60, {
@@ -263,11 +302,11 @@ const returns = block(Z2.x + 30, intents.bottom + 120, Z2.w - 60, {
   title: 'Aurora confidential return routes',
   sub: 'One return route per investment wallet',
   private: true,
-  chips: ['D1 › C', 'D2 › C', 'D3 › C', 'D4 › C'],
+  chips: ['D1 › M', 'D2 › M', 'D3 › M', 'D4 › M'],
 })
 
 const balance2 = block(Z2.x + 30, returns.bottom + 28, Z2.w - 60, {
-  title: 'Confidential balance C',
+  title: 'Confidential balance M',
   sub: 'Same account, credited by every return route',
   private: true,
   glyphs: ['ledger'],
@@ -279,7 +318,7 @@ const quotes = block(Z2.x + 30, balance2.bottom + 28, Z2.w - 60, {
   title: 'Aurora confidential payout quotes',
   sub: 'One quote per fresh withdrawal wallet',
   private: true,
-  chips: ['R1 quote', 'R2 quote', 'R3 quote'],
+  chips: ['P5 quote', 'P6 quote', 'P7 quote'],
 })
 
 add(flowV(balance.cx, balance.bottom, intents.y, { private: true }))
@@ -294,13 +333,13 @@ add(route([[deposit.right, deposit.y + 60], [Z2.x - 30, deposit.y + 60], [Z2.x -
 const AX = [Z3.x + 30, Z3.x + 210, Z3.x + 390, Z3.x + 570]
 const AW = 160
 
-const wallets = AX.map((x, i) => tile(x, Z3.y + 64, AW, 'wallet', `A${i + 1}`))
+const wallets = AX.map((x, i) => tile(x, Z3.y + 64, AW, 'wallet', `P${i + 1}`))
 
 const invest = block(Z3.x + 30, wallets[0].bottom + 86, Z3.w - 60, {
   step: '5',
   title: 'Invest in vaults',
   sub: 'Morpho / Aave / compatible Euler application',
-  chips: ['A1 position', 'A2 position', 'A3 position', 'A4 position'],
+  chips: ['P1 position', 'P2 position', 'P3 position', 'P4 position'],
 })
 
 const exitStep = block(Z3.x + 30, invest.bottom + 64, Z3.w - 60, {
@@ -309,7 +348,7 @@ const exitStep = block(Z3.x + 30, invest.bottom + 64, Z3.w - 60, {
   sub: 'Redeem part of each position, the rest stays invested',
 })
 
-const wallets2 = AX.map((x, i) => tile(x, exitStep.bottom + 86, AW, 'wallet', `A${i + 1}`))
+const wallets2 = AX.map((x, i) => tile(x, exitStep.bottom + 86, AW, 'wallet', `P${i + 1}`))
 const deposits = AX.map((x, i) => tile(x, wallets2[0].bottom + 54, AW, 'file', `Deposit D${i + 1}`))
 
 // intents rail into the wallets
@@ -321,7 +360,7 @@ add(
       [Z3.x - 24, Z3.y + 40],
       [wallets[3].cx, Z3.y + 40],
     ],
-    { private: true },
+    { private: true, head: false },
   ),
 )
 wallets.forEach((w) => add(flowV(w.cx, Z3.y + 40, w.y, { private: true })))
@@ -358,11 +397,11 @@ deposits.forEach((d, i) => {
 /* ------------------------------------------------------------ column 4 */
 
 const RX = [Z4.x + 30, Z4.x + 220, Z4.x + 410]
-const fresh = RX.map((x, i) => tile(x, Z4.y + 64, 170, 'wallet', `R${i + 1}`))
+const fresh = RX.map((x, i) => tile(x, Z4.y + 64, 170, 'wallet', `P${i + 5}`))
 
 const freshNote = block(Z4.x + 30, fresh[0].bottom + 28, Z4.w - 60, {
   title: 'Fresh withdrawal addresses',
-  sub: 'Controlled by the same Mera passkey, no new enrolment',
+  sub: 'Same account M, no new passkey enrolment',
   glyphs: ['exit'],
   glyphNote: 'One quote per address',
 })
@@ -377,7 +416,7 @@ add(
       [Z4.x + Z4.w + 28, payoutRail],
       [fresh[0].cx, payoutRail],
     ],
-    { private: true, r: 14 },
+    { private: true, r: 14, head: false },
   ),
 )
 fresh.forEach((f) => add(flowV(f.cx, payoutRail, f.y, { private: true })))

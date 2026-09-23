@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#070a09" />
+    <title>Gizu · Earn cycle</title>
+    <link rel="icon" type="image/svg+xml" href="/gizulogo.svg" />
+    <meta property="og:title" content="Gizu · One passkey. The complete Earn cycle." />
+    <meta property="og:image" content="/earn-cycle.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <style>
+      @font-face {
+        font-family: 'Helvetica Neue LT';
+        src: url('/fonts/HelveticaNeue-400.ttf') format('truetype');
+        font-weight: 400;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Helvetica Neue LT';
+        src: url('/fonts/HelveticaNeue-500.ttf') format('truetype');
+        font-weight: 500;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Helvetica Neue LT';
+        src: url('/fonts/HelveticaNeue-700.ttf') format('truetype');
+        font-weight: 600 700;
+        font-display: swap;
+      }
+      :root {
+        --ink: #070a09;
+        --neon: #31c47e;
+        --text: #f2f7f4;
+        --muted: rgba(242, 247, 244, 0.55);
+        --hair: rgba(255, 255, 255, 0.1);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--ink);
+        color: var(--text);
+        font-family: 'Helvetica Neue LT', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        display: flex;
+        flex-direction: column;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 24px 28px;
+      }
+      header img { height: 26px; width: auto; }
+      header span { font-size: 17px; font-weight: 500; letter-spacing: -0.2px; }
+      header a {
+        margin-left: auto;
+        color: var(--neon);
+        text-decoration: none;
+        font-size: 12px;
+        letter-spacing: 1.8px;
+        text-transform: uppercase;
+        border: 1px solid var(--hair);
+        border-radius: 999px;
+        padding: 9px 16px;
+      }
+      main { flex: 1; padding: 0 28px 40px; }
+      figure {
+        margin: 0 auto;
+        max-width: 1600px;
+        border: 1px solid var(--hair);
+        border-radius: 16px;
+        overflow: hidden;
+        background: #0c110f;
+      }
+      figure img { display: block; width: 100%; height: auto; }
+      @media (max-width: 640px) {
+        header, main { padding-left: 16px; padding-right: 16px; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <img src="/gizulogo.svg" alt="" />
+      <span>Gizu</span>
+      <a href="/earn-cycle.png" download>Download PNG</a>
+    </header>
+
+    <main>
+      <figure>
+        <a href="/earn-cycle.png"><img src="/earn-cycle.png" alt="Gizu Earn cycle diagram" /></a>
+      </figure>
+    </main>
+  </body>
+</html>

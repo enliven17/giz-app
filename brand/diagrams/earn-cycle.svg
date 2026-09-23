@@ -1,0 +1,266 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1680" height="1120" viewBox="0 0 1680 1120">
+  <defs>
+    <marker id="head" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="rgba(223,232,227,0.45)"/>
+    </marker>
+    <marker id="headNeon" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#31c47e" fill-opacity="0.7"/>
+    </marker>
+  </defs>
+  <rect width="1680" height="1120" fill="#050706"/>
+  <radialGradient id="glow" cx="50%" cy="0%" r="70%"><stop offset="0%" stop-color="#31c47e" stop-opacity="0.07"/><stop offset="100%" stop-color="#31c47e" stop-opacity="0"/></radialGradient>
+  <rect width="1680" height="1120" fill="url(#glow)"/>
+  <text x="840" y="74" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="40" font-weight="700" fill="#dfe8e3" letter-spacing="-0.8" text-anchor="middle">One passkey. The complete Earn cycle.</text>
+  <text x="840" y="112" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="rgba(223,232,227,0.45)" text-anchor="middle">Monad <tspan fill="#31c47e">&#8594;</tspan> confidential balance <tspan fill="#31c47e">&#8594;</tspan> Ethereum vaults <tspan fill="#31c47e">&#8594;</tspan> fresh Monad wallets</text>
+  <g transform="translate(58 196)" stroke="#dfe8e3" stroke-opacity="0.65" fill="none" stroke-width="2">
+     <circle cx="20" cy="14" r="12"/>
+     <path d="M0 52 a20 22 0 0 1 40 0"/>
+   </g>
+  <text x="78" y="286" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="500" fill="rgba(223,232,227,0.45)" letter-spacing="2.2" text-anchor="middle">INVESTOR</text>
+  <rect x="158" y="178" width="320" height="214" rx="18" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <circle cx="190" cy="210" r="15" fill="#31c47e"/><text x="190" y="215" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#04150c" letter-spacing="0" text-anchor="middle">1</text>
+  <text x="216" y="206" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="17" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="start">Log in with Mera</text>
+  <text x="216" y="226" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="rgba(223,232,227,0.45)" letter-spacing="0" text-anchor="start">One master passkey</text>
+  <path d="M182,246 H454" stroke="rgba(255,255,255,0.07)"/>
+  <text x="182" y="268" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="500" fill="#31c47e" letter-spacing="2.2" text-anchor="start">LOCALLY DERIVED KEYS</text>
+  <text x="182" y="292" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#31c47e" letter-spacing="0" text-anchor="start">F</text>
+  <text x="268" y="292" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="rgba(223,232,227,0.45)" letter-spacing="0" text-anchor="start">Funding wallet</text>
+  <text x="182" y="312" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#31c47e" letter-spacing="0" text-anchor="start">C</text>
+  <text x="268" y="312" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="rgba(223,232,227,0.45)" letter-spacing="0" text-anchor="start">Confidential account signer</text>
+  <text x="182" y="332" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#31c47e" letter-spacing="0" text-anchor="start">A1 – A4</text>
+  <text x="268" y="332" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="rgba(223,232,227,0.45)" letter-spacing="0" text-anchor="start">Investment wallets</text>
+  <text x="182" y="352" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#31c47e" letter-spacing="0" text-anchor="start">R1 – R3</text>
+  <text x="268" y="352" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="rgba(223,232,227,0.45)" letter-spacing="0" text-anchor="start">Fresh withdrawal wallets</text>
+  <text x="182" y="372" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="rgba(223,232,227,0.3)" letter-spacing="0" text-anchor="start">One unlock · separate signatures · no wallet switching</text>
+  <rect x="520" y="214" width="210" height="118" rx="18" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <circle cx="552" cy="246" r="15" fill="#31c47e"/><text x="552" y="251" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#04150c" letter-spacing="0" text-anchor="middle">2</text>
+  <text x="578" y="242" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="start">Fund wallet F</text>
+  <text x="578" y="262" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="rgba(223,232,227,0.45)" letter-spacing="0" text-anchor="start">USDC on Monad</text>
+  <circle cx="562" cy="298" r="14" fill="none" stroke="#31c47e" stroke-opacity="0.6"/>
+  <text x="562" y="303" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#31c47e" letter-spacing="0" text-anchor="middle">$</text>
+  <text x="586" y="303" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#dfe8e3" letter-spacing="0" text-anchor="start">USDC</text>
+  <rect x="772" y="214" width="216" height="118" rx="18" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <text x="796" y="248" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="start">Generated Monad</text>
+  <text x="796" y="268" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="start">deposit address</text>
+  <g transform="translate(796 288)" stroke="#31c47e" stroke-opacity="0.8" fill="none" stroke-width="1.4">
+     <path d="M2 0 H12 L17 5 V18 H2 Z"/>
+     <path d="M12 0 V5 H17"/>
+     <path d="M5.5 9 H13.5 M5.5 13 H11"/>
+   </g>
+  <text x="822" y="305" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="rgba(223,232,227,0.45)" letter-spacing="0" text-anchor="start">0xABCD . . . 1234</text>
+  <rect x="1030" y="200" width="262" height="148" rx="18" fill="rgba(49,196,126,0.07)" stroke="rgba(49,196,126,0.28)"/>
+  <circle cx="1062" cy="232" r="15" fill="#31c47e"/><text x="1062" y="237" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#04150c" letter-spacing="0" text-anchor="middle">3</text>
+  <text x="1088" y="228" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="start">Confidential balance C</text>
+  <text x="1088" y="248" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="rgba(223,232,227,0.45)" letter-spacing="0" text-anchor="start">Aurora deposit route → FAR credit</text>
+  <g transform="translate(1058 272)" fill="none" stroke="#31c47e" stroke-width="1.6" stroke-opacity="0.85">
+    <ellipse cx="14" cy="6" rx="14" ry="6"/><path d="M0 6 V20 a14 6 0 0 0 28 0 V6"/>
+  </g>
+  <g transform="translate(1112 272)" stroke="#31c47e" fill="none" stroke-width="1.6">
+     <rect x="0" y="7" width="16" height="11" rx="3"/>
+     <path d="M3.5 7 V4.5 a4.5 4.5 0 0 1 9 0 V7"/>
+   </g>
+  <text x="1058" y="330" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="500" fill="#31c47e" letter-spacing="2.2" text-anchor="start">FAR · PRIVATE LEDGER</text>
+  <rect x="1330" y="200" width="292" height="148" rx="18" fill="rgba(49,196,126,0.07)" stroke="rgba(49,196,126,0.28)"/>
+  <circle cx="1362" cy="232" r="15" fill="#31c47e"/><text x="1362" y="237" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#04150c" letter-spacing="0" text-anchor="middle">4</text>
+  <text x="1388" y="228" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="start">Aurora Confidential Intents</text>
+  <text x="1388" y="248" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="rgba(223,232,227,0.45)" letter-spacing="0" text-anchor="start">One payout quote per recipient</text>
+  <g stroke="#31c47e" stroke-width="1.8" fill="none" marker-end="url(#headNeon)" stroke-opacity="0.75">
+     <path d="M1372,300 H1436"/><path d="M1436,300 L1476,282"/><path d="M1436,300 L1476,318"/>
+   </g>
+  <path d="M104,272 L150,272" stroke="rgba(223,232,227,0.35)" stroke-width="1.4" marker-end="url(#head)" fill="none"/>
+  <path d="M486,272 L512,272" stroke="rgba(223,232,227,0.35)" stroke-width="1.4" marker-end="url(#head)" fill="none"/>
+  <path d="M738,272 L764,272" stroke="rgba(223,232,227,0.35)" stroke-width="1.4" marker-end="url(#head)" fill="none"/>
+  <path d="M996,272 L1022,272" stroke="rgba(223,232,227,0.35)" stroke-width="1.4" marker-end="url(#head)" fill="none"/>
+  <path d="M1300,272 L1322,272" stroke="rgba(223,232,227,0.35)" stroke-width="1.4" marker-end="url(#head)" fill="none"/>
+  <path d="M20,466 H520 C640,466 700,392 860,390 H1660" stroke="#31c47e" stroke-opacity="0.25" stroke-dasharray="7 9" fill="none"/>
+  <text x="1004" y="428" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="500" fill="#31c47e" letter-spacing="2.2" text-anchor="end">ETHEREUM</text>
+  <text x="40" y="452" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="500" fill="#31c47e" letter-spacing="2.2" text-anchor="start">MONAD</text>
+  <rect x="1032" y="404" width="120" height="74" rx="14" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <g transform="translate(1081 420)" stroke="#31c47e" stroke-opacity="0.85" fill="none" stroke-width="1.5">
+     <rect x="0" y="0" width="22" height="16" rx="4"/>
+     <path d="M0 5 H22"/>
+     <circle cx="16.5" cy="10.5" r="1.6" fill="#31c47e" stroke="none"/>
+   </g>
+  <text x="1092" y="462" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="middle">A1</text>
+  <path d="M1092,478 L1092,528" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <text x="1100" y="502" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="rgba(223,232,227,0.3)" letter-spacing="0" text-anchor="start">Approve + deposit</text>
+  <rect x="1180" y="404" width="120" height="74" rx="14" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <g transform="translate(1229 420)" stroke="#31c47e" stroke-opacity="0.85" fill="none" stroke-width="1.5">
+     <rect x="0" y="0" width="22" height="16" rx="4"/>
+     <path d="M0 5 H22"/>
+     <circle cx="16.5" cy="10.5" r="1.6" fill="#31c47e" stroke="none"/>
+   </g>
+  <text x="1240" y="462" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="middle">A2</text>
+  <path d="M1240,478 L1240,528" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <text x="1248" y="502" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="rgba(223,232,227,0.3)" letter-spacing="0" text-anchor="start">Approve + deposit</text>
+  <rect x="1328" y="404" width="120" height="74" rx="14" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <g transform="translate(1377 420)" stroke="#31c47e" stroke-opacity="0.85" fill="none" stroke-width="1.5">
+     <rect x="0" y="0" width="22" height="16" rx="4"/>
+     <path d="M0 5 H22"/>
+     <circle cx="16.5" cy="10.5" r="1.6" fill="#31c47e" stroke="none"/>
+   </g>
+  <text x="1388" y="462" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="middle">A3</text>
+  <path d="M1388,478 L1388,528" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <text x="1396" y="502" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="rgba(223,232,227,0.3)" letter-spacing="0" text-anchor="start">Approve + deposit</text>
+  <rect x="1476" y="404" width="120" height="74" rx="14" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <g transform="translate(1525 420)" stroke="#31c47e" stroke-opacity="0.85" fill="none" stroke-width="1.5">
+     <rect x="0" y="0" width="22" height="16" rx="4"/>
+     <path d="M0 5 H22"/>
+     <circle cx="16.5" cy="10.5" r="1.6" fill="#31c47e" stroke="none"/>
+   </g>
+  <text x="1536" y="462" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="middle">A4</text>
+  <path d="M1536,478 L1536,528" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <path d="M1161,348 V380 H1092 V404" stroke="#31c47e" stroke-opacity="0.45" stroke-width="1.4" fill="none" marker-end="url(#headNeon)"/>
+  <path d="M1161,348 V380 H1240 V404" stroke="#31c47e" stroke-opacity="0.45" stroke-width="1.4" fill="none" marker-end="url(#headNeon)"/>
+  <path d="M1476,348 V380 H1388 V404" stroke="#31c47e" stroke-opacity="0.45" stroke-width="1.4" fill="none" marker-end="url(#headNeon)"/>
+  <path d="M1476,348 V380 H1536 V404" stroke="#31c47e" stroke-opacity="0.45" stroke-width="1.4" fill="none" marker-end="url(#headNeon)"/>
+  <rect x="1006" y="540" width="620" height="138" rx="18" fill="rgba(49,196,126,0.07)" stroke="rgba(49,196,126,0.28)"/>
+  <circle cx="1040" cy="574" r="15" fill="#31c47e"/><text x="1040" y="579" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#04150c" letter-spacing="0" text-anchor="middle">5</text>
+  <text x="1066" y="570" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="17" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="start">Invest in vaults</text>
+  <text x="1066" y="590" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="rgba(223,232,227,0.45)" letter-spacing="0" text-anchor="start">Morpho / Aave / compatible Zama application</text>
+  <rect x="1026" y="614" width="132" height="44" rx="12" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/><text x="1092" y="641" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#dfe8e3" letter-spacing="0" text-anchor="middle">A1 position</text>
+  <rect x="1174" y="614" width="132" height="44" rx="12" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/><text x="1240" y="641" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#dfe8e3" letter-spacing="0" text-anchor="middle">A2 position</text>
+  <rect x="1322" y="614" width="132" height="44" rx="12" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/><text x="1388" y="641" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#dfe8e3" letter-spacing="0" text-anchor="middle">A3 position</text>
+  <rect x="1470" y="614" width="132" height="44" rx="12" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/><text x="1536" y="641" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#dfe8e3" letter-spacing="0" text-anchor="middle">A4 position</text>
+  <rect x="1006" y="716" width="620" height="92" rx="18" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <circle cx="1040" cy="750" r="15" fill="#31c47e"/><text x="1040" y="755" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#04150c" letter-spacing="0" text-anchor="middle">6</text>
+  <text x="1066" y="746" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="start">User requests a partial withdrawal</text>
+  <text x="1066" y="766" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="rgba(223,232,227,0.45)" letter-spacing="0" text-anchor="start">Redeem from each position; remaining positions stay invested</text>
+  <path d="M1092,678 L1092,712" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <path d="M1240,678 L1240,712" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <path d="M1388,678 L1388,712" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <path d="M1536,678 L1536,712" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <path d="M1092,808 L1092,844" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <text x="1100" y="832" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="rgba(223,232,227,0.3)" letter-spacing="0" text-anchor="start">Redeem</text>
+  <rect x="1032" y="850" width="120" height="70" rx="14" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <g transform="translate(1081 864)" stroke="#31c47e" stroke-opacity="0.85" fill="none" stroke-width="1.5">
+     <rect x="0" y="0" width="22" height="16" rx="4"/>
+     <path d="M0 5 H22"/>
+     <circle cx="16.5" cy="10.5" r="1.6" fill="#31c47e" stroke="none"/>
+   </g>
+  <text x="1092" y="904" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="middle">A1</text>
+  <path d="M1092,920 L1092,946" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <rect x="1024" y="950" width="136" height="48" rx="12" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <g transform="translate(1038 962)" stroke="#31c47e" stroke-opacity="0.8" fill="none" stroke-width="1.4">
+     <path d="M2 0 H12 L17 5 V18 H2 Z"/>
+     <path d="M12 0 V5 H17"/>
+     <path d="M5.5 9 H13.5 M5.5 13 H11"/>
+   </g>
+  <text x="1066" y="980" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#dfe8e3" letter-spacing="0" text-anchor="start">Deposit D1</text>
+  <path d="M1240,808 L1240,844" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <text x="1248" y="832" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="rgba(223,232,227,0.3)" letter-spacing="0" text-anchor="start">Redeem</text>
+  <rect x="1180" y="850" width="120" height="70" rx="14" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <g transform="translate(1229 864)" stroke="#31c47e" stroke-opacity="0.85" fill="none" stroke-width="1.5">
+     <rect x="0" y="0" width="22" height="16" rx="4"/>
+     <path d="M0 5 H22"/>
+     <circle cx="16.5" cy="10.5" r="1.6" fill="#31c47e" stroke="none"/>
+   </g>
+  <text x="1240" y="904" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="middle">A2</text>
+  <path d="M1240,920 L1240,946" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <rect x="1172" y="950" width="136" height="48" rx="12" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <g transform="translate(1186 962)" stroke="#31c47e" stroke-opacity="0.8" fill="none" stroke-width="1.4">
+     <path d="M2 0 H12 L17 5 V18 H2 Z"/>
+     <path d="M12 0 V5 H17"/>
+     <path d="M5.5 9 H13.5 M5.5 13 H11"/>
+   </g>
+  <text x="1214" y="980" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#dfe8e3" letter-spacing="0" text-anchor="start">Deposit D2</text>
+  <path d="M1388,808 L1388,844" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <text x="1396" y="832" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="rgba(223,232,227,0.3)" letter-spacing="0" text-anchor="start">Redeem</text>
+  <rect x="1328" y="850" width="120" height="70" rx="14" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <g transform="translate(1377 864)" stroke="#31c47e" stroke-opacity="0.85" fill="none" stroke-width="1.5">
+     <rect x="0" y="0" width="22" height="16" rx="4"/>
+     <path d="M0 5 H22"/>
+     <circle cx="16.5" cy="10.5" r="1.6" fill="#31c47e" stroke="none"/>
+   </g>
+  <text x="1388" y="904" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="middle">A3</text>
+  <path d="M1388,920 L1388,946" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <rect x="1320" y="950" width="136" height="48" rx="12" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <g transform="translate(1334 962)" stroke="#31c47e" stroke-opacity="0.8" fill="none" stroke-width="1.4">
+     <path d="M2 0 H12 L17 5 V18 H2 Z"/>
+     <path d="M12 0 V5 H17"/>
+     <path d="M5.5 9 H13.5 M5.5 13 H11"/>
+   </g>
+  <text x="1362" y="980" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#dfe8e3" letter-spacing="0" text-anchor="start">Deposit D3</text>
+  <path d="M1536,808 L1536,844" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <text x="1544" y="832" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="rgba(223,232,227,0.3)" letter-spacing="0" text-anchor="start">Redeem</text>
+  <rect x="1476" y="850" width="120" height="70" rx="14" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <g transform="translate(1525 864)" stroke="#31c47e" stroke-opacity="0.85" fill="none" stroke-width="1.5">
+     <rect x="0" y="0" width="22" height="16" rx="4"/>
+     <path d="M0 5 H22"/>
+     <circle cx="16.5" cy="10.5" r="1.6" fill="#31c47e" stroke="none"/>
+   </g>
+  <text x="1536" y="904" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="middle">A4</text>
+  <path d="M1536,920 L1536,946" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <rect x="1468" y="950" width="136" height="48" rx="12" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <g transform="translate(1482 962)" stroke="#31c47e" stroke-opacity="0.8" fill="none" stroke-width="1.4">
+     <path d="M2 0 H12 L17 5 V18 H2 Z"/>
+     <path d="M12 0 V5 H17"/>
+     <path d="M5.5 9 H13.5 M5.5 13 H11"/>
+   </g>
+  <text x="1510" y="980" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#dfe8e3" letter-spacing="0" text-anchor="start">Deposit D4</text>
+  <text x="1316" y="1052" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="rgba(223,232,227,0.3)" letter-spacing="0" text-anchor="middle">Same investment wallets · separate Ethereum deposit addresses</text>
+  <rect x="560" y="828" width="300" height="150" rx="18" fill="rgba(49,196,126,0.07)" stroke="rgba(49,196,126,0.28)"/>
+  <circle cx="592" cy="862" r="15" fill="#31c47e"/><text x="592" y="867" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#04150c" letter-spacing="0" text-anchor="middle">7</text>
+  <text x="618" y="858" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="start">Aurora confidential</text>
+  <text x="618" y="878" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="start">return routes</text>
+  <text x="592" y="902" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="rgba(223,232,227,0.45)" letter-spacing="0" text-anchor="start">One return route per investment wallet</text>
+  <g stroke="#31c47e" stroke-width="1.8" fill="none" marker-end="url(#headNeon)" stroke-opacity="0.75">
+     <path d="M600,944 H664"/><path d="M664,944 L704,926"/><path d="M664,944 L704,962"/>
+   </g>
+  <path d="M1084,998 V1004 H806 V980" stroke="#31c47e" stroke-opacity="0.4" stroke-width="1.4" fill="none" marker-end="url(#headNeon)"/>
+  <path d="M1232,998 V1014 H744 V980" stroke="#31c47e" stroke-opacity="0.4" stroke-width="1.4" fill="none" marker-end="url(#headNeon)"/>
+  <path d="M1380,998 V1024 H682 V980" stroke="#31c47e" stroke-opacity="0.4" stroke-width="1.4" fill="none" marker-end="url(#headNeon)"/>
+  <path d="M1528,998 V1034 H620 V980" stroke="#31c47e" stroke-opacity="0.4" stroke-width="1.4" fill="none" marker-end="url(#headNeon)"/>
+  <rect x="70" y="828" width="300" height="150" rx="18" fill="rgba(49,196,126,0.07)" stroke="rgba(49,196,126,0.28)"/>
+  <g transform="translate(104 862)" fill="none" stroke="#31c47e" stroke-width="1.6" stroke-opacity="0.85">
+    <ellipse cx="14" cy="6" rx="14" ry="6"/><path d="M0 6 V20 a14 6 0 0 0 28 0 V6"/>
+  </g>
+  <g transform="translate(158 862)" stroke="#31c47e" fill="none" stroke-width="1.6">
+     <rect x="0" y="7" width="16" height="11" rx="3"/>
+     <path d="M3.5 7 V4.5 a4.5 4.5 0 0 1 9 0 V7"/>
+   </g>
+  <text x="104" y="916" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="start">Confidential balance C</text>
+  <text x="104" y="936" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="rgba(223,232,227,0.45)" letter-spacing="0" text-anchor="start">Same account C</text>
+  <text x="104" y="962" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="500" fill="#31c47e" letter-spacing="2.2" text-anchor="start">FAR · PRIVATE LEDGER</text>
+  <path d="M552,902 L382,902" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <rect x="120" y="622" width="300" height="96" rx="18" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <circle cx="152" cy="656" r="15" fill="#31c47e"/><text x="152" y="661" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#04150c" letter-spacing="0" text-anchor="middle">8</text>
+  <text x="178" y="652" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="start">Aurora confidential</text>
+  <text x="178" y="672" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="start">payout quotes</text>
+  <path d="M220,820 L220,726" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <rect x="120" y="470" width="92" height="74" rx="14" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <g transform="translate(155 486)" stroke="#31c47e" stroke-opacity="0.85" fill="none" stroke-width="1.5">
+     <rect x="0" y="0" width="22" height="16" rx="4"/>
+     <path d="M0 5 H22"/>
+     <circle cx="16.5" cy="10.5" r="1.6" fill="#31c47e" stroke="none"/>
+   </g>
+  <text x="166" y="528" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="middle">R1</text>
+  <path d="M166,614 L166,552" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <rect x="226" y="470" width="92" height="74" rx="14" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <g transform="translate(261 486)" stroke="#31c47e" stroke-opacity="0.85" fill="none" stroke-width="1.5">
+     <rect x="0" y="0" width="22" height="16" rx="4"/>
+     <path d="M0 5 H22"/>
+     <circle cx="16.5" cy="10.5" r="1.6" fill="#31c47e" stroke="none"/>
+   </g>
+  <text x="272" y="528" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="middle">R2</text>
+  <path d="M272,614 L272,552" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <rect x="332" y="470" width="92" height="74" rx="14" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <g transform="translate(367 486)" stroke="#31c47e" stroke-opacity="0.85" fill="none" stroke-width="1.5">
+     <rect x="0" y="0" width="22" height="16" rx="4"/>
+     <path d="M0 5 H22"/>
+     <circle cx="16.5" cy="10.5" r="1.6" fill="#31c47e" stroke="none"/>
+   </g>
+  <text x="378" y="528" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="middle">R3</text>
+  <path d="M378,614 L378,552" stroke="rgba(49,196,126,0.5)" stroke-width="1.4" marker-end="url(#headNeon)" fill="none"/>
+  <text x="452" y="500" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#dfe8e3" letter-spacing="0" text-anchor="start">Fresh withdrawal addresses</text>
+  <text x="452" y="522" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="rgba(223,232,227,0.45)" letter-spacing="0" text-anchor="start">Controlled by the same Mera passkey</text>
+  <rect x="70" y="1058" width="1540" height="0.5" rx="0" fill="rgba(14,19,16,0.9)" stroke="rgba(255,255,255,0.07)"/>
+  <text x="340" y="1082" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="rgba(223,232,227,0.45)" letter-spacing="0" text-anchor="middle">Same passkey controls F, C, A1-A4 and R1-R3.</text>
+  <text x="340" y="1100" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="rgba(223,232,227,0.3)" letter-spacing="0" text-anchor="middle">New addresses do not require new passkeys.</text>
+  <path d="M590,1070 V1104" stroke="rgba(255,255,255,0.07)"/>
+  <text x="840" y="1082" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="rgba(223,232,227,0.45)" letter-spacing="0" text-anchor="middle">Public: chain transfers and vault activity.</text>
+  <text x="840" y="1100" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="rgba(223,232,227,0.3)" letter-spacing="0" text-anchor="middle">Private: internal FAR balances and routing.</text>
+  <path d="M1090,1070 V1104" stroke="rgba(255,255,255,0.07)"/>
+  <text x="1340" y="1082" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="rgba(223,232,227,0.45)" letter-spacing="0" text-anchor="middle">Amounts and timing can still correlate activity.</text>
+  <text x="1340" y="1100" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="rgba(223,232,227,0.3)" letter-spacing="0" text-anchor="middle">App coordinates separate routes; execution is not atomic.</text>
+</svg>

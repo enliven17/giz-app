@@ -1,4 +1,3 @@
-import { ComingSoonHeading } from "./ComingSoonHeading";
 import { View } from "react-native";
 import { Fingerprint, ShieldCheck, Bell, Globe, FileText, LifeBuoy } from "lucide-react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
@@ -35,63 +34,50 @@ const groups = [
     ],
   },
 ];
-export function TabScreen({ route, navigation }: BottomTabScreenProps<MainTabParamList>) {
+export function TabScreen({ navigation }: BottomTabScreenProps<MainTabParamList, "Settings">) {
   const { session, disconnect } = useSession();
   return (
-    <Screen scrollable={route.name === "Settings"}>
-      {route.name === "Settings" && <Typography variant="title">Account</Typography>}
-      {route.name === "Settings" ? (
-        <>
-          <Surface>
-            <View className="flex-row items-center gap-4 p-5">
-              <View className="rounded-2xl bg-accent/10 p-4">
-                <Typography variant="label">{profile.initials}</Typography>
-              </View>
-              <View className="flex-1 gap-1">
-                <Typography variant="row">{profile.name}</Typography>
-                <Typography variant="caption">{profile.member}</Typography>
-              </View>
-            </View>
-          </Surface>
-          <Typography variant="caption">
-            Access method: {session?.method === "Demo passkey" ? "Passkey" : session?.method}
-          </Typography>
-          {groups.map((group) => (
-            <View key={group.title} className="gap-3">
-              <Typography variant="caption">{group.title}</Typography>
-              <Surface>
-                {group.rows.map((row) => (
-                  <GroupedRow
-                    key={row.label}
-                    {...row}
-                    value="Unavailable"
-                    onPress={() => {}}
-                    disabled
-                  />
-                ))}
-              </Surface>
-            </View>
-          ))}
-          <Button
-            label="Open UI preview"
-            variant="quiet"
-            onPress={() =>
-              navigation
-                .getParent<NativeStackNavigationProp<RootStackParamList>>()
-                ?.navigate("Preview")
-            }
-          />
-          <Button variant="destructive" label="Disconnect" onPress={disconnect} />
-          <Typography variant="caption">Gizu v0.1.0</Typography>
-        </>
-      ) : (
-        <View className="flex-1 items-center justify-center gap-6 px-4">
-          <ComingSoonHeading />
-          <Typography style={{ textAlign: "center" }}>
-            In-app swaps are not available yet. Explore confidential vaults and your portfolio.
-          </Typography>
+    <Screen>
+      <Typography variant="title">Account</Typography>
+      <Surface>
+        <View className="flex-row items-center gap-4 p-5">
+          <View className="rounded-2xl bg-accent/10 p-4">
+            <Typography variant="label">{profile.initials}</Typography>
+          </View>
+          <View className="flex-1 gap-1">
+            <Typography variant="row">{profile.name}</Typography>
+            <Typography variant="caption">{profile.member}</Typography>
+          </View>
         </View>
-      )}
+      </Surface>
+      <Typography variant="caption">
+        Access method: {session?.method === "Demo passkey" ? "Passkey" : session?.method}
+      </Typography>
+      {groups.map((group) => (
+        <View key={group.title} className="gap-3">
+          <Typography variant="caption">{group.title}</Typography>
+          <Surface>
+            {group.rows.map((row) => (
+              <GroupedRow
+                key={row.label}
+                {...row}
+                value="Unavailable"
+                onPress={() => {}}
+                disabled
+              />
+            ))}
+          </Surface>
+        </View>
+      ))}
+      <Button
+        label="Open UI preview"
+        variant="quiet"
+        onPress={() =>
+          navigation.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate("Preview")
+        }
+      />
+      <Button variant="destructive" label="Disconnect" onPress={disconnect} />
+      <Typography variant="caption">Gizu v0.1.0</Typography>
     </Screen>
   );
 }

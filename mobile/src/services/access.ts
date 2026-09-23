@@ -1,5 +1,4 @@
-export const walletProviders = ["MetaMask", "Rainbow", "Ledger", "WalletConnect"] as const;
-export type AccessMethod = "Demo passkey" | (typeof walletProviders)[number];
+export type AccessMethod = "Demo passkey";
 export type DemoSession = { kind: "demo"; method: AccessMethod };
 export interface AccessService {
   request(method: AccessMethod): Promise<DemoSession>;

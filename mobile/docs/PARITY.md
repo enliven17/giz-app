@@ -14,7 +14,7 @@ Legend: **working** = local UI handler exists; **simulated** = fixtures/timers;
 | --- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | P01 | Welcome -> access; back                                                                   | components/Onboarding.tsx, Auth.tsx, App.tsx                               | Working screen-state navigation                                                             | Complete forward/back journey, M2                                                                    |
 | P02 | Create passkey wallet                                                                     | components/Auth.tsx                                                        | Simulated timed access; no native credential                                                | Explicit demo access, protected routes, failure fixture, M2                                          |
-| P03 | External wallet selector and dismissal                                                    | components/Auth.tsx                                                        | Lists MetaMask, Rainbow, Ledger, WalletConnect; selecting any calls onDone                  | Mock provider selection and cancel without pretending to connect, M2                                 |
+| P03 | External wallet selector and dismissal                                                    | components/Auth.tsx                                                        | Lists MetaMask, Rainbow, Ledger, WalletConnect; selecting any calls onDone                  | Removed from mobile: passkey-only access by decision on 2026-09-23                                   |
 | P04 | Home/Vaults/Exchange/Settings tabs; detail/subpage back; disconnect                       | App.tsx, components/BottomNav.tsx                                          | Working local routing; tabs hidden outside main app                                         | Typed native routes; native back and auth boundary; clear account state on disconnect, M2/M5         |
 | P05 | Portfolio value, chart, holdings, vault shortcuts                                         | components/Home.tsx, data.ts                                               | Fixture values/series; vault shortcuts work                                                 | Equivalent information and navigation with mock states, M3                                           |
 | P06 | Home notification, activity, see-all-vaults, deposit/withdraw links                       | components/Home.tsx                                                        | Working handlers                                                                            | Reach intended destinations and return, M3/M4                                                        |
@@ -40,9 +40,9 @@ an explanation, rather than a clickable no-op or invented service response.
 | 1D/1W/1M/1Y/All chart periods                                             | Home, VaultDetail                  | Define deterministic per-period fixtures and selection behavior, M3                                     |
 | Manager-search wording; advanced-filter button                            | Vaults                             | Align search text/fields; specify filters beyond risk or explicitly defer advanced filters, M3          |
 | Share vault                                                               | VaultDetail                        | Define native share payload and valid destination; do not invent public URL, M3                         |
-| 25%/50%/75%/Max                                                           | Exchange, SwapSheet, TransferSheet | Define available mock balances, fee reserve and rounding rules, M4                                      |
-| Direction arrow and asset-selector buttons                                | Exchange, SwapSheet                | Define allowed pairs/direction and whether selectors are editable; preserve buy/sell semantics, M4      |
-| Recent trades see-all                                                     | Exchange                           | Decide link to Activity and data/filter semantics, M4                                                   |
+| 25%/50%/75%/Max                                                           | Exchange, SwapSheet, TransferSheet | Implemented: fee-aware Max and exact integer percentages; docs/TRADING.md                               |
+| Direction arrow and asset-selector buttons                                | Exchange, SwapSheet                | Implemented: USDC ↔ selected vault; buys spend USDC, sells spend unlocked units                         |
+| Recent trades see-all                                                     | Exchange                           | Implemented: session swap receipts and See all activity; full history includes transfers                |
 | Copy account address                                                      | Settings                           | Use a complete synthetic address and native clipboard feedback, M5                                      |
 | Recovery/backup and signing-policy rows                                   | SubPage/content                    | Mock/unavailable classification until security contract exists, M5/M6                                   |
 | Currency selection                                                        | SubPage/content                    | Decide display-only formatting versus fixture FX conversion; settlement unchanged, M5                   |
@@ -71,8 +71,8 @@ rules in AGENTS.md; this baseline can survive removal of the initial work plan.
   access” control opens demo access; no existing credential is claimed.
 - P02: simulated passkey access, memory-only demo session, loading/cancel,
   failure/rejection recovery and duplicate-submit protection. No biometrics or keys.
-- P03: simulated MetaMask/Rainbow/Ledger/WalletConnect selection in a native modal,
-  cancellation and invalidation of late results. No external app opens.
+- P03: removed. Mobile supports passkey-only access; the wallet picker and its
+  navigation route are no longer available.
 - P04: Home/Vaults/Exchange/Settings shell, protected navigation and disconnect
   implemented. Content and subpages remain with M3–M5; visible placeholders say so.
 - P05–P15: product content remains pending except the P14 disconnect action.
@@ -134,11 +134,11 @@ P01 now has a separate Request access modal with email, investment range, platfo
 multiselect and optional Other. Submission uses an injected development mock, with
 no network, persistence or real waitlist enrollment. Validation, pending, failure/retry,
 dismissal, completion and stale-result handling are part of the new functional journey.
-P02/P03 retain both passkey and external-wallet access by explicit user decision;
-the frontend's passkey-only change is not adopted. No real credentials are created.
+P02/P03 now use passkey-only access by the updated user decision on 2026-09-23.
+External-wallet entry is removed. Access remains mocked; no real credentials are created.
 
-M4 buy/sell and transfers remain pending; use the frontend sell tone and explicit
-confirmation labels when implementing them. M5 notifications remain pending; prefer
+M4 buy/sell and transfers are implemented with mock services and explicit
+confirmation labels; see docs/TRADING.md. M5 notifications remain pending; prefer
 a native screen/sheet over the desktop dropdown. Preserve native navigation, reduced
 motion support, readable type and no top navigation bars.
 
@@ -149,7 +149,7 @@ focused on reusable approaches. They supplement the journey statuses above.
 
 - Access sessions remain memory-only with `kind: "demo"`. Restart/disconnect clears
   the session; signed-out protected/unknown links are discarded. The UI preview
-  remains available under Settings. Keep both passkey and external-wallet entry.
+  remains available under Settings. Use passkey-only entry.
 - Keep user-facing copy free of demo/simulated prefixes and repetitive banners.
   Preserve engineering mock provenance and labeled native share summaries; do not
   claim actual biometrics, credential creation, connectivity or settlement.
@@ -174,15 +174,27 @@ focused on reusable approaches. They supplement the journey statuses above.
   or Other. The range is not a commitment. Preserve answers on retry, lock controls
   while pending, ignore late results on dismissal and clear answers on reopening.
   Completion is user-dismissed. Its mock creates no real waitlist entry or session.
-- Exchange keeps its route/deep link but is presented as Swap coming soon. Trading
-  and transfers remain M4; notifications/account actions remain M5. Use a distinct
-  sell tone with explicit confirmation labels; do not make sale success look like failure.
-- Swap's coming-soon placeholder uses a fixed, non-scrolling viewport centered
-  above the measured tab bar. Its heading scales for screen width with explicit
-  line height to prevent glyph clipping; other content screens remain scrollable.
-- Swap's “coming soon” heading combines three horizontally displaced native text
-  bands with cyan/magenta Lottie fragments. A shared native-driven clock produces
-  two short tear bursts per five-second loop over permanently rendered text.
-  Swap and body copy stay still.
-  The effect runs only on the focused tab while the app is active; reduced motion,
-  enlarged text and animation failure use native text. The screen remains fixed.
+- Exchange keeps its route/deep link and is presented as Swap. M4 now implements
+  mock buy/sell and deposit/withdraw with explicit review, signing, submission,
+  pending/unknown and result states. The old coming-soon heading is retired.
+  Notifications/account actions remain M5; use a distinct sell tone without
+  making successful sales look like failures. See `TRADING.md` for current rules.
+
+- Welcome uses a fixed, non-scrolling screen with safe-area padding.
+- Welcome animates only the word “Stealth”: a 360 ms opening tear after a short
+  delay, then smaller 240 ms bursts approximately seven seconds apart. The large Gizu
+  symbol stays still with a green light sweep over a five-second cycle. Artwork and headline form a centered group above the bottom actions.
+  The symbol is omitted on short screens or enlarged text to prioritize content. Copy and access
+  buttons remain steady and immediately usable. Both effects stop off-screen,
+  in the background or with reduced motion; non-default text sizes keep native
+  heading wrapping without decorative slices. This effect uses Reanimated and
+  the shared SVG logo, with no new Lottie asset or dependency.
+
+## M4 current status — 2026-09-23
+
+P05/P08–P12 now include mock deposits, withdrawals, vault buy/sell, asset direction,
+percentage/Max controls, reviews and operation feedback. Recent swaps link to
+Activity. Pending/unknown operations block new submissions and remain accessible
+after dismissal. Confirmed adapter responses update session balances/holdings;
+no timer signals execution. These are internal mock rules, documented in TRADING.md.
+Platform acceptance limits and actual checks are recorded in FOUNDATION.md.

@@ -1,3 +1,5 @@
+import { TransactionProvider } from "@/features/transactions/TransactionProvider";
+import type { TransactionService } from "@/services/transactions";
 import { EarlyAccessProvider } from "@/features/access/EarlyAccessProvider";
 import type { EarlyAccessService } from "@/services/earlyAccess";
 import { InvestmentProvider } from "@/features/investments/InvestmentProvider";
@@ -22,7 +24,13 @@ const theme = {
     border: colors.border,
   },
 };
-function AppNavigation({ investmentService }: { investmentService?: InvestmentService }) {
+function AppNavigation({
+  investmentService,
+  transactionService,
+}: {
+  investmentService?: InvestmentService;
+  transactionService?: TransactionService;
+}) {
   const { session } = useSession();
   return (
     <NavigationContainer
@@ -32,7 +40,9 @@ function AppNavigation({ investmentService }: { investmentService?: InvestmentSe
     >
       {session ? (
         <InvestmentProvider service={investmentService}>
-          <RootNavigator />
+          <TransactionProvider service={transactionService}>
+            <RootNavigator />
+          </TransactionProvider>
         </InvestmentProvider>
       ) : (
         <RootNavigator />
@@ -44,10 +54,12 @@ export function AppRoot({
   accessService,
   earlyAccessService,
   investmentService,
+  transactionService,
 }: {
   accessService?: AccessService;
   earlyAccessService?: EarlyAccessService;
   investmentService?: InvestmentService;
+  transactionService?: TransactionService;
 }) {
   return (
     <SafeAreaProvider>
@@ -55,7 +67,10 @@ export function AppRoot({
         <SessionProvider accessService={accessService}>
           <EarlyAccessProvider service={earlyAccessService}>
             <StatusBar style="light" />
-            <AppNavigation investmentService={investmentService} />
+            <AppNavigation
+              investmentService={investmentService}
+              transactionService={transactionService}
+            />
           </EarlyAccessProvider>
         </SessionProvider>
       </ErrorBoundary>

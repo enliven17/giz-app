@@ -357,3 +357,68 @@ animations; it does not establish intermediate animation frames.
   chromatic text-tear burst after navigating to Swap. These spot checks do not
   establish frame pacing. Android, device reduced-motion and full-suite checks
   were not run for this visual adjustment.
+
+### Welcome motion — 2026-09-23
+
+- Added a feature-local native-text tear on “Stealth” and a slow transform/opacity
+  cycle on the existing SVG wave. No dependencies or copied assets added. Native
+  text remains rendered; motion pauses off-screen/background and honors reduced
+  motion. Non-default font scaling uses the original wrapping heading.
+- Passed: TypeScript, focused ESLint and 30 tests across access/request-access
+  functional suites, including readable welcome content and both entry actions
+  with reduced motion enabled and disabled via native-boundary mocks.
+- iPhone 17 Pro / iOS 26.5: inspected resting layout and wave positions; opened
+  Get started and Request access, then returned successfully. Screenshots did not
+  capture a tear burst, so native burst timing/frame pacing remains unverified.
+  Android, device reduced-motion/large-text checks and full-suite coverage were
+  not run for this adjustment.
+
+### Welcome brand artwork replacement — 2026-09-23
+
+- Replaced the chart-like wave with a large Gizu symbol using the existing logo
+  path, a green gradient sweep and occasional small horizontal offsets. Removed
+  the unused wave component. Grouped artwork and headline closer together while
+  retaining fixed bottom actions and a non-scrolling layout. Compact/large-text
+  layouts omit decorative artwork. Reduced motion uses a static gradient.
+- Passed: TypeScript, focused ESLint and 30 access/request-access functional tests.
+- Native visual verification is pending: simulator was inside a session and
+  automatic approval review rejected Disconnect because sign-out was not explicitly
+  authorized. No alternate sign-out route was attempted. Android and device
+  reduced-motion checks were not run.
+
+### Passkey-only access — 2026-09-23
+
+- Supersedes the earlier dual-access decision. Access now has one full-width
+  passkey card and passkey-specific copy. Removed the wallet picker, navigator
+  route and external-provider type variants; the controller requests only the
+  development passkey method. Authentication remains a memory-only mock.
+- Verification: TypeScript, full ESLint and the full Jest coverage command passed.
+  Functional coverage includes the absent wallet action, passkey request payload,
+  success, rejection/retry, cancellation, duplicate prevention and unknown
+  wallet-picker links. Native appearance was not verified: simulator is signed in
+  and the earlier automatic approval block on Disconnect remains unresolved.
+
+## M4 trading and transfers — 2026-09-23
+
+- Implemented Swap asset/direction selection, vault buy/sell, Home deposit/withdraw,
+  exact amount validation, fee-aware percentages/Max, quote review, signing,
+  submission and shared pending/unknown/result feedback. Retired the Swap
+  coming-soon screen and its dedicated animation. Account remains passkey-only.
+- Added session-scoped mock ledger/service boundaries and operation status retained
+  across navigation. Only confirmed adapter responses change balances/holdings;
+  status reconciliation uses the original key. Activity includes current receipts.
+  Exact prototype balances, fees, lockups and rounding are in TRADING.md.
+- Passed: TypeScript, full ESLint, repository formatting checks, all 90 tests across
+  10 suites and configured coverage thresholds (92.16% statements, 86.49% branches,
+  89.86% functions, 93.87% lines). All 20 new functional flow tests also passed with
+  the Android Jest preset. These are rendered tests using mocked native boundaries.
+- Passed: iOS and Android Metro/Hermes exports. Expo Doctor initially could not
+  fetch remote metadata in the sandbox; the network-enabled retry passed 21/21.
+- Native iPhone 17 Pro / iOS 26.5: inspected Swap selection/layout, buy amount form,
+  the fee-aware 25% control and quote review with fees/lockup. No native submission
+  was performed during this check. Full native success/rejection/cancellation,
+  software keyboard, large-text and swipe/hardware-back acceptance remains open;
+  Android device verification was not run. JS exports are not native builds.
+- M4 implementation is present; its native acceptance checkbox remains open.
+  Real credentials, live quotes, backend idempotency and durable/on-chain
+  reconciliation remain M6. No live transactions or new dependencies were added.

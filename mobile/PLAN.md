@@ -100,7 +100,7 @@ Paths in this table are relative to `../frontend/`.
 
 | Area                   | Reference                                            | Mobile parity target                                                                                           | Current limitation / follow-up                                                                                     |
 | ---------------------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Entry and access       | `src/components/Onboarding.tsx`, `Auth.tsx`          | Welcome, passkey-wallet path, external-wallet path, cancel/back, access to app                                 | Simulated authentication; real session, recovery, and wallet providers unselected                                  |
+| Entry and access       | `src/components/Onboarding.tsx`, `Auth.tsx`          | Welcome, passkey-only path, cancel/back, access to app                                                         | Simulated authentication; real session, recovery, and wallet providers unselected                                  |
 | App navigation         | `src/App.tsx`, `src/components/BottomNav.tsx`        | Home, Vaults, Exchange, Settings tabs; detail and secondary screens; native back behavior                      | Web currently uses component state rather than native routes                                                       |
 | Portfolio              | `src/components/Home.tsx`                            | Portfolio value, performance chart, holdings, vault shortcuts, activity, notifications, deposit/withdraw entry | Values are fixtures; period controls are currently presentation only                                               |
 | Vault discovery        | `src/components/Vaults.tsx`, `VaultCard.tsx`         | Search, risk filters, cards, no-results state, detail navigation                                               | Search currently matches name/ticker/strategy despite manager-search placeholder; advanced-filter icon is inactive |
@@ -260,7 +260,7 @@ or mise dependency is introduced by this decision.
 
 ## 5. Implementation milestones
 
-M0 documentation is recorded; all implementation milestones remain pending. Complete a vertical slice on both platforms before
+M0–M4 implementation progress is recorded below; outstanding native acceptance remains explicit. Complete a vertical slice on both platforms before
 expanding it; do not equate a bundler start with a verified native application.
 
 ### M0 — Confirm foundation and freeze parity baseline
@@ -417,7 +417,7 @@ headerless-navigation decision.
    - [x] Add ticker/manager identity, price/change pairing, compact responsive metrics,
          allocation bar with textual values and grouped terms rows.
    - [x] Style Back and Share as content icon buttons; keep share retry behavior.
-         Buy/sell remain unavailable until M4. Retain functional chart periods and
+         Buy/sell now use the M4 mock service. Retain functional chart periods and
          numeric summaries without implying live market data.
 6. Welcome and access
    - [x] Remove remaining logo marks; use the split-color headline and paired access
@@ -450,15 +450,19 @@ M4/M5. Font rights are a dependency only for custom-font embedding.
 
 ### M4 — Trading and transfers
 
-- [ ] Implement Exchange, buy/sell, deposit/withdraw, amount validation, review,
+- [x] Implement Exchange, buy/sell, deposit/withdraw, amount validation, review,
       and shared operation feedback through mock service interfaces.
-- [ ] Resolve percentage/Max, asset direction, balance/minimum/lockup rules, and
-      pending-operation dismissal behavior explicitly.
-- [ ] Add deterministic rejection, failure, quote expiry, delayed confirmation,
+- [x] Resolve percentage/Max, asset direction, balance/minimum/lockup rules, and
+      pending-operation dismissal behavior explicitly in `docs/TRADING.md`.
+- [x] Add deterministic rejection, failure, quote expiry, delayed confirmation,
       unknown submission, and duplicate-submit scenarios.
+- [ ] Complete native iOS/Android acceptance for every success/rejection flow,
+      keyboard, large text, hardware Back and gesture dismissal. Automated rendered
+      tests and JS exports do not certify these native behaviors.
 
-Exit: both platforms complete and reject each demo flow, malformed amounts cannot
-advance, and no UI timer is treated as evidence of a real transaction.
+Implementation is available through mock services. Exit remains native acceptance
+on both platforms: malformed amounts cannot advance and no UI timer is treated
+as evidence of a real transaction. Real signing, networks and settlement remain M6.
 
 ### M5 — Account, notifications, and secondary pages
 
@@ -591,7 +595,7 @@ open; headerless verification is recorded in docs/FOUNDATION.md.
 
 - [x] Adopt Gizu logo, “DeFi in Stealth Mode”, confidential-vault wording,
       Swap coming-soon presentation, chart spacing and account row alignment.
-- [x] Keep both passkey and external-wallet options by user decision.
+- [x] Use passkey-only access; supersedes the earlier decision to retain external wallets (2026-09-23).
 - [x] Add a guest request-access modal backed by an isolated development mock,
       including validation, loading, retry, duplicate prevention and dismissal.
 - [ ] During M4, use a dedicated sell tone and explicit Confirm buy / Confirm sell.

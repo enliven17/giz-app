@@ -1,3 +1,4 @@
+import type { TransactionService } from "@/services/transactions";
 import type { EarlyAccessService } from "@/services/earlyAccess";
 import type { InvestmentService } from "@/services/investments";
 import { render } from "@testing-library/react-native";
@@ -7,9 +8,11 @@ export function renderApp(
   accessService?: AccessService,
   investmentService?: InvestmentService,
   earlyAccessService?: EarlyAccessService,
+  transactionService?: TransactionService,
 ) {
   return render(
     <AppRoot
+      transactionService={transactionService}
       accessService={accessService}
       investmentService={investmentService}
       earlyAccessService={earlyAccessService}

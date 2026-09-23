@@ -17,6 +17,7 @@ import { useVaultDetailController } from "./useVaultDetailController";
 import { DataStatus } from "./DataStatus";
 export function VaultDetailScreen({
   route,
+  navigation,
 }: NativeStackScreenProps<RootStackParamList, "VaultDetail">) {
   const { data, vault, sharing, shareError, share } = useVaultDetailController(route.params.id);
   return (
@@ -93,13 +94,23 @@ export function VaultDetailScreen({
           </Surface>
           <View className="flex-row gap-3">
             <View className="flex-1">
-              <Button label="Buy" disabled onPress={() => {}} />
+              <Button
+                label="Buy"
+                onPress={() =>
+                  navigation.navigate("Transaction", { kind: "buy", vaultId: vault.id })
+                }
+              />
             </View>
             <View className="flex-1">
-              <Button label="Sell" disabled onPress={() => {}} />
+              <Button
+                label="Sell"
+                variant="destructive"
+                onPress={() =>
+                  navigation.navigate("Transaction", { kind: "sell", vaultId: vault.id })
+                }
+              />
             </View>
           </View>
-          <Typography variant="caption">Buying and selling are not available yet.</Typography>
           {shareError && <Notice error message="Sharing failed. Please try again." />}
         </>
       ) : (

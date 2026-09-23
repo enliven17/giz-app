@@ -2,14 +2,14 @@
 
 Expo SDK 57 development app for iOS and Android. The current slice includes
 welcome, simulated passkey-only access, a protected four-tab shell,
-and disconnect. Demo sessions live only in memory. No real funds, authentication,
+mock buy/sell and deposit/withdraw flows, and disconnect. Demo sessions live only in memory. No real funds, authentication,
 biometrics or wallet connection are performed.
 
-From welcome, choose **Get started** or **I have access**, then **Try demo passkey**
-or a provider under **Choose demo wallet**. Settings offers **Open UI preview**
-and **Disconnect demo**. Home now shows the demo portfolio, holdings and chart periods. Browse all four
-vaults, search by name/ticker/strategy/manager, filter risk, and open vault details
-or activity. Exchange and transfers remain unavailable until the trading slice.
+From welcome, choose **Get started**, then **Continue with passkey**. Settings
+provides **Open UI preview** and **Disconnect**. Home shows fixture holdings,
+chart periods and available account USDC. Browse vaults, search by name/ticker/
+strategy/manager, filter risk, and open vault details or Activity. Swap and the
+Buy/Sell/Deposit/Withdraw controls open the M4 mock trading flows.
 
 ## Prerequisites
 
@@ -143,8 +143,8 @@ so the last items can scroll clear of it. Narrow/large-text vault layouts use on
 
 User-facing demo banners and prefixes are removed. The app still uses isolated mock
 services and memory-only sessions; this visual update adds no live wallet, signing,
-market feed or backend. Share payloads retain fixture provenance. Trading/transfers
-and notifications/account actions remain unavailable until M4/M5. Timestamp details,
+market feed or backend. Share payloads retain fixture provenance. M4 enables mock
+trading/transfers; notifications/account actions remain unavailable until M5. Timestamp details,
 error/retry and stale/offline feedback remain available.
 
 System fonts are used because no mobile redistribution licence was found for the
@@ -154,10 +154,22 @@ See docs/FOUNDATION.md for the exact native and automated validation record.
 ## Latest frontend reconciliation (M3.3)
 
 Welcome now uses the Gizu logo and “DeFi in Stealth Mode” headline. Portfolio and
-vault discovery use “Confidential vaults”; Exchange is presented as “Swap coming
-soon” while retaining its existing route. Access supports passkeys only.
+vault discovery use “Confidential vaults”; the Swap tab now supports USDC/vault
+buy/sell through M4 mock services. Access supports passkeys only.
 
 Request access opens a guest form with email, investment range and platform choices.
 Its isolated mock service sends and stores nothing and does not grant access or
 create a real waitlist entry. Functional tests cover validation, submission, retry,
-duplicate prevention and dismissal. Sell flows remain M4 and notifications M5.
+duplicate prevention and dismissal. Notifications remain M5.
+
+## Trading and transfers (M4)
+
+Home opens Deposit/Withdraw; vault details open Buy/Sell. Swap selects the vault
+and direction. Every operation requires amount validation and quote review. After
+submission, Check status reconciles the same operation; closing the modal does
+not cancel it. Home/Swap/Activity can reopen status. The session-scoped mock ledger
+updates cash, units and activity only on confirmed responses and resets at sign-out.
+
+See [docs/TRADING.md](docs/TRADING.md) for exact fee, minimum, lockup, rounding,
+scenario and dismissal rules. These interfaces are mock contracts, not production
+API specifications or real wallet/signing integrations.

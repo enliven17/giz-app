@@ -260,7 +260,7 @@ or mise dependency is introduced by this decision.
 
 ## 5. Implementation milestones
 
-M0 documentation is recorded; all implementation milestones remain pending. Complete a vertical slice on both platforms before
+M0–M4 implementation progress is recorded below; outstanding native acceptance remains explicit. Complete a vertical slice on both platforms before
 expanding it; do not equate a bundler start with a verified native application.
 
 ### M0 — Confirm foundation and freeze parity baseline
@@ -417,7 +417,7 @@ headerless-navigation decision.
    - [x] Add ticker/manager identity, price/change pairing, compact responsive metrics,
          allocation bar with textual values and grouped terms rows.
    - [x] Style Back and Share as content icon buttons; keep share retry behavior.
-         Buy/sell remain unavailable until M4. Retain functional chart periods and
+         Buy/sell now use the M4 mock service. Retain functional chart periods and
          numeric summaries without implying live market data.
 6. Welcome and access
    - [x] Remove remaining logo marks; use the split-color headline and paired access
@@ -450,15 +450,19 @@ M4/M5. Font rights are a dependency only for custom-font embedding.
 
 ### M4 — Trading and transfers
 
-- [ ] Implement Exchange, buy/sell, deposit/withdraw, amount validation, review,
+- [x] Implement Exchange, buy/sell, deposit/withdraw, amount validation, review,
       and shared operation feedback through mock service interfaces.
-- [ ] Resolve percentage/Max, asset direction, balance/minimum/lockup rules, and
-      pending-operation dismissal behavior explicitly.
-- [ ] Add deterministic rejection, failure, quote expiry, delayed confirmation,
+- [x] Resolve percentage/Max, asset direction, balance/minimum/lockup rules, and
+      pending-operation dismissal behavior explicitly in `docs/TRADING.md`.
+- [x] Add deterministic rejection, failure, quote expiry, delayed confirmation,
       unknown submission, and duplicate-submit scenarios.
+- [ ] Complete native iOS/Android acceptance for every success/rejection flow,
+      keyboard, large text, hardware Back and gesture dismissal. Automated rendered
+      tests and JS exports do not certify these native behaviors.
 
-Exit: both platforms complete and reject each demo flow, malformed amounts cannot
-advance, and no UI timer is treated as evidence of a real transaction.
+Implementation is available through mock services. Exit remains native acceptance
+on both platforms: malformed amounts cannot advance and no UI timer is treated
+as evidence of a real transaction. Real signing, networks and settlement remain M6.
 
 ### M5 — Account, notifications, and secondary pages
 

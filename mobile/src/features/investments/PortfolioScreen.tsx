@@ -1,3 +1,6 @@
+import { useTransactions } from "@/features/transactions/TransactionProvider";
+import { OperationLink } from "@/features/transactions/OperationLink";
+import { decimal } from "@/domain/transactions";
 import { View } from "react-native";
 import { Bell, MoreHorizontal } from "lucide-react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
@@ -19,6 +22,8 @@ import { useInvestments } from "./InvestmentProvider";
 import { DataStatus } from "./DataStatus";
 export function PortfolioScreen({ navigation }: BottomTabScreenProps<MainTabParamList, "Home">) {
   const { data } = useInvestments();
+  const { account, error: balanceError } = useTransactions();
+  const holdings = account && account.revision > 0 ? account.holdings : (data?.holdings ?? []);
   const root = navigation.getParent<NativeStackNavigationProp<RootStackParamList>>();
   return (
     <Screen>
@@ -34,9 +39,9 @@ export function PortfolioScreen({ navigation }: BottomTabScreenProps<MainTabPara
       </View>
       <View className="mt-4 gap-2">
         <Typography variant="heading">Your portfolio</Typography>
-        <Typography variant="caption">Portfolio value · USD</Typography>
-        {data && <Balance value={portfolioTotal(data.holdings)} />}
-        {data && data.holdings.length > 0 && (
+        <Typography variant="caption">Vault holdings · USD</Typography>
+        {data && <Balance value={portfolioTotal(holdings)} />}
+        {data && holdings.length > 0 && (
           <View className="flex-row flex-wrap items-center gap-2">
             <Badge
               label={`${data.dailyChange.percent}%`}
@@ -47,15 +52,29 @@ export function PortfolioScreen({ navigation }: BottomTabScreenProps<MainTabPara
         )}
       </View>
       <DataStatus />
+      {account && (
+        <Typography variant="row">
+          {balanceError
+            ? "Available USDC: refresh required"
+            : `Available USDC: ${decimal(account.cash)}`}
+        </Typography>
+      )}
+      <OperationLink />
       {data && (
         <>
           <HistoryChart series={data.portfolioSeries} />
           <View className="flex-row flex-wrap gap-3">
             <View className="min-w-24 flex-1">
-              <Button label="Deposit" disabled onPress={() => {}} />
+              <Button
+                label="Deposit"
+                onPress={() => root.navigate("Transaction", { kind: "deposit" })}
+              />
             </View>
             <View className="min-w-24 flex-1">
-              <Button label="Withdraw" disabled onPress={() => {}} />
+              <Button
+                label="Withdraw"
+                onPress={() => root.navigate("Transaction", { kind: "withdraw" })}
+              />
             </View>
             <IconButton
               icon={MoreHorizontal}
@@ -63,9 +82,7 @@ export function PortfolioScreen({ navigation }: BottomTabScreenProps<MainTabPara
               onPress={() => root.navigate("Activity")}
             />
           </View>
-          <Typography variant="caption">
-            Deposits, withdrawals and notifications are not available yet.
-          </Typography>
+          <Typography variant="caption">Notifications are not available yet.</Typography>
           <View className="mt-3 flex-row flex-wrap items-center justify-between gap-2">
             <Typography variant="heading">Confidential vaults</Typography>
             <Button
@@ -76,9 +93,9 @@ export function PortfolioScreen({ navigation }: BottomTabScreenProps<MainTabPara
           </View>
           <VaultList vaults={data.vaults} onOpen={(id) => root.navigate("VaultDetail", { id })} />
           <Typography variant="heading">Holdings</Typography>
-          {data.holdings.length === 0 && <Typography>No holdings yet.</Typography>}
+          {holdings.length === 0 && <Typography>No holdings yet.</Typography>}
           <Surface>
-            {data.holdings.map((holding) => (
+            {holdings.map((holding) => (
               <GroupedRow
                 key={holding.id}
                 label={holding.name}

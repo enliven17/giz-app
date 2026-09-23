@@ -40,9 +40,9 @@ an explanation, rather than a clickable no-op or invented service response.
 | 1D/1W/1M/1Y/All chart periods                                             | Home, VaultDetail                  | Define deterministic per-period fixtures and selection behavior, M3                                     |
 | Manager-search wording; advanced-filter button                            | Vaults                             | Align search text/fields; specify filters beyond risk or explicitly defer advanced filters, M3          |
 | Share vault                                                               | VaultDetail                        | Define native share payload and valid destination; do not invent public URL, M3                         |
-| 25%/50%/75%/Max                                                           | Exchange, SwapSheet, TransferSheet | Define available mock balances, fee reserve and rounding rules, M4                                      |
-| Direction arrow and asset-selector buttons                                | Exchange, SwapSheet                | Define allowed pairs/direction and whether selectors are editable; preserve buy/sell semantics, M4      |
-| Recent trades see-all                                                     | Exchange                           | Decide link to Activity and data/filter semantics, M4                                                   |
+| 25%/50%/75%/Max                                                           | Exchange, SwapSheet, TransferSheet | Implemented: fee-aware Max and exact integer percentages; docs/TRADING.md                               |
+| Direction arrow and asset-selector buttons                                | Exchange, SwapSheet                | Implemented: USDC ↔ selected vault; buys spend USDC, sells spend unlocked units                         |
+| Recent trades see-all                                                     | Exchange                           | Implemented: session swap receipts and See all activity; full history includes transfers                |
 | Copy account address                                                      | Settings                           | Use a complete synthetic address and native clipboard feedback, M5                                      |
 | Recovery/backup and signing-policy rows                                   | SubPage/content                    | Mock/unavailable classification until security contract exists, M5/M6                                   |
 | Currency selection                                                        | SubPage/content                    | Decide display-only formatting versus fixture FX conversion; settlement unchanged, M5                   |
@@ -137,8 +137,8 @@ dismissal, completion and stale-result handling are part of the new functional j
 P02/P03 now use passkey-only access by the updated user decision on 2026-09-23.
 External-wallet entry is removed. Access remains mocked; no real credentials are created.
 
-M4 buy/sell and transfers remain pending; use the frontend sell tone and explicit
-confirmation labels when implementing them. M5 notifications remain pending; prefer
+M4 buy/sell and transfers are implemented with mock services and explicit
+confirmation labels; see docs/TRADING.md. M5 notifications remain pending; prefer
 a native screen/sheet over the desktop dropdown. Preserve native navigation, reduced
 motion support, readable type and no top navigation bars.
 
@@ -174,18 +174,11 @@ focused on reusable approaches. They supplement the journey statuses above.
   or Other. The range is not a commitment. Preserve answers on retry, lock controls
   while pending, ignore late results on dismissal and clear answers on reopening.
   Completion is user-dismissed. Its mock creates no real waitlist entry or session.
-- Exchange keeps its route/deep link but is presented as Swap coming soon. Trading
-  and transfers remain M4; notifications/account actions remain M5. Use a distinct
-  sell tone with explicit confirmation labels; do not make sale success look like failure.
-- Swap's coming-soon placeholder uses a fixed, non-scrolling viewport centered
-  above the measured tab bar. Its heading scales for screen width with explicit
-  line height to prevent glyph clipping; other content screens remain scrollable.
-- Swap's “coming soon” heading combines three horizontally displaced native text
-  bands with cyan/magenta Lottie fragments. A shared native-driven clock produces
-  two short tear bursts per five-second loop over permanently rendered text.
-  Swap and body copy stay still.
-  The effect runs only on the focused tab while the app is active; reduced motion,
-  enlarged text and animation failure use native text. The screen remains fixed.
+- Exchange keeps its route/deep link and is presented as Swap. M4 now implements
+  mock buy/sell and deposit/withdraw with explicit review, signing, submission,
+  pending/unknown and result states. The old coming-soon heading is retired.
+  Notifications/account actions remain M5; use a distinct sell tone without
+  making successful sales look like failures. See `TRADING.md` for current rules.
 
 - Welcome uses a fixed, non-scrolling screen with safe-area padding.
 - Welcome animates only the word “Stealth”: a 360 ms opening tear after a short
@@ -196,3 +189,12 @@ focused on reusable approaches. They supplement the journey statuses above.
   in the background or with reduced motion; non-default text sizes keep native
   heading wrapping without decorative slices. This effect uses Reanimated and
   the shared SVG logo, with no new Lottie asset or dependency.
+
+## M4 current status — 2026-09-23
+
+P05/P08–P12 now include mock deposits, withdrawals, vault buy/sell, asset direction,
+percentage/Max controls, reviews and operation feedback. Recent swaps link to
+Activity. Pending/unknown operations block new submissions and remain accessible
+after dismissal. Confirmed adapter responses update session balances/holdings;
+no timer signals execution. These are internal mock rules, documented in TRADING.md.
+Platform acceptance limits and actual checks are recorded in FOUNDATION.md.

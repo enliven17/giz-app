@@ -397,3 +397,28 @@ animations; it does not establish intermediate animation frames.
   success, rejection/retry, cancellation, duplicate prevention and unknown
   wallet-picker links. Native appearance was not verified: simulator is signed in
   and the earlier automatic approval block on Disconnect remains unresolved.
+
+## M4 trading and transfers — 2026-09-23
+
+- Implemented Swap asset/direction selection, vault buy/sell, Home deposit/withdraw,
+  exact amount validation, fee-aware percentages/Max, quote review, signing,
+  submission and shared pending/unknown/result feedback. Retired the Swap
+  coming-soon screen and its dedicated animation. Account remains passkey-only.
+- Added session-scoped mock ledger/service boundaries and operation status retained
+  across navigation. Only confirmed adapter responses change balances/holdings;
+  status reconciliation uses the original key. Activity includes current receipts.
+  Exact prototype balances, fees, lockups and rounding are in TRADING.md.
+- Passed: TypeScript, full ESLint, repository formatting checks, all 90 tests across
+  10 suites and configured coverage thresholds (92.16% statements, 86.49% branches,
+  89.86% functions, 93.87% lines). All 20 new functional flow tests also passed with
+  the Android Jest preset. These are rendered tests using mocked native boundaries.
+- Passed: iOS and Android Metro/Hermes exports. Expo Doctor initially could not
+  fetch remote metadata in the sandbox; the network-enabled retry passed 21/21.
+- Native iPhone 17 Pro / iOS 26.5: inspected Swap selection/layout, buy amount form,
+  the fee-aware 25% control and quote review with fees/lockup. No native submission
+  was performed during this check. Full native success/rejection/cancellation,
+  software keyboard, large-text and swipe/hardware-back acceptance remains open;
+  Android device verification was not run. JS exports are not native builds.
+- M4 implementation is present; its native acceptance checkbox remains open.
+  Real credentials, live quotes, backend idempotency and durable/on-chain
+  reconciliation remain M6. No live transactions or new dependencies were added.

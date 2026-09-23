@@ -1,3 +1,4 @@
+import { ExchangeScreen } from "@/features/transactions/ExchangeScreen";
 import { PortfolioScreen } from "@/features/investments/PortfolioScreen";
 import { VaultsScreen } from "@/features/investments/VaultsScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -17,7 +18,7 @@ export function MainTabs() {
     >
       <Tabs.Screen name="Home" component={PortfolioScreen} />
       <Tabs.Screen name="Vaults" component={VaultsScreen} />
-      <Tabs.Screen name="Exchange" component={TabScreen} />
+      <Tabs.Screen name="Exchange" component={ExchangeScreen} />
       <Tabs.Screen name="Settings" component={TabScreen} />
     </Tabs.Navigator>
   );

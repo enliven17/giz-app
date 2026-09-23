@@ -1,3 +1,4 @@
+import { TransactionScreen } from "@/features/transactions/TransactionScreen";
 import { RequestAccessScreen } from "@/features/access/RequestAccessScreen";
 import { VaultDetailScreen } from "@/features/investments/VaultDetailScreen";
 import { ActivityScreen } from "@/features/investments/ActivityScreen";
@@ -18,6 +19,11 @@ export function RootNavigator() {
     >
       {session ? (
         <Stack.Group navigationKey="demo">
+          <Stack.Screen
+            name="Transaction"
+            component={TransactionScreen}
+            options={{ presentation: "modal" }}
+          />
           <Stack.Screen
             name="VaultDetail"
             component={VaultDetailScreen}

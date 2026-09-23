@@ -1,3 +1,4 @@
+import type { OperationKind } from "@/domain/transactions";
 import type { NavigatorScreenParams } from "@react-navigation/native";
 export type MainTabParamList = {
   Home: undefined;
@@ -13,4 +14,5 @@ export type RootStackParamList = {
   Preview: undefined;
   VaultDetail: { id: string };
   Activity: undefined;
+  Transaction: { kind?: OperationKind; vaultId?: string; resume?: boolean };
 };

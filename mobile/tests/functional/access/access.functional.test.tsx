@@ -157,8 +157,8 @@ test("new account actions remain unavailable and the selected capsule tab is acc
   renderApp();
   await signIn();
   expect(screen.getByRole("button", { name: "Home tab", selected: true })).toBeVisible();
-  expect(screen.getByRole("button", { name: "Deposit" })).toBeDisabled();
-  expect(screen.getByRole("button", { name: "Withdraw" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Deposit" })).toBeEnabled();
+  expect(screen.getByRole("button", { name: "Withdraw" })).toBeEnabled();
   expect(screen.getByRole("button", { name: "Notifications — unavailable" })).toBeDisabled();
   expect(screen.queryByText(/Demo mode|No real funds/)).toBeNull();
   await userEvent.press(screen.getByLabelText("Settings tab"));
@@ -187,25 +187,11 @@ test("updated branding, confidential vaults and Swap availability retain navigat
   await signIn();
   expect(screen.getByRole("header", { name: "Confidential vaults" })).toBeVisible();
   await userEvent.press(screen.getByLabelText("Swap tab"));
-  expect(await screen.findByRole("header", { name: /Swap.*coming soon/s })).toBeVisible();
-  expect(screen.getByText(/In-app swaps are not available yet/)).toBeVisible();
+  expect(await screen.findByRole("header", { name: "Swap" })).toBeVisible();
+  expect(await screen.findByRole("button", { name: "Buy vault units" })).toBeVisible();
   await userEvent.press(screen.getByLabelText("Vaults tab"));
   expect(await screen.findByRole("header", { name: "Confidential vaults" })).toBeVisible();
 });
-
-test.each([true, false])(
-  "Swap text remains present with reduced motion %s",
-  async (reduceMotion) => {
-    jest.spyOn(AccessibilityInfo, "isReduceMotionEnabled").mockResolvedValue(reduceMotion);
-    renderApp();
-    await signIn();
-    await userEvent.press(screen.getByLabelText("Swap tab"));
-    expect(await screen.findByRole("header", { name: "Swap coming soon" })).toBeVisible();
-    expect(screen.getByText("coming soon", { includeHiddenElements: true })).toBeOnTheScreen();
-    await userEvent.press(screen.getByLabelText("Home tab"));
-    expect(await screen.findByRole("header", { name: "Your portfolio" })).toBeVisible();
-  },
-);
 
 test.each([true, false])(
   "welcome stays readable and actionable with reduced motion %s",

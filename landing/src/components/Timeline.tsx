@@ -1,124 +1,137 @@
-import { useEffect, useState } from 'react'
-import type { LucideIcon } from 'lucide-react'
-import Reveal from './Reveal'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useInView } from 'framer-motion'
+import StepVisual, { type VisualKind } from './StepVisual'
 
 export type TimelineStep = {
   title: string
   chain?: string
   body: string
-  icon: LucideIcon
+  visual: VisualKind
 }
 
-const STEP_MS = 1600
-
-/**
- * Vertical timeline with a light travelling down the spine. The node the light
- * is passing lifts toward the viewer, so the eye follows the same order the
- * money does.
- */
-export default function Timeline({ steps }: { steps: TimelineStep[] }) {
-  const [live, setLive] = useState(0)
-
-  useEffect(() => {
-    const t = window.setInterval(() => setLive((v) => (v + 1) % steps.length), STEP_MS)
-    return () => window.clearInterval(t)
-  }, [steps.length])
-
-  const rows = steps.length
-  const spine = `M 12 0 V ${rows * 100}`
+/** One card, alternating sides, lit while it is the step in view. */
+function Row({ step, index }: { step: TimelineStep; index: number }) {
+  const ref = useRef<HTMLLIElement>(null)
+  const inView = useInView(ref, { margin: '-45% 0px -45% 0px' })
+  const [hover, setHover] = useState(false)
+  const left = index % 2 === 0
+  const on = inView || hover
 
   return (
-    <div className="relative grid grid-cols-[56px_1fr] gap-x-6 md:grid-cols-[72px_1fr] md:gap-x-10">
-      {/* the spine and the light that runs down it */}
-      <div className="relative">
+    <li
+      ref={ref}
+      className={`relative flex flex-col md:flex-row md:items-center ${left ? '' : 'md:flex-row-reverse'}`}
+    >
+      {/* node on the spine */}
+      <span
+        className={`absolute left-[26px] top-10 z-10 h-3 w-3 -translate-x-1/2 rounded-full transition-all duration-500 md:left-1/2 ${
+          on ? 'scale-[1.6] bg-neon shadow-[0_0_0_6px_rgba(49,196,126,0.12)]' : 'bg-white/20'
+        }`}
+      />
+
+      {/* connector from the spine to the card */}
+      <span
+        className={`absolute left-[26px] top-10 hidden h-px transition-colors duration-500 md:block md:left-1/2 md:w-[calc(50%-320px)] ${
+          left ? 'md:-translate-x-full' : ''
+        } ${on ? 'bg-neon/30' : 'bg-white/10'}`}
+      />
+
+      <div className="w-full pl-14 md:w-1/2 md:pl-0 md:pr-16 md:[&:nth-child(n)]:pr-16">
+        <motion.article
+          onPointerEnter={() => setHover(true)}
+          onPointerLeave={() => setHover(false)}
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className={`rounded-2xl border p-5 transition-all duration-500 md:p-6 ${
+            on
+              ? 'border-neon/25 bg-[#0c1712] shadow-[0_30px_80px_-50px_rgba(49,196,126,0.8)]'
+              : 'border-white/[0.07] bg-ink-card'
+          }`}
+        >
+          <StepVisual kind={step.visual} on={on} />
+
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <h3 className="text-[21px] font-semibold tracking-tight">{step.title}</h3>
+            {step.chain && (
+              <span
+                className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors duration-500 ${
+                  on ? 'border-neon/30 text-neon' : 'border-white/10 text-white/45'
+                }`}
+              >
+                {step.chain}
+              </span>
+            )}
+          </div>
+          <p className="mt-2.5 max-w-[46ch] text-[14.5px] leading-relaxed text-white/45">
+            {step.body}
+          </p>
+        </motion.article>
+      </div>
+
+      <div className="hidden md:block md:w-1/2" />
+    </li>
+  )
+}
+
+export default function Timeline({ steps }: { steps: TimelineStep[] }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [height, setHeight] = useState(0)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const ro = new ResizeObserver(() => setHeight(el.offsetHeight))
+    ro.observe(el)
+    setHeight(el.offsetHeight)
+    return () => ro.disconnect()
+  }, [])
+
+  return (
+    <div ref={ref} className="relative">
+      {/* the spine and the light that travels down it */}
+      <div className="pointer-events-none absolute left-[26px] top-0 h-full w-px bg-white/[0.08] md:left-1/2" />
+      {height > 0 && (
         <svg
-          className="absolute inset-0 h-full w-full"
-          viewBox={`0 0 24 ${rows * 100}`}
+          className="pointer-events-none absolute left-[26px] top-0 h-full w-px overflow-visible md:left-1/2"
+          viewBox={`0 0 2 ${height}`}
           preserveAspectRatio="none"
           fill="none"
           aria-hidden
         >
-          <path d={spine} stroke="rgba(255,255,255,0.1)" strokeWidth="1.5" />
           <g mask="url(#spine-mask)">
-            <circle className="spine-light" cx="0" cy="0" r="36" fill="url(#spine-grad)" />
+            <circle className="spine-light" cx="0" cy="0" r="90" fill="url(#spine-grad)" />
           </g>
           <defs>
             <mask id="spine-mask">
-              <path d={spine} stroke="white" strokeWidth="3" />
+              <path d={`M1 0 V ${height}`} stroke="white" strokeWidth="4" />
             </mask>
             <radialGradient id="spine-grad">
               <stop offset="0%" stopColor="#31c47e" />
               <stop offset="100%" stopColor="transparent" />
             </radialGradient>
           </defs>
+          <style>{`
+            .spine-light {
+              offset-path: path("M1 0 V ${height}");
+              animation: spine-run 9s linear infinite;
+            }
+            @keyframes spine-run {
+              0% { offset-distance: 0%; }
+              100% { offset-distance: 100%; }
+            }
+            @media (prefers-reduced-motion: reduce) {
+              .spine-light { animation: none; opacity: 0; }
+            }
+          `}</style>
         </svg>
+      )}
 
-        <style>{`
-          .spine-light {
-            offset-path: path("${spine}");
-            offset-anchor: 0 0;
-            animation: spine-run ${rows * STEP_MS}ms cubic-bezier(0.7, 0.2, 0.3, 0.9) infinite;
-          }
-          @keyframes spine-run {
-            0% { offset-distance: 0%; }
-            92% { offset-distance: 100%; }
-            100% { offset-distance: 100%; }
-          }
-          @media (prefers-reduced-motion: reduce) {
-            .spine-light { animation: none; opacity: 0.4; }
-          }
-        `}</style>
-      </div>
-
-      <ol className="space-y-4">
-        {steps.map((step, i) => {
-          const Icon = step.icon
-          const on = i === live
-          return (
-            <Reveal key={step.title} delay={i * 0.06}>
-              <li
-                className={`relative flex items-start gap-5 rounded-2xl border p-6 transition-all duration-700 ease-out md:p-7 ${
-                  on
-                    ? 'border-neon/30 bg-[#0c1712] -translate-y-1 shadow-[0_24px_60px_-40px_rgba(49,196,126,0.8)]'
-                    : 'border-white/[0.07] bg-ink-card'
-                }`}
-              >
-                {/* node that meets the spine */}
-                <span
-                  className={`absolute -left-[38px] top-9 h-2.5 w-2.5 rounded-full transition-all duration-500 md:-left-[54px] ${
-                    on ? 'scale-150 bg-neon' : 'bg-white/20'
-                  }`}
-                />
-
-                <span
-                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border transition-colors duration-500 ${
-                    on ? 'border-neon/30 bg-neon/10 text-neon' : 'border-white/10 bg-white/[0.03] text-white/60'
-                  }`}
-                >
-                  <Icon size={20} strokeWidth={1.7} />
-                </span>
-
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <h3 className="text-[19px] font-semibold tracking-tight">{step.title}</h3>
-                    {step.chain && (
-                      <span
-                        className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors duration-500 ${
-                          on ? 'border-neon/30 text-neon' : 'border-white/10 text-white/45'
-                        }`}
-                      >
-                        {step.chain}
-                      </span>
-                    )}
-                  </div>
-                  <p className="mt-2 max-w-[52ch] text-[14.5px] leading-relaxed text-white/45">
-                    {step.body}
-                  </p>
-                </div>
-              </li>
-            </Reveal>
-          )
-        })}
+      <ol className="relative space-y-10 md:space-y-16">
+        {steps.map((step, i) => (
+          <Row key={step.title} step={step} index={i} />
+        ))}
       </ol>
     </div>
   )

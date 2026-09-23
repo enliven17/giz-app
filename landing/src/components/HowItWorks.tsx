@@ -1,4 +1,3 @@
-import { Wallet, Landmark, Shuffle, KeyRound, Lock, Layers, Vault, ShieldCheck } from 'lucide-react'
 import Reveal from './Reveal'
 import Timeline, { type TimelineStep } from './Timeline'
 
@@ -6,52 +5,52 @@ const STEPS: TimelineStep[] = [
   {
     title: 'Your wallet',
     body: 'Connect the wallet you already use. Nothing about it changes and nothing leaves it yet.',
-    icon: Wallet,
+    visual: 'wallet',
   },
   {
     title: 'Funding account',
     chain: 'Monad',
     body: 'Your balance lands on a funding account that only your passkey controls.',
-    icon: Landmark,
+    visual: 'deposit',
   },
   {
     title: 'Confidential transfer',
     chain: 'Aurora',
     body: 'Value is routed privately, unlinked from the wallet it came from.',
-    icon: Shuffle,
+    visual: 'route',
   },
   {
     title: 'Private investing account',
     chain: 'Ethereum',
     body: 'A separate account holds your positions, derived from the same passkey.',
-    icon: KeyRound,
+    visual: 'keys',
   },
   {
     title: 'Your deposit',
     body: 'You choose an amount. Nothing else about you is attached to it.',
-    icon: Wallet,
+    visual: 'deposit',
   },
   {
     title: 'Encryption',
     chain: 'Zama',
     body: 'The amount is encrypted before it touches a vault, and stays encrypted on chain.',
-    icon: Lock,
+    visual: 'encrypt',
   },
   {
     title: 'Combined with other deposits',
     body: 'Your deposit joins a batch, so no single entry traces back to one account.',
-    icon: Layers,
+    visual: 'batch',
   },
   {
     title: 'Curated vault',
     chain: 'Morpho',
     body: 'The batch enters a curated strategy with a named curator and a published mandate.',
-    icon: Vault,
+    visual: 'vault',
   },
   {
     title: 'Your encrypted position',
     body: 'You hold encrypted shares. Only you can read the balance, the yield and the exit.',
-    icon: ShieldCheck,
+    visual: 'shield',
   },
 ]
 

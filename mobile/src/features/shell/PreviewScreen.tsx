@@ -15,6 +15,8 @@ import { MetricGroup } from "@/components/molecules/MetricGroup";
 import { SnapshotStatus } from "@/components/molecules/SnapshotStatus";
 import { Choice } from "@/components/molecules/Choice";
 import { VaultList } from "@/components/organisms/VaultList";
+import { SignStatus } from "@/components/molecules/SignStatus";
+import { WaveBackdrop } from "@/components/molecules/WaveBackdrop";
 import { useInvestments } from "@/features/investments/InvestmentProvider";
 import { GlitchText } from "@/components/atoms/GlitchText";
 import { smoothGlitchWordmark } from "@/animations/smoothGlitchWordmark";
@@ -100,6 +102,11 @@ export function PreviewScreen() {
         onRefresh={() => setFeedback("Retry previewed.")}
       />
       <Notice error message="Example error — no operation was submitted." />
+      <Typography variant="heading">Motion</Typography>
+      <WaveBackdrop height={160} />
+      <SignStatus state="signing" />
+      <SignStatus state="done" doneLabel="Order filled" detail="1,362.99 HLX" />
+      <SignStatus state="failed" tone="negative" />
       <Typography variant="heading">Vault card</Typography>
       <VaultList
         vaults={data?.vaults.slice(0, 1) ?? []}

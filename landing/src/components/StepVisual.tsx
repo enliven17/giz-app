@@ -286,21 +286,27 @@ function Funding({ on }: { on: boolean }) {
 
 /** Beam travelling along a routed path, adapted from the fraud card. */
 function Route({ on }: { on: boolean }) {
+  // the path starts and ends at the edge of each node, never under it
+  const path = 'M 22 22 L 50 22 L 50 56 L 78 56'
+
   return (
     <Stage>
       <div className="absolute inset-0">
-        <svg className="absolute inset-0 h-full w-full" viewBox="0 0 52 50" fill="none">
-          <g stroke="rgba(255,255,255,0.12)" strokeWidth="0.4">
-            <path d="M 6 6 v 12 l 20 10 l 20 -8 v 22" />
-          </g>
+        <svg
+          className="absolute inset-0 h-full w-full"
+          viewBox="0 0 100 78"
+          fill="none"
+          preserveAspectRatio="none"
+        >
+          <path d={path} stroke="rgba(255,255,255,0.12)" strokeWidth="0.8" />
           {on && (
             <g mask="url(#route-mask)">
-              <circle className="route-beam" cx="0" cy="0" r="9" fill="url(#route-grad)" />
+              <circle className="route-beam" cx="0" cy="0" r="10" fill="url(#route-grad)" />
             </g>
           )}
           <defs>
             <mask id="route-mask">
-              <path d="M 6 6 v 12 l 20 10 l 20 -8 v 22" stroke="white" strokeWidth="0.9" />
+              <path d={path} stroke="white" strokeWidth="1.6" />
             </mask>
             <radialGradient id="route-grad" fx="1">
               <stop offset="0%" stopColor="#31c47e" />
@@ -309,13 +315,25 @@ function Route({ on }: { on: boolean }) {
           </defs>
         </svg>
 
-        <div className="absolute left-5 top-5 h-11 w-11 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/10 bg-white/[0.04]" />
-        <div className="absolute bottom-6 right-6 h-11 w-11 rounded-xl border border-neon/25 bg-neon/10" />
+        {/* nodes sit where the path begins and ends */}
+        <span
+          className="absolute flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-xl border border-white/10 bg-[#0a0e0c] text-[10px] uppercase tracking-[0.15em] text-white/40"
+          style={{ left: '14%', top: '28%' }}
+        >
+          from
+        </span>
+        <span
+          className="absolute flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-xl border border-neon/25 bg-[#0c1712] text-[10px] uppercase tracking-[0.15em] text-neon/70"
+          style={{ left: '86%', top: '72%' }}
+        >
+          to
+        </span>
 
         <motion.div
           initial={false}
-          animate={{ opacity: on ? 1 : 0.4 }}
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md border border-white/10 bg-[#0a0e0c] px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-white/50"
+          animate={{ opacity: on ? 1 : 0.45 }}
+          className="absolute -translate-x-1/2 -translate-y-1/2 rounded-md border border-white/10 bg-[#0a0e0c] px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-white/50"
+          style={{ left: '50%', top: '50%' }}
         >
           confidential
         </motion.div>
@@ -324,12 +342,12 @@ function Route({ on }: { on: boolean }) {
       <style>{`
         .route-beam {
           offset-anchor: 10px 0px;
-          offset-path: path("M 6 6 v 12 l 20 10 l 20 -8 v 26");
+          offset-path: path("M 22 22 L 50 22 L 50 56 L 78 56");
           animation: route-run 3s cubic-bezier(0.05, 0.05, 0.05, 0.03) infinite;
         }
         @keyframes route-run {
           0% { offset-distance: 0%; }
-          55% { offset-distance: 100%; }
+          60% { offset-distance: 100%; }
           100% { offset-distance: 100%; }
         }
       `}</style>
@@ -343,9 +361,9 @@ function Keys({ on }: { on: boolean }) {
       <Scrambler on={on} />
       <EdgeMask />
 
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
+      <div className="absolute inset-0 flex flex-col items-center justify-center pt-4">
         <div className="relative rounded-[3px] bg-black/40 p-1">
-          <div className="relative h-24 w-[72px] overflow-hidden rounded-[2px] bg-gradient-to-br from-[#161d19] to-[#0d1310]">
+          <div className="relative h-[84px] w-[64px] overflow-hidden rounded-[2px] bg-gradient-to-br from-[#161d19] to-[#0d1310]">
             <svg
               viewBox="0 0 80 96"
               fill="none"
@@ -376,13 +394,14 @@ function Keys({ on }: { on: boolean }) {
           {on && <CheckCircle />}
         </div>
 
-        <div className="mt-2 flex gap-1.5 font-mono text-[10px] text-white/45">
+        <div className="mt-4 flex gap-2">
           {['P1', 'P2', 'P3', 'P4'].map((k, i) => (
             <motion.span
               key={k}
               initial={false}
-              animate={on ? { opacity: 1, y: 0 } : { opacity: 0.3, y: 4 }}
-              transition={{ duration: 0.4, delay: on ? 2.5 + i * 0.1 : 0 }}
+              animate={on ? { opacity: 1, y: 0 } : { opacity: 0.35, y: 5 }}
+              transition={{ duration: 0.4, delay: on ? 2.5 + i * 0.12 : 0 }}
+              className="rounded-lg border border-neon/25 bg-neon/10 px-3 py-1.5 font-mono text-[12px] font-semibold text-neon"
             >
               {k}
             </motion.span>
@@ -561,7 +580,7 @@ function Shield({ on }: { on: boolean }) {
         initial={false}
         animate={{ y: on ? -26 : 0 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className="absolute inset-x-0 top-8 mx-auto h-56 w-[200px] rounded-[30px] border border-white/10 bg-[#111714] p-1.5"
+        className="absolute inset-x-0 top-7 mx-auto h-60 w-[216px] rounded-[32px] border border-white/10 bg-[#111714] p-1.5"
       >
         <div className="relative h-full overflow-hidden rounded-[24px] bg-[#070b09]">
           <div className="absolute left-5 top-3 text-[9px] text-white/35">09:41</div>
@@ -580,24 +599,24 @@ function Shield({ on }: { on: boolean }) {
                 : { y: -70, scale: 0.75, filter: 'blur(10px)' }
             }
             transition={{ duration: 0.3, ease: 'easeInOut', delay: on ? 0.1 : 0 }}
-            className="absolute inset-x-3 z-10 flex h-12 items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-white/[0.06] px-3 backdrop-blur-md"
+            className="absolute inset-x-3 z-10 flex h-14 items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-white/[0.08] px-3 backdrop-blur-md"
           >
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-neon/15 text-[11px] font-semibold text-neon">
               G
             </span>
-            <span className="min-w-0 flex-1">
-              <span className="flex items-center justify-between">
-                <span className="text-[11px] font-medium">Position updated</span>
-                <span className="text-[9px] text-white/35">now</span>
+            <span className="min-w-0 flex-1 leading-tight">
+              <span className="flex items-baseline justify-between gap-2">
+                <span className="text-[11.5px] font-medium">Position updated</span>
+                <span className="shrink-0 text-[9px] text-white/35">now</span>
               </span>
-              <span className="block truncate text-[10px] text-white/45">
-                Balance ••••••  ·  encrypted
+              <span className="mt-1 block truncate text-[10.5px] text-white/50">
+                Balance •••••• encrypted
               </span>
             </span>
           </motion.div>
 
           {/* home screen behind the alert */}
-          <div className="absolute inset-x-4 top-12 grid grid-cols-4 gap-2.5 pt-4">
+          <div className="absolute inset-x-4 top-16 grid grid-cols-4 gap-3">
             {Array.from({ length: 12 }).map((_, i) => (
               <span
                 key={i}

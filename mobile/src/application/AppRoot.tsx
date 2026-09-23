@@ -1,3 +1,5 @@
+import { EarlyAccessProvider } from "@/features/access/EarlyAccessProvider";
+import type { EarlyAccessService } from "@/services/earlyAccess";
 import { InvestmentProvider } from "@/features/investments/InvestmentProvider";
 import type { InvestmentService } from "@/services/investments";
 import { DarkTheme, NavigationContainer } from "@react-navigation/native";
@@ -40,17 +42,21 @@ function AppNavigation({ investmentService }: { investmentService?: InvestmentSe
 }
 export function AppRoot({
   accessService,
+  earlyAccessService,
   investmentService,
 }: {
   accessService?: AccessService;
+  earlyAccessService?: EarlyAccessService;
   investmentService?: InvestmentService;
 }) {
   return (
     <SafeAreaProvider>
       <ErrorBoundary>
         <SessionProvider accessService={accessService}>
-          <StatusBar style="light" />
-          <AppNavigation investmentService={investmentService} />
+          <EarlyAccessProvider service={earlyAccessService}>
+            <StatusBar style="light" />
+            <AppNavigation investmentService={investmentService} />
+          </EarlyAccessProvider>
         </SessionProvider>
       </ErrorBoundary>
     </SafeAreaProvider>

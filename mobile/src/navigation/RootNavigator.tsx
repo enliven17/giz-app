@@ -1,4 +1,4 @@
-import { Button } from "@/components/atoms/Button";
+import { RequestAccessScreen } from "@/features/access/RequestAccessScreen";
 import { VaultDetailScreen } from "@/features/investments/VaultDetailScreen";
 import { ActivityScreen } from "@/features/investments/ActivityScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -15,31 +15,7 @@ export function RootNavigator() {
   return (
     <Stack.Navigator
       initialRouteName={session ? "Main" : "Welcome"}
-      screenOptions={({ route, navigation }) => ({
-        headerBackVisible: false,
-        headerLeft:
-          route.name === "Welcome" || route.name === "Main" || route.name === "WalletPicker"
-            ? undefined
-            : () => (
-                <Button
-                  label="Back"
-                  variant="quiet"
-                  onPress={() => {
-                    if (navigation.canGoBack()) navigation.goBack();
-                    else if (!session) navigation.navigate("Welcome");
-                    else
-                      navigation.navigate("Main", {
-                        screen:
-                          route.name === "VaultDetail"
-                            ? "Vaults"
-                            : route.name === "Preview"
-                              ? "Settings"
-                              : "Home",
-                      });
-                  }}
-                />
-              ),
-      })}
+      screenOptions={{ headerShown: false }}
     >
       {session ? (
         <Stack.Group navigationKey="demo">
@@ -63,6 +39,11 @@ export function RootNavigator() {
       ) : (
         <Stack.Group navigationKey="guest">
           <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ title: "Gizu" }} />
+          <Stack.Screen
+            name="RequestAccess"
+            component={RequestAccessScreen}
+            options={{ presentation: "modal" }}
+          />
           <Stack.Screen name="Access" component={AccessScreen} options={{ title: "Demo access" }} />
           <Stack.Screen
             name="WalletPicker"

@@ -10,7 +10,7 @@ afterEach(() => jest.restoreAllMocks());
 async function enter(service?: InvestmentService) {
   renderApp(undefined, service);
   await userEvent.press(await screen.findByRole("button", { name: "Get started" }));
-  await userEvent.press(screen.getByRole("button", { name: "Try demo passkey" }));
+  await userEvent.press(screen.getByRole("button", { name: "Continue with passkey" }));
   await screen.findByRole("header", { name: "Your portfolio" });
 }
 async function openVault() {
@@ -21,13 +21,13 @@ test("browses portfolio, periods, holdings, filtered vault details and activity"
   await enter();
   expect(await screen.findByText("$810,838.24")).toBeVisible();
   await userEvent.press(screen.getByRole("radio", { name: "1D" }));
-  expect(screen.getByText(/1D demo index:.*8 samples/)).toBeVisible();
+  expect(screen.getByText(/1D index:.*8 samples/)).toBeVisible();
   await openVault();
   expect(screen.getByText("$1.8342")).toBeVisible();
   expect(screen.getByText("46%")).toBeVisible();
   expect(screen.getByText("$25,000")).toBeVisible();
   await userEvent.press(screen.getByRole("radio", { name: "1Y" }));
-  expect(screen.getByText(/1Y demo index:.*48 samples/)).toBeVisible();
+  expect(screen.getByText(/1Y index:.*48 samples/)).toBeVisible();
   await userEvent.press(screen.getByRole("button", { name: "Back" }));
   await userEvent.press(await screen.findByRole("button", { name: "See all vaults" }));
   const search = screen.getByLabelText("Search name, ticker, strategy or manager");
@@ -47,7 +47,7 @@ test("browses portfolio, periods, holdings, filtered vault details and activity"
   await userEvent.press(screen.getByLabelText("Home tab"));
   await userEvent.press(screen.getByRole("button", { name: "View activity" }));
   expect(await screen.findByText("September · Bought HLX")).toBeVisible();
-  expect(screen.getByText("$120,000.00 (simulated history)")).toBeVisible();
+  expect(screen.getByText("$120,000.00")).toBeVisible();
   await userEvent.press(screen.getByRole("button", { name: "Back" }));
   expect(await screen.findByRole("header", { name: "Your portfolio" })).toBeVisible();
 });
@@ -55,13 +55,13 @@ test("shows initial loading and recovers from an adapter failure without duplica
   const pending = deferred<InvestmentSnapshot>();
   const load = jest.fn().mockReturnValueOnce(pending.promise).mockResolvedValue(investmentFixture);
   await enter({ load });
-  const loading = screen.getByRole("button", { name: "Loading demo data" });
+  const loading = screen.getByRole("button", { name: "Loading data" });
   expect(loading).toBeDisabled();
   await userEvent.press(loading);
   expect(load).toHaveBeenCalledTimes(1);
   await act(async () => pending.reject(new Error("fixture unavailable")));
   expect(await screen.findByRole("alert")).toHaveTextContent(
-    "Unable to refresh demo data. Please retry.",
+    "Unable to refresh data. Please retry.",
   );
   await userEvent.press(screen.getByRole("button", { name: "Retry data" }));
   expect(await screen.findByText("$810,838.24")).toBeVisible();
@@ -115,7 +115,7 @@ test("empty portfolio, charts, discovery and activity remain navigable", async (
 test("missing vault has a recoverable empty state", async () => {
   await enter({ load: async () => ({ ...investmentFixture, vaults: [] }) });
   await userEvent.press(await screen.findByRole("button", { name: "Open HLX holding" }));
-  expect(await screen.findByText("Vault not found in this demo snapshot.")).toBeVisible();
+  expect(await screen.findByText("Vault not found in this snapshot.")).toBeVisible();
   await userEvent.press(screen.getByRole("button", { name: "Back" }));
   expect(await screen.findByRole("header", { name: "Your portfolio" })).toBeVisible();
 });
@@ -127,11 +127,11 @@ test("sharing sends only a labeled demo summary, handles dismissal and retries f
     .mockResolvedValue({ action: Share.sharedAction });
   await enter();
   await openVault();
-  await userEvent.press(screen.getByRole("button", { name: "Share demo summary" }));
+  await userEvent.press(screen.getByRole("button", { name: "Share summary" }));
   expect(await screen.findByRole("alert")).toHaveTextContent("Sharing failed. Please try again.");
-  await userEvent.press(screen.getByRole("button", { name: "Share demo summary" }));
+  await userEvent.press(screen.getByRole("button", { name: "Share summary" }));
   expect(screen.queryByRole("alert")).toBeNull();
-  await userEvent.press(screen.getByRole("button", { name: "Share demo summary" }));
+  await userEvent.press(screen.getByRole("button", { name: "Share summary" }));
   expect(share).toHaveBeenLastCalledWith({
     message:
       "Gizu demo vault: Helix Alpha (HLX)\nHelix Capital\nMarket neutral basis trade\nMedium risk (fixture). Demo only; not an investment offer or live quote.",
@@ -145,10 +145,10 @@ test("disconnect drops the snapshot and late responses cannot repopulate the nex
     .mockResolvedValue({ ...investmentFixture, holdings: [] });
   await enter({ load });
   await userEvent.press(screen.getByLabelText("Settings tab"));
-  await userEvent.press(screen.getByRole("button", { name: "Disconnect demo" }));
+  await userEvent.press(screen.getByRole("button", { name: "Disconnect" }));
   await act(async () => pending.resolve(investmentFixture));
   await userEvent.press(await screen.findByRole("button", { name: "Get started" }));
-  await userEvent.press(screen.getByRole("button", { name: "Try demo passkey" }));
+  await userEvent.press(screen.getByRole("button", { name: "Continue with passkey" }));
   expect(await screen.findByText("$0.00")).toBeVisible();
   expect(screen.queryByText("$810,838.24")).toBeNull();
   expect(load).toHaveBeenCalledTimes(2);
@@ -162,7 +162,7 @@ test.each(["vault/helix", "activity"])(
     expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
     expect(screen.queryByText("$1.8342")).toBeNull();
     await userEvent.press(screen.getByRole("button", { name: "Get started" }));
-    await userEvent.press(screen.getByRole("button", { name: "Try demo passkey" }));
+    await userEvent.press(screen.getByRole("button", { name: "Continue with passkey" }));
     await userEvent.press(
       await screen.findByRole("button", {
         name: "Back",

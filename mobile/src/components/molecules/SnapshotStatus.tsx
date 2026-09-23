@@ -17,17 +17,15 @@ export function SnapshotStatus({ asOf, freshness, loading, error, onRefresh }: P
       <View className="flex-row flex-wrap items-center justify-between gap-1">
         {asOf ? (
           <Button
-            label="Demo · No real funds"
+            label="Updated"
             accessibilityLabel={expanded ? "Hide data timestamp" : "Show data timestamp"}
             variant="quiet"
             onPress={() => setExpanded(!expanded)}
           />
-        ) : (
-          <Typography variant="caption">Demo · No real funds</Typography>
-        )}
+        ) : null}
         <Button
           variant="quiet"
-          label={loading ? "Loading demo data" : error ? "Retry data" : "Refresh data"}
+          label={loading ? "Loading data" : error ? "Retry data" : "Refresh data"}
           loading={loading}
           onPress={onRefresh}
         />

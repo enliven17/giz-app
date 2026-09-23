@@ -18,8 +18,7 @@ export function HistoryChart({ series }: { series: number[] }) {
     .join(" ");
   return (
     <View className="gap-3">
-      <Typography variant="label">Illustrative performance index</Typography>
-      <Typography variant="caption">Synthetic history · Not actual returns or prices</Typography>
+      <Typography variant="label">Performance index</Typography>
       <View
         className="flex-row flex-wrap gap-2"
         accessibilityRole="radiogroup"
@@ -48,7 +47,7 @@ export function HistoryChart({ series }: { series: number[] }) {
           <Typography
             variant="caption"
             accessibilityLiveRegion="polite"
-          >{`${period} demo index: Start ${values[0]!.toFixed(2)} · End ${values[values.length - 1]!.toFixed(2)} (${values.length} samples)`}</Typography>
+          >{`${period} index: Start ${values[0]!.toFixed(2)} · End ${values[values.length - 1]!.toFixed(2)} (${values.length} samples)`}</Typography>
         </>
       ) : (
         <Typography>No chart history available.</Typography>

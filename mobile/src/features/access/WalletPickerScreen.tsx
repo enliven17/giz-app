@@ -12,8 +12,7 @@ export function WalletPickerScreen({
   const controller = useAccessController();
   return (
     <Screen>
-      <Typography variant="heading">Select demo signer</Typography>
-      <Notice message="Provider names are previews only. No external wallet will open." />
+      <Typography variant="heading">Select signer</Typography>
       {walletProviders.map((provider) => (
         <Button
           key={provider}
@@ -24,7 +23,7 @@ export function WalletPickerScreen({
         />
       ))}
       {controller.pending && (
-        <Typography accessibilityLiveRegion="polite">Opening demo access…</Typography>
+        <Typography accessibilityLiveRegion="polite">Opening access…</Typography>
       )}
       {controller.error && <Notice error message={controller.error} />}
       <Button

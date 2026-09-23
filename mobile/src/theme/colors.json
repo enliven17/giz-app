@@ -2,8 +2,8 @@
   "ink": "#050706",
   "surface": "#0b100d",
   "accent": "#31c47e",
-  "text": "#f5f7f6",
+  "text": "#dfe8e3",
   "muted": "#a7b2ab",
   "danger": "#ff9b9b",
-  "border": "#29372f"
+  "border": "#1d2821"
 }

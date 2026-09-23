@@ -1,16 +1,23 @@
+import { Badge } from "@/components/atoms/Badge";
+import { IconButton } from "@/components/atoms/IconButton";
+import { GroupedRow } from "@/components/molecules/GroupedRow";
+import { Surface } from "@/components/molecules/Surface";
+import { Info } from "lucide-react-native";
+import { BackAction } from "@/navigation/BackAction";
 import { useState } from "react";
 import { View } from "react-native";
 import { Screen } from "@/components/templates/Screen";
 import { Typography } from "@/components/atoms/Typography";
 import { Button } from "@/components/atoms/Button";
 import { Notice } from "@/components/molecules/Notice";
-import { BrandMark } from "@/components/molecules/BrandMark";
 import { Metric } from "@/components/molecules/Metric";
 import { MetricGroup } from "@/components/molecules/MetricGroup";
 import { SnapshotStatus } from "@/components/molecules/SnapshotStatus";
 import { Choice } from "@/components/molecules/Choice";
 import { VaultList } from "@/components/organisms/VaultList";
 import { useInvestments } from "@/features/investments/InvestmentProvider";
+import { GlitchText } from "@/components/atoms/GlitchText";
+import { smoothGlitchWordmark } from "@/animations/smoothGlitchWordmark";
 export function PreviewScreen() {
   const [selected, setSelected] = useState(false);
   const [feedback, setFeedback] = useState(
@@ -19,15 +26,36 @@ export function PreviewScreen() {
   const { data } = useInvestments();
   return (
     <Screen>
+      <BackAction fallback="Settings" />
       <Typography variant="heading">UI preview</Typography>
-      <BrandMark />
-      <Metric emphasis label="Example portfolio · USD demo" value="$810,838.24" />
+      <Typography variant="label">Pixel glitch</Typography>
+      <GlitchText />
+      <Typography variant="label">Clean type glitch</Typography>
+      <GlitchText
+        source={smoothGlitchWordmark}
+        accessibilityLabel="Animated smooth Gizu glitch wordmark"
+        testID="gizu-smooth-glitch-animation"
+        text="GIZU"
+      />
+      <Metric emphasis label="Example portfolio · USD" value="$810,838.24" />
       <MetricGroup
         metrics={[
-          { label: "Demo APY", value: "18.4%" },
+          { label: "APY", value: "18.4%" },
           { label: "Lockup", value: "30 days" },
         ]}
       />
+      <Surface>
+        <GroupedRow label="Example grouped row" value="USD" detail="Supporting information" />
+      </Surface>
+      <View className="flex-row flex-wrap gap-3">
+        <Badge label="+3.84%" />
+        <Badge label="-1.84%" negative />
+        <IconButton
+          icon={Info}
+          label="Preview information"
+          onPress={() => setFeedback("Information action previewed.")}
+        />
+      </View>
       <Typography variant="heading">Actions</Typography>
       <Button label="Primary example" onPress={() => setFeedback("Primary action previewed.")} />
       <Button

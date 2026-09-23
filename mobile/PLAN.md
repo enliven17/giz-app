@@ -56,7 +56,7 @@ Choose one solution per responsibility when needed and record the rationale.
 
 ### Accepted tools and adoption boundaries
 
-| Area                                    | Accepted selection                                         | Application to Gizu                                                                                     |
+| Area                                    | Accepted selection                                         | Application to Gizu                                                                                      |
 | --------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | Native runtime                          | Expo development builds and expo-dev-client                | iOS/Android native development; select a compatible stable SDK matrix rather than copying Toddy versions |
 | Language                                | Strict TypeScript                                          | Typed domain, component, service and navigation contracts                                                |
@@ -70,7 +70,7 @@ Choose one solution per responsibility when needed and record the rationale.
 | Formatting                              | Prettier and EditorConfig                                  | Select and document formatting values at setup; tooling adoption does not mandate Toddy's exact values   |
 | Commit hooks                            | Husky                                                      | Fast, scoped, non-mutating format/lint/focused-test gate; full checks stay in CI                         |
 | Automated tests                         | Jest, jest-expo, React Native Testing Library              | Unit, mocked integration and accessible user-interaction tests                                           |
-| Coverage                                | Full-source coverage with enforced thresholds              | Establish Gizu's own meaningful baseline; do not copy Toddy's percentages                               |
+| Coverage                                | Full-source coverage with enforced thresholds              | Establish Gizu's own meaningful baseline; do not copy Toddy's percentages                                |
 | Dependency health                       | Expo Doctor                                                | Include in the main check command                                                                        |
 | Builds                                  | EAS development, preview and production profiles           | Configure profiles at foundation; builds/submissions require their own task scope and credentials        |
 | Tool versions                           | Document and enforce compatible Node/npm/just versions     | Retain npm; no required mise or pnpm migration                                                           |
@@ -116,8 +116,9 @@ Paths in this table are relative to `../frontend/`.
 Parity means preserving these user journeys and information, not copying inert
 buttons or incorrect calculations. During each feature milestone, list every
 visible action as implemented, simulated, explicitly unavailable, or awaiting a
-product decision. Do not silently omit actions. Mock-only builds must identify
-demo data and simulated operations. Release completion requires real behavior
+product decision. Do not silently omit actions. Mock/service status remains explicit
+in engineering documentation and test fixtures. M3.2 removes demo disclosures from
+the app interface; it does not implement real integrations. Release completion requires real behavior
 for each supported action or an explicitly agreed scope change.
 
 ### Visual and native experience
@@ -310,7 +311,7 @@ open; see `docs/FOUNDATION.md` for passed, blocked and not-run evidence.
       Android back, iOS gestures, and modal dismissal behave consistently.
 
 Exit: onboarding -> demo access -> tabs -> disconnect works on both platforms;
-demo behavior is visibly identified and reusable UI has a small preview surface.
+reusable UI has a small preview surface. M3.2 supersedes the original visible-demo-label requirement.
 
 M2 implementation covers the complete demo journey and UI preview. Protected
 links and cancellation are covered by functional tests. The final navigation/device
@@ -355,6 +356,97 @@ the documented M3 defaults.
 Implementation is complete. Native validation is partial: Computer control returned
 intermittent `noWindowsAvailable` errors during coordinate gestures. The iOS text-size
 setting was restored after inspection. See docs/FOUNDATION.md for the validation record.
+
+### M3.2 — Frontend design parity
+
+Status: implementation complete; native validation remains partial. See
+`docs/FOUNDATION.md` for passed and outstanding checks.
+Reference: frontend at repository commit `42c51e2341e2c5a45def140a5da2a137b147bd10`.
+Use the frontend mobile layouts as the primary reference. The committed delta since
+M0 is mainly Gizu naming and logo removal; existing visual gaps are included here.
+This phase supersedes M3.1's visible demo disclosures and retains the subsequent
+headerless-navigation decision.
+
+#### Accepted decisions
+
+- Remove in-app demo disclosures: banners, no-real-funds notices, demo/simulated
+  prefixes in titles, actions and metrics, and repetitive synthetic-data notices.
+  Use clean product-facing copy. Keep mock adapters, fixture isolation and accurate
+  engineering records. Do not replace removed notices with unsupported claims of
+  real biometrics, created wallets, live market history or completed settlement.
+  Keep necessary loading, error, stale/offline and unavailable-feature feedback.
+- Keep trading/transfers in M4 and notifications/account functionality in M5.
+  Unimplemented actions remain visibly unavailable, including newly styled controls.
+- Build reusable surfaces, badges, icon buttons, vault tiles and grouped rows within
+  the existing atomic structure. Screens and controllers retain feature ownership.
+- Verify font redistribution rights before embedding the frontend Helvetica files.
+  If rights cannot be established, use system typography and record the visual gap.
+- Adapt decorative effects for native performance and reduced motion. Keep balances
+  and essential labels stable; no glitch effects on financial information.
+- Keep all top navigator bars hidden. Retain bottom tabs, content Back/Cancel actions,
+  protected routes, direct-entry fallbacks and state preservation.
+
+#### Implementation sequence
+
+1. Shared visual foundations and copy
+   - [x] Add layered dark surfaces, subtle borders, rounded corners, spacing,
+         typography roles and positive/negative badges using shared tokens.
+   - [x] Remove demo disclosures throughout visible screens and actions; update
+         accessible names and affected functional assertions consistently.
+   - [ ] Resolve Helvetica embedding rights; retain readable contrast, touch targets
+         and scalable text rather than copying tiny/low-contrast web labels.
+2. Floating bottom tabs
+   - [x] Replace the full-width strip with a rounded capsule and green selected-icon
+         background. Preserve accessible names, selected state and tab behavior.
+   - [x] Float the capsule over a transparent overlay and reserve its measured
+         height in scroll-content bottom padding so the last controls can scroll
+         clear of it. iOS transparency was visually verified; native bottom-scroll
+         and Android verification remain open.
+3. Vault cards and discovery
+   - [x] Add ticker badge, change badge, sparkline, vault name, TVL and APY to one
+         pressable tile. Use two columns when readable; one column for narrow
+         displays or large text. Do not force square cards that clip content.
+   - [x] Match search and risk-chip styling while retaining manager search,
+         contextual clearing, result counts, empty/error/retry and filter state.
+4. Portfolio
+   - [x] Add member/greeting composition, prominent balance with subdued cents,
+         change badge and compact action row using clearly isolated fixture data.
+   - [x] Place private vaults before holdings; render holdings in grouped rows.
+         Preserve working holding navigation and accessible full monetary values.
+5. Vault details
+   - [x] Add ticker/manager identity, price/change pairing, compact responsive metrics,
+         allocation bar with textual values and grouped terms rows.
+   - [x] Style Back and Share as content icon buttons; keep share retry behavior.
+         Buy/sell remain unavailable until M4. Retain functional chart periods and
+         numeric summaries without implying live market data.
+6. Welcome and access
+   - [x] Remove remaining logo marks; use the split-color headline and paired access
+         cards, stacking as needed. Preserve cancellation, rejection and retry.
+   - [x] Add a restrained native decorative background with a static reduced-motion
+         fallback. Avoid web-only effects and unsupported credential claims.
+7. Account presentation
+   - [x] Use Account heading, fixture profile card, grouped settings rows and
+         destructive disconnect styling. Retain Settings UI preview access.
+   - [x] Keep unimplemented rows explicitly unavailable; add their behavior in M5.
+8. Guidance and validation
+   - [x] Reconcile permanent guidance, README and parity records with accepted copy,
+         headerless layout and design decisions; retain accurate mock/test status.
+   - [x] Expand UI preview for the new shared primitives and their feedback states.
+   - [x] Run functional coverage for navigation, filters, chart periods, access,
+         disconnect and recovery; run full check and Android-preset functional tests.
+   - [ ] Compare frontend/mobile screenshots at matched sizes; inspect a small
+         display, enlarged text, keyboard, bottom-tab overlap, screen-reader labels,
+         reduced motion, back gestures and modal dismissal on native platforms.
+
+Font decision: no redistribution licence was found in the repository. System
+typography is used; custom embedding remains blocked on rights evidence. Static
+SVG artwork provides the restrained background without motion/GPU dependencies.
+
+Exit: existing mobile journeys visually follow the frontend, with no top navigation
+bars or in-app demo disclosures, no loss of working behavior, and no hidden content
+at supported text sizes. Report passed, failed, blocked and not-run validation
+separately. This phase does not certify real wallet/backend execution or complete
+M4/M5. Font rights are a dependency only for custom-font embedding.
 
 ### M4 — Trading and transfers
 
@@ -483,3 +575,25 @@ version-sensitive installation details before scaffolding.
 - Repository product references: `../frontend/src/App.tsx`,
   `../frontend/src/components/`, `../frontend/src/data.ts`,
   `../frontend/src/content.ts`, `../frontend/tailwind.config.ts`.
+
+## Headerless navigation update
+
+- [x] Hide every top navigator bar while retaining bottom tabs.
+- [x] Move Back actions into scrolling content with direct-entry fallbacks; retain
+      wallet cancellation, protected routes and native navigation configuration.
+- [x] Apply safe-area and keyboard spacing in the shared screen template.
+- [x] Keep one content title per screen and update permanent guidance.
+
+This supersedes M3.1's shared header Back design. Existing native QA gaps remain
+open; headerless verification is recorded in docs/FOUNDATION.md.
+
+## Frontend reconciliation follow-up (M3.3)
+
+- [x] Adopt Gizu logo, “DeFi in Stealth Mode”, confidential-vault wording,
+      Swap coming-soon presentation, chart spacing and account row alignment.
+- [x] Keep both passkey and external-wallet options by user decision.
+- [x] Add a guest request-access modal backed by an isolated development mock,
+      including validation, loading, retry, duplicate prevention and dismissal.
+- [ ] During M4, use a dedicated sell tone and explicit Confirm buy / Confirm sell.
+- [ ] During M5, add native notification read/unread and mark-all behavior.
+- [ ] Replace the request-access mock with an agreed real submission service before production.

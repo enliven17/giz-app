@@ -1,7 +1,16 @@
-import Reveal from './Reveal'
-import Timeline, { type TimelineStep } from './Timeline'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useMotionValueEvent, useScroll, useSpring, useTransform } from 'framer-motion'
+import type { MotionValue } from 'framer-motion'
+import StepVisual, { type VisualKind } from './StepVisual'
 
-const STEPS: TimelineStep[] = [
+type Step = {
+  title: string
+  chain?: string
+  body: string
+  visual: VisualKind
+}
+
+const STEPS: Step[] = [
   {
     title: 'Your wallet',
     body: 'Connect the wallet you already use. Nothing about it changes and nothing leaves it yet.',
@@ -54,22 +63,170 @@ const STEPS: TimelineStep[] = [
   },
 ]
 
-export default function HowItWorks() {
-  return (
-    <section id="money" className="scroll-mt-28 py-24 md:py-32">
-      <Reveal className="shell">
-        <p className="eyebrow">How it works</p>
-        <h2 className="mt-5 max-w-[18ch] text-[clamp(32px,4.4vw,52px)] font-semibold leading-[1.02] tracking-[-0.025em]">
-          From your wallet to an encrypted position
-        </h2>
-        <p className="mt-6 max-w-[52ch] text-[17px] leading-relaxed text-white/45">
-          One passkey, four accounts and a batch of encrypted deposits. Follow the path down.
-        </p>
-      </Reveal>
+// the line the section runs along, drawn once and measured for the node points
+const RAIL =
+  'M 18 60 C 130 60 130 14 242 14 S 354 106 466 106 S 578 14 690 14 S 802 106 914 106 S 1026 30 1182 30'
 
-      {/* wider than the rest of the page, the cards need the room */}
-      <div className="mx-auto mt-16 w-full max-w-[1360px] px-6 md:px-10">
-        <Timeline steps={STEPS} />
+function Rail({ progress, index }: { progress: MotionValue<number>; index: number }) {
+  const pathRef = useRef<SVGPathElement>(null)
+  const [nodes, setNodes] = useState<{ x: number; y: number }[]>([])
+  const dashOffset = useTransform(progress, (v) => 1 - v)
+
+  useEffect(() => {
+    const path = pathRef.current
+    if (!path) return
+    const len = path.getTotalLength()
+    setNodes(
+      STEPS.map((_, i) => {
+        const p = path.getPointAtLength((len * i) / (STEPS.length - 1))
+        return { x: p.x, y: p.y }
+      }),
+    )
+  }, [])
+
+  return (
+    <svg
+      viewBox="0 0 1200 120"
+      fill="none"
+      className="h-auto w-full"
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <path ref={pathRef} d={RAIL} stroke="rgba(255,255,255,0.1)" strokeWidth="1.5" />
+      <motion.path
+        d={RAIL}
+        stroke="#31c47e"
+        strokeWidth="1.5"
+        pathLength={1}
+        strokeDasharray={1}
+        style={{ strokeDashoffset: dashOffset }}
+      />
+      {nodes.map((n, i) => (
+        <g key={i}>
+          <motion.circle
+            cx={n.x}
+            cy={n.y}
+            fill={i <= index ? '#31c47e' : 'rgba(255,255,255,0.18)'}
+            animate={{ r: i === index ? 7 : 4 }}
+            transition={{ duration: 0.3 }}
+          />
+          {i === index && (
+            <motion.circle
+              cx={n.x}
+              cy={n.y}
+              fill="none"
+              stroke="#31c47e"
+              strokeWidth="1.5"
+              animate={{ r: [7, 18], opacity: [0.6, 0] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
+            />
+          )}
+        </g>
+      ))}
+    </svg>
+  )
+}
+
+/** Mounts the visual at rest, then lets it play, so every step animates. */
+function Card({ step, index }: { step: Step; index: number }) {
+  const [on, setOn] = useState(false)
+
+  useEffect(() => {
+    setOn(false)
+    const id = window.setTimeout(() => setOn(true), 80)
+    return () => window.clearTimeout(id)
+  }, [index])
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 34, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className="relative overflow-hidden rounded-[22px] border border-white/[0.09] bg-[linear-gradient(160deg,#101815_0%,#0a0e0c_55%)] p-3 shadow-[0_50px_120px_-60px_rgba(0,0,0,1)]"
+    >
+      <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(49,196,126,0.5),transparent)]" />
+      <StepVisual kind={step.visual} on={on} />
+      <div className="flex items-center justify-between px-2 pb-1 pt-3 text-[10px] uppercase tracking-[0.2em] text-white/25">
+        <span>gizu</span>
+        <span>{step.chain ?? 'private'}</span>
+      </div>
+    </motion.div>
+  )
+}
+
+export default function HowItWorks() {
+  const ref = useRef<HTMLElement>(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
+  const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30, mass: 0.4 })
+  const [index, setIndex] = useState(0)
+
+  useMotionValueEvent(scrollYProgress, 'change', (v) => {
+    setIndex(Math.min(STEPS.length - 1, Math.max(0, Math.floor(v * STEPS.length))))
+  })
+
+  // the room behind the stage drifts, so it never reads as flat black
+  const glowX = useTransform(progress, [0, 1], ['-18%', '18%'])
+  const step = STEPS[index]
+
+  return (
+    <section
+      ref={ref}
+      id="money"
+      className="relative"
+      style={{ height: `${STEPS.length * 75 + 60}vh` }}
+    >
+      <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden">
+        {/* depth behind everything */}
+        <div className="pointer-events-none absolute inset-0 bg-[#070a09]" />
+        <motion.div
+          style={{ x: glowX }}
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_45%,rgba(49,196,126,0.1),transparent_70%)]"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.05)_1px,transparent_1px)] opacity-40 [background-size:26px_26px]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(75%_60%_at_50%_50%,transparent,#050706)]" />
+
+        <div className="shell relative pt-24 md:pt-28">
+          <p className="eyebrow">How it works</p>
+          <h2 className="mt-3 max-w-[20ch] text-[clamp(26px,3.4vw,42px)] font-semibold leading-[1.05] tracking-[-0.025em]">
+            From your wallet to an encrypted position
+          </h2>
+        </div>
+
+        <div className="shell relative flex flex-1 items-center py-6">
+          <div className="grid w-full items-center gap-8 md:grid-cols-[0.85fr_1.15fr] md:gap-14">
+            <div key={`text-${index}`} className="order-2 md:order-1">
+              <motion.div
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="flex items-center gap-3 font-mono text-[12px] text-white/30">
+                  <span className="text-neon">{String(index + 1).padStart(2, '0')}</span>
+                  <span className="h-px w-8 bg-white/15" />
+                  <span>{String(STEPS.length).padStart(2, '0')}</span>
+                  {step.chain && (
+                    <span className="rounded-full border border-neon/25 px-2.5 py-1 text-[11px] text-neon">
+                      {step.chain}
+                    </span>
+                  )}
+                </div>
+                <h3 className="mt-4 text-[clamp(24px,2.6vw,34px)] font-semibold leading-[1.1] tracking-[-0.02em]">
+                  {step.title}
+                </h3>
+                <p className="mt-3 max-w-[42ch] text-[15px] leading-relaxed text-white/45 md:text-[16px]">
+                  {step.body}
+                </p>
+              </motion.div>
+            </div>
+
+            <div key={`card-${index}`} className="order-1 md:order-2">
+              <Card step={step} index={index} />
+            </div>
+          </div>
+        </div>
+
+        <div className="relative px-4 pb-8 md:px-10 md:pb-10">
+          <Rail progress={progress} index={index} />
+        </div>
       </div>
     </section>
   )

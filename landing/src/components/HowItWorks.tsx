@@ -61,10 +61,10 @@ const STEPS: Step[] = [
 function Frame({ visual, index }: { visual: VisualKind; index: number }) {
   const [on, setOn] = useState(false)
 
-  // one frame at rest is all the reveals need, so nothing visibly resets
+  // the box finishes gliding before anything inside it starts
   useEffect(() => {
-    const id = requestAnimationFrame(() => setOn(true))
-    return () => cancelAnimationFrame(id)
+    const id = window.setTimeout(() => setOn(true), 520)
+    return () => window.clearTimeout(id)
   }, [index])
 
   return <StepVisual kind={visual} on={on} />

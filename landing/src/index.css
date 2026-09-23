@@ -118,3 +118,21 @@ body {
   width: 0;
   height: 0;
 }
+
+
+/* The step box glides first, then everything inside it arrives. Fill is
+   backwards so the element's own animations take over once this is done. */
+@keyframes step-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.step-stage *:not([data-carrier]):not(:has([data-carrier])) {
+  animation: step-in 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.5s backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step-stage *:not([data-carrier]):not(:has([data-carrier])) {
+    animation: none;
+  }
+}

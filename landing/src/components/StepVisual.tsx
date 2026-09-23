@@ -51,7 +51,7 @@ function CheckCircle({ delay = 2.3 }: { delay?: number }) {
 }
 
 /** Shared stage, so every step carries the same optical weight. */
-const STAGE = 'relative mx-auto h-[340px] w-full max-w-[820px] sm:h-[440px]'
+const STAGE = 'step-stage relative mx-auto h-[340px] w-full max-w-[820px] sm:h-[440px]'
 
 function Stage({ children }: { children: React.ReactNode }) {
   return <div className={STAGE}>{children}</div>
@@ -116,6 +116,7 @@ function Vault({ on }: { on: boolean }) {
       <motion.div
         variants={vaultVariant}
         layoutId="carrier"
+      data-carrier
         transition={{ layout: LAYOUT }}
         className="absolute inset-x-0 top-[124px] mx-auto h-52 w-[90%] max-w-[420px] border-t border-white/10 bg-gradient-to-b from-[#141a17] to-[#0b100e] p-6 shadow-lg"
         style={{
@@ -197,6 +198,7 @@ function Wallet({ on }: { on: boolean }) {
           }}
           transition={{ layout: LAYOUT, duration: 0.4, ease: EASE }}
           layoutId="carrier"
+      data-carrier
           className="relative w-[min(400px,100%)] overflow-hidden rounded-xl border bg-gradient-to-b from-[#141a17] to-[#0b100e] p-4 shadow-lg"
         >
           {/* a light sweeps across the card while it reads the wallet */}
@@ -251,6 +253,7 @@ function Funding({ on }: { on: boolean }) {
         <div className="text-[11px] uppercase tracking-[0.22em] text-white/35">Funding account</div>
         <motion.div
           layoutId="carrier"
+      data-carrier
           className="rounded-xl border border-white/[0.07] bg-[#0b100e] px-6 py-4"
         >
           <NumberFlow
@@ -330,6 +333,7 @@ function Route({ on }: { on: boolean }) {
             }}
             transition={{ layout: LAYOUT, duration: 0.4 }}
             layoutId="carrier"
+      data-carrier
             className="shrink-0 rounded-full border px-3 py-2 text-center"
           >
             <div className="font-mono text-[12px] tracking-[0.1em] text-neon">
@@ -375,6 +379,7 @@ function Keys({ on }: { on: boolean }) {
           animate={{ y: on ? 0 : 6, opacity: on ? 1 : 0.55 }}
           transition={{ layout: LAYOUT, duration: 0.5, ease: EASE }}
           layoutId="carrier"
+      data-carrier
           className="flex items-center gap-2.5 rounded-xl border border-neon/25 bg-[#0c1712] px-3.5 py-2"
         >
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-neon/15 font-mono text-[12px] font-semibold text-neon">
@@ -457,6 +462,7 @@ function Deposit({ on }: { on: boolean }) {
           }}
           transition={{ layout: LAYOUT, duration: 0.4, ease: EASE }}
           layoutId="carrier"
+      data-carrier
           className="w-[min(408px,100%)] rounded-xl border bg-gradient-to-b from-[#141a17] to-[#0b100e] p-5"
         >
           <div className="text-[10px] uppercase tracking-[0.22em] text-white/35">Amount</div>
@@ -506,7 +512,8 @@ function Encrypt({ on }: { on: boolean }) {
     <Stage>
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-6">
         {/* every character turns over in place, plain on one face, cipher on the other */}
-        <motion.div layoutId="carrier" transition={{ layout: LAYOUT }} className="flex gap-1 rounded-xl border border-white/[0.07] bg-[#0b100e] px-3 py-2">
+        <motion.div layoutId="carrier"
+      data-carrier transition={{ layout: LAYOUT }} className="flex gap-1 rounded-xl border border-white/[0.07] bg-[#0b100e] px-3 py-2">
           {PLAIN.split('').map((c, i) => (
             <span key={i} className="relative block h-14 w-[36px] [perspective:400px]">
               <motion.span
@@ -624,6 +631,7 @@ function Batch({ on }: { on: boolean }) {
 
           <motion.span
             layoutId="carrier"
+      data-carrier
             transition={{ layout: LAYOUT }}
             className="absolute flex h-9 w-[104px] items-center justify-center rounded-xl border border-neon/30 bg-neon/10 font-mono text-[12px] text-neon"
             style={{ left: 386, top: 102 }}
@@ -676,6 +684,7 @@ function Shield({ on }: { on: boolean }) {
         animate={{ y: on ? -22 : 0 }}
         transition={{ layout: LAYOUT, duration: 0.3, ease: 'easeInOut' }}
         layoutId="carrier"
+      data-carrier
         className="absolute inset-x-0 top-8 mx-auto h-[400px] w-[min(330px,92%)] rounded-[40px] border border-white/10 bg-[#111714] p-1.5"
       >
         <div className="relative h-full overflow-hidden rounded-[28px] bg-[#070b09]">

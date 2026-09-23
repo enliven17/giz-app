@@ -27,12 +27,14 @@
     "precommit": "node scripts/precommit.cjs"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "2.2.0",
     "@react-navigation/bottom-tabs": "^7.19.2",
     "@react-navigation/elements": "2.9.43",
     "@react-navigation/native": "^7.0.0",
     "@react-navigation/native-stack": "^7.0.0",
     "@shopify/react-native-skia": "2.6.2",
     "expo": "57.0.24",
+    "expo-clipboard": "~57.0.2",
     "expo-dev-client": "~57.0.19",
     "expo-splash-screen": "~57.0.9",
     "expo-status-bar": "~57.0.1",

@@ -10,32 +10,42 @@ import { GroupedRow } from "@/components/molecules/GroupedRow";
 import { useSession } from "@/application/SessionProvider";
 import { profileFixture as profile } from "@/services/fixtures/profile";
 import type { MainTabParamList, RootStackParamList } from "@/navigation/types";
+import { AccountAddress } from "@/features/account/AccountAddress";
+import { PreferenceFeedback } from "@/features/account/PreferenceFeedback";
+import { useAccount } from "@/features/account/AccountProvider";
+import type { AccountPage } from "@/features/account/pages";
 const groups = [
   {
     title: "Security",
     rows: [
-      { label: "Passkey wallet", icon: Fingerprint },
-      { label: "Transaction signing", icon: ShieldCheck },
-      { label: "Push alerts", icon: Bell },
+      { page: "passkey-wallet" as AccountPage, label: "Passkey wallet", icon: Fingerprint },
+      {
+        page: "transaction-signing" as AccountPage,
+        label: "Transaction signing",
+        icon: ShieldCheck,
+      },
+      { page: "alerts" as AccountPage, label: "Push alerts", icon: Bell },
     ],
   },
   {
     title: "Preferences",
     rows: [
-      { label: "Currency", icon: Globe },
-      { label: "Statements", icon: FileText },
+      { page: "currency" as AccountPage, label: "Currency", icon: Globe },
+      { page: "statements" as AccountPage, label: "Statements", icon: FileText },
     ],
   },
   {
     title: "Support",
     rows: [
-      { label: "Contact desk", icon: LifeBuoy },
-      { label: "Terms and disclosures", icon: FileText },
+      { page: "contact-desk" as AccountPage, label: "Contact desk", icon: LifeBuoy },
+      { page: "terms" as AccountPage, label: "Terms and disclosures", icon: FileText },
     ],
   },
 ];
-export function TabScreen({ navigation }: BottomTabScreenProps<MainTabParamList, "Settings">) {
-  const { session, disconnect } = useSession();
+export function AccountScreen({ navigation }: BottomTabScreenProps<MainTabParamList, "Settings">) {
+  const { session } = useSession();
+  const { preferences, busy, disconnectAccount } = useAccount();
+  const root = navigation.getParent<NativeStackNavigationProp<RootStackParamList>>();
   return (
     <Screen>
       <Typography variant="title">Account</Typography>
@@ -49,10 +59,12 @@ export function TabScreen({ navigation }: BottomTabScreenProps<MainTabParamList,
             <Typography variant="caption">{profile.member}</Typography>
           </View>
         </View>
+        <AccountAddress />
       </Surface>
       <Typography variant="caption">
         Access method: {session?.method === "Demo passkey" ? "Passkey" : session?.method}
       </Typography>
+      <PreferenceFeedback />
       {groups.map((group) => (
         <View key={group.title} className="gap-3">
           <Typography variant="caption">{group.title}</Typography>
@@ -61,9 +73,14 @@ export function TabScreen({ navigation }: BottomTabScreenProps<MainTabParamList,
               <GroupedRow
                 key={row.label}
                 {...row}
-                value="Unavailable"
-                onPress={() => {}}
-                disabled
+                value={
+                  row.page === "currency"
+                    ? "USD"
+                    : row.page === "statements"
+                      ? preferences?.statements
+                      : undefined
+                }
+                onPress={() => root.navigate("AccountPage", { page: row.page })}
               />
             ))}
           </Surface>
@@ -76,7 +93,12 @@ export function TabScreen({ navigation }: BottomTabScreenProps<MainTabParamList,
           navigation.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate("Preview")
         }
       />
-      <Button variant="destructive" label="Disconnect" onPress={disconnect} />
+      <Button
+        variant="destructive"
+        label="Disconnect"
+        disabled={busy}
+        onPress={() => void disconnectAccount()}
+      />
       <Typography variant="caption">Gizu v0.1.0</Typography>
     </Screen>
   );

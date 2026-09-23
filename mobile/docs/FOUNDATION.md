@@ -1,5 +1,35 @@
 # Mobile foundation
 
+## M5 verification — 2026-09-23
+
+- Added SDK-bundled AsyncStorage 2.2.0 and Expo Clipboard ~57.0.2 using Expo's
+  installer; the npm lockfile records the resolved dependency graph.
+- Full `npm run check` passed: TypeScript, formatting, lint, Expo Doctor (21/21),
+  and 113 tests in 13 suites. Coverage: statements 93.29%, branches 86.60%,
+  functions 91.57%, lines 94.99%; all configured thresholds passed.
+- All 14 account/notification functional flows also passed with the Android Jest
+  preset. The Android run caught missing explicit switch accessibility semantics;
+  role and checked/disabled state are now provided and the regression flow passes.
+- iOS/Android JavaScript exports passed. The iOS development-client native build
+  succeeded and installed on iPhone 17 Pro / iOS 26.5. Xcode reported one Expo
+  development-launcher script dependency-analysis warning, with zero build errors.
+- Native inspection confirmed Account rendering, successful clipboard feedback,
+  notification expansion and unread count updating from 2 to 1 (including Home
+  after Back), and statement frequency/disabled request presentation. No real
+  credential, transfer, push permission or message submission was exercised.
+- The old tunnel URL failed during launch. The new localhost launch also failed
+  because Metro listened on IPv6 while its URL used IPv4. Starting Metro with
+  `--lan --port 8082` and selecting that server in the development launcher restored
+  the app; no application-code workaround was needed.
+- Not run: Android native build/device acceptance for this change, physical-device
+  clipboard/persistence, native preference changes/restart/logout, enlarged-text
+  and screen-reader walkthroughs, hardware Back/gesture acceptance. Rendered tests
+  cover persistence/restart-equivalent remount/cleanup and failures through mocked
+  native boundaries; these are not device E2E results.
+
+Feature outcomes and pending integrations are recorded in [ACCOUNT.md](ACCOUNT.md).
+Real passkey registration/authentication is the user's requested next step.
+
 Foundation record, updated during M1 on 2026-09-22. Dependencies are now installed
 and locked. Native project generation and JavaScript compilation are distinct from
 native build/device verification; see the current verification record below.

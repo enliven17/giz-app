@@ -1,5 +1,5 @@
 export type AccessMethod = "Demo passkey";
-export type DemoSession = { kind: "demo"; method: AccessMethod };
+export type DemoSession = { kind: "demo"; method: AccessMethod; accountId?: string };
 export interface AccessService {
   request(method: AccessMethod): Promise<DemoSession>;
 }

@@ -144,7 +144,7 @@ so the last items can scroll clear of it. Narrow/large-text vault layouts use on
 User-facing demo banners and prefixes are removed. The app still uses isolated mock
 services and memory-only sessions; this visual update adds no live wallet, signing,
 market feed or backend. Share payloads retain fixture provenance. M4 enables mock
-trading/transfers; notifications/account actions remain unavailable until M5. Timestamp details,
+trading/transfers; M5 adds account pages, preferences and the in-app inbox. Timestamp details,
 error/retry and stale/offline feedback remain available.
 
 System fonts are used because no mobile redistribution licence was found for the
@@ -160,7 +160,7 @@ buy/sell through M4 mock services. Access supports passkeys only.
 Request access opens a guest form with email, investment range and platform choices.
 Its isolated mock service sends and stores nothing and does not grant access or
 create a real waitlist entry. Functional tests cover validation, submission, retry,
-duplicate prevention and dismissal. Notifications remain M5.
+duplicate prevention and dismissal. Notifications use the M5 mock inbox.
 
 ## Trading and transfers (M4)
 
@@ -173,3 +173,17 @@ updates cash, units and activity only on confirmed responses and resets at sign-
 See [docs/TRADING.md](docs/TRADING.md) for exact fee, minimum, lockup, rounding,
 scenario and dismissal rules. These interfaces are mock contracts, not production
 API specifications or real wallet/signing integrations.
+
+## Account and notifications (M5)
+
+Home's notification button opens the inbox with read/unread and mark-all controls.
+Account opens passkey/signing information, push-alert preferences, currency,
+statements, contact desk and disclosures. Copy address uses the native clipboard.
+Only non-sensitive preferences persist in AsyncStorage; explicit disconnect clears
+this account's preferences and all session state. USD is the only supported display
+currency. Recovery, push delivery, FX, document downloads and support channels are
+explicitly unavailable pending their integrations. Real passkeys are next.
+
+See [docs/ACCOUNT.md](docs/ACCOUNT.md) for availability and persistence rules.
+M5 adds native storage/clipboard modules: rebuild an existing development client
+with `npm run ios` or `npm run android` from `mobile/` before testing this version.

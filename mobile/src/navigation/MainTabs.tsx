@@ -3,7 +3,7 @@ import { PortfolioScreen } from "@/features/investments/PortfolioScreen";
 import { VaultsScreen } from "@/features/investments/VaultsScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FloatingTabs } from "./FloatingTabs";
-import { TabScreen } from "@/features/shell/TabScreen";
+import { AccountScreen } from "@/features/account/AccountScreen";
 import type { MainTabParamList } from "./types";
 const Tabs = createBottomTabNavigator<MainTabParamList>();
 export function MainTabs() {
@@ -19,7 +19,7 @@ export function MainTabs() {
       <Tabs.Screen name="Home" component={PortfolioScreen} />
       <Tabs.Screen name="Vaults" component={VaultsScreen} />
       <Tabs.Screen name="Exchange" component={ExchangeScreen} />
-      <Tabs.Screen name="Settings" component={TabScreen} />
+      <Tabs.Screen name="Settings" component={AccountScreen} />
     </Tabs.Navigator>
   );
 }

@@ -1,3 +1,5 @@
+import type { AccountDependencies } from "@/features/account/AccountProvider";
+import type { NotificationService } from "@/services/notifications";
 import type { TransactionService } from "@/services/transactions";
 import type { EarlyAccessService } from "@/services/earlyAccess";
 import type { InvestmentService } from "@/services/investments";
@@ -9,9 +11,12 @@ export function renderApp(
   investmentService?: InvestmentService,
   earlyAccessService?: EarlyAccessService,
   transactionService?: TransactionService,
+  account?: { dependencies?: AccountDependencies; notifications?: NotificationService },
 ) {
   return render(
     <AppRoot
+      accountDependencies={account?.dependencies}
+      notificationService={account?.notifications}
       transactionService={transactionService}
       accessService={accessService}
       investmentService={investmentService}

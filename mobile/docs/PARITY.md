@@ -138,8 +138,7 @@ P02/P03 now use passkey-only access by the updated user decision on 2026-09-23.
 External-wallet entry is removed. Access remains mocked; no real credentials are created.
 
 M4 buy/sell and transfers are implemented with mock services and explicit
-confirmation labels; see docs/TRADING.md. M5 notifications remain pending; prefer
-a native screen/sheet over the desktop dropdown. Preserve native navigation, reduced
+confirmation labels; see docs/TRADING.md. M5 notifications now use a native screen with read/unread and mark-all behavior. Preserve native navigation, reduced
 motion support, readable type and no top navigation bars.
 
 ## Product and interaction decisions retained from agent guidance
@@ -177,7 +176,7 @@ focused on reusable approaches. They supplement the journey statuses above.
 - Exchange keeps its route/deep link and is presented as Swap. M4 now implements
   mock buy/sell and deposit/withdraw with explicit review, signing, submission,
   pending/unknown and result states. The old coming-soon heading is retired.
-  Notifications/account actions remain M5; use a distinct sell tone without
+  Notifications/account actions are implemented in M5; use a distinct sell tone without
   making successful sales look like failures. See `TRADING.md` for current rules.
 
 - Welcome uses a fixed, non-scrolling screen with safe-area padding.
@@ -198,3 +197,20 @@ Activity. Pending/unknown operations block new submissions and remain accessible
 after dismissal. Confirmed adapter responses update session balances/holdings;
 no timer signals execution. These are internal mock rules, documented in TRADING.md.
 Platform acceptance limits and actual checks are recorded in FOUNDATION.md.
+
+## M5 current status — 2026-09-23
+
+P06/P13: Home opens the mock inbox; full text, read/unread, mark-all, refresh,
+unread count and failure/retry work across navigation. Read state is session-only.
+P04/P14: account-scoped AsyncStorage preferences and cleanup precede disconnect;
+failed cleanup leaves the session open with retry. P15: all secondary rows open
+information or preference screens. Clipboard is a native integration using the full
+synthetic address. The address cannot receive funds. USD is selected; unsupported
+currencies, recovery/security policy changes, statement requests/downloads, support
+channels and legal document downloads are explicitly unavailable. No security
+claims, live contact destinations or documents are invented from frontend fixtures.
+See [ACCOUNT.md](ACCOUNT.md) for the complete action classification and tests.
+
+These current decisions supersede the M3 account/unavailable descriptions and M5
+pending decisions above. Authentication is still mocked. Actual passkey integration
+is the next requested step; other M6 services remain separate work.

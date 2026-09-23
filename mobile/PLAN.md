@@ -466,15 +466,23 @@ as evidence of a real transaction. Real signing, networks and settlement remain 
 
 ### M5 — Account, notifications, and secondary pages
 
-- [ ] Implement notifications, account details, clipboard, preferences, disconnect,
+- [x] Implement notifications, account details, clipboard, preferences, disconnect,
       passkey/signing information, currency, statements, support, and disclosures.
-- [ ] Persist non-sensitive preferences through an AsyncStorage adapter; specify
+- [x] Persist non-sensitive preferences through an AsyncStorage adapter; specify
       defaults, normalization, write-error handling and account-scoped logout cleanup.
-- [ ] Classify backup/recovery, document downloads, support actions, and push
+- [x] Classify backup/recovery, document downloads, support actions, and push
       permissions/delivery as mock, implemented integration, or unavailable.
+
+Implemented outcomes and boundaries are recorded in `docs/ACCOUNT.md`: native
+clipboard, account-scoped persistent preferences, session inbox and explicit
+unavailable states for unconnected integrations. Automated acceptance covers these
+outcomes; native verification limits are recorded in `docs/FOUNDATION.md`.
 
 Exit: every parity row and visible action has an explicit tested outcome. Do not
 claim that a local alerts toggle registers a device for push notifications.
+
+Next requested step: real passkey registration/authentication, followed by the
+remaining M6 integrations after their provider and backend contracts are selected.
 
 ### M6 — Real integrations
 
@@ -598,6 +606,6 @@ open; headerless verification is recorded in docs/FOUNDATION.md.
 - [x] Use passkey-only access; supersedes the earlier decision to retain external wallets (2026-09-23).
 - [x] Add a guest request-access modal backed by an isolated development mock,
       including validation, loading, retry, duplicate prevention and dismissal.
-- [ ] During M4, use a dedicated sell tone and explicit Confirm buy / Confirm sell.
-- [ ] During M5, add native notification read/unread and mark-all behavior.
+- [x] During M4, use a dedicated sell tone and explicit Confirm buy / Confirm sell.
+- [x] During M5, add native notification read/unread and mark-all behavior.
 - [ ] Replace the request-access mock with an agreed real submission service before production.

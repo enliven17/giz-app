@@ -8,7 +8,7 @@ const Tabs = createBottomTabNavigator<MainTabParamList>();
 export function MainTabs() {
   return (
     <Tabs.Navigator
-      tabBar={FloatingTabs}
+      tabBar={(props) => <FloatingTabs {...props} />}
       backBehavior="initialRoute"
       screenOptions={({ route }) => ({
         headerShown: false,

@@ -267,3 +267,31 @@ and share-payload provenance remain intact. No packages or font assets were adde
 The simulator still uses the previously installed development binary (displaying
 Nexum Dev in its developer menu); it loaded the current Gizu JavaScript successfully.
 A fresh native build is needed to reflect the renamed development identity in that menu.
+
+## Tab selection motion — 2026-09-23
+
+The capsule uses a measured sliding pill plus a 1.14-scale icon pop on newly
+selected tabs. Navigation state drives both effects. Initial placement/geometry
+changes snap; active-tab taps do not replay the pop. Reanimated animations respect
+system Reduce Motion and navigation is never delayed for animation completion.
+
+- Passed: full check, all 21 Expo Doctor checks and 43 tests. The new navigation
+  test covers prevented presses, repeated selection, long presses and relayout.
+- Passed: 34 functional tests with the Android preset.
+- Passed native smoke: current bundle reloaded on iPhone 17 Pro / iOS 26.5, tab
+  switching works and the indicator settles at the selected Settings destination.
+- Not verified: animation frame timing/smoothness, rapid native tap interruption,
+  native Reduce Motion setting, and Android device rendering. Mocked Jest motion
+  and settled screenshots do not establish those results.
+
+## Tab background crossfade — 2026-09-23
+
+Tab changes retain the sliding pill and icon pop, with one stationary outgoing
+background fading out in 150 ms and the moving pill fading in over 180 ms. Rapid
+changes replace the outgoing layer rather than accumulating highlights. Initial
+placement and geometry changes snap without fading. Both backgrounds ignore
+pointer input and are hidden from accessibility; all motion uses system Reduce Motion.
+
+Native crossfade timing, smoothness and reduced-motion behavior have not been
+visually verified for this change. Jest validates navigation behavior with mocked
+animations; it does not establish intermediate animation frames.

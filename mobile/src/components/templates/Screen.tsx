@@ -23,6 +23,9 @@ export function Screen({ children }: PropsWithChildren) {
       >
         <ScrollView
           contentContainerClassName="grow gap-4 px-5 py-4"
+          contentContainerStyle={
+            tabHeight === undefined ? undefined : { paddingBottom: tabHeight + 16 }
+          }
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
         >

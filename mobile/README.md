@@ -137,8 +137,9 @@ The shared Screen template applies safe-area insets and keyboard spacing directl
 
 The interface now uses layered rounded surfaces, compact vault tiles with sparklines,
 change badges, grouped holdings/terms/account rows, paired access cards and a floating
-bottom-tab capsule. All top navigation bars remain hidden. The capsule occupies normal
-layout flow so it reserves its own height; narrow/large-text vault layouts use one column.
+bottom-tab capsule. All top navigation bars remain hidden. The capsule floats over a
+transparent overlay, with its measured height reserved in scroll-content bottom padding
+so the last items can scroll clear of it. Narrow/large-text vault layouts use one column.
 
 User-facing demo banners and prefixes are removed. The app still uses isolated mock
 services and memory-only sessions; this visual update adds no live wallet, signing,

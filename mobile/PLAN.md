@@ -398,9 +398,10 @@ headerless-navigation decision.
 2. Floating bottom tabs
    - [x] Replace the full-width strip with a rounded capsule and green selected-icon
          background. Preserve accessible names, selected state and tab behavior.
-   - [x] Reserve bottom space through normal layout flow so content and controls
-         cannot sit behind the capsule. iOS keyboard/safe-area checks passed;
-         Android native verification remains open.
+   - [x] Float the capsule over a transparent overlay and reserve its measured
+         height in scroll-content bottom padding so the last controls can scroll
+         clear of it. iOS transparency was visually verified; native bottom-scroll
+         and Android verification remain open.
 3. Vault cards and discovery
    - [x] Add ticker badge, change badge, sparkline, vault name, TVL and APY to one
          pressable tile. Use two columns when readable; one column for narrow

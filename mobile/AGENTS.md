@@ -317,8 +317,9 @@ The scaffolded tooling must continue to:
 - Use layered dark surfaces, subtle borders, rounded cards, restrained green accents
   and system typography. Embed custom fonts only with verified mobile redistribution
   rights; no licence was found for the frontend Helvetica files during M3.2.
-- Bottom tabs use a floating capsule in normal layout flow so its rendered height
-  reserves space. Keep accessible tab names/events and no top navigation bars.
+- Bottom tabs use a floating capsule over a transparent absolute overlay. Report
+  its measured height to navigation and reserve that height in scroll-content bottom
+  padding; allow touches through the area outside the capsule. Keep accessible tab names/events and no top navigation bars.
 - Vault tiles show ticker, change, sparkline, name, TVL and APY. Use a single column
   on narrow screens or enlarged text; never force clipping to preserve square tiles.
 - Use shared surfaces, badges, icon buttons, grouped rows and balances. Format money
@@ -328,3 +329,11 @@ The scaffolded tooling must continue to:
   Do not animate/glitch essential text or financial values.
 - Trading/transfers remain M4 and notifications/account behavior remain M5. Keep
   their controls explicitly unavailable while applying the new presentation.
+
+- Tab selection uses one measured sliding circle and a restrained selected-icon pop.
+  Center both background layers within each tab without shrinking its touch target.
+  Fade the previous background out over 150 ms and the moving pill in over 180 ms.
+  Keep only one outgoing layer; replace it when interrupted.
+  Drive motion from navigation state, preserve preventable tab presses/long presses,
+  and never delay navigation for animation. Repeated selection must not replay the
+  pop; interrupted motion retargets. Respect system Reduce Motion for all stages.

@@ -1,11 +1,36 @@
 import { ArrowUpRight } from 'lucide-react'
 import Reveal from './Reveal'
+import Auralis from './Auralis'
 
 const STRATEGIES = [
-  { asset: 'USDC', curator: 'Steakhouse', yield: '8.4%', note: 'Stable, conservative allocation' },
-  { asset: 'USDC', curator: 'Gauntlet', yield: '11.2%', note: 'Balanced lending markets' },
-  { asset: 'ETH', curator: 'Block Analitica', yield: '6.1%', note: 'Blue chip collateral only' },
-  { asset: 'USDT', curator: 'Re7 Labs', yield: '13.7%', note: 'Higher yield, higher risk band' },
+  {
+    asset: 'USDC',
+    curator: 'Steakhouse',
+    yield: '8.4%',
+    note: 'Stable, conservative allocation',
+    colors: ['#1f6f52', '#3ddc97', '#0c3c2c'],
+  },
+  {
+    asset: 'USDC',
+    curator: 'Gauntlet',
+    yield: '11.2%',
+    note: 'Balanced lending markets',
+    colors: ['#2bd88a', '#8af0c4', '#0f6b8c'],
+  },
+  {
+    asset: 'ETH',
+    curator: 'Block Analitica',
+    yield: '6.1%',
+    note: 'Blue chip collateral only',
+    colors: ['#19c7a0', '#39a0ff', '#123a6b'],
+  },
+  {
+    asset: 'USDT',
+    curator: 'Re7 Labs',
+    yield: '13.7%',
+    note: 'Higher yield, higher risk band',
+    colors: ['#5ce6a8', '#2f8bff', '#4a2ba0'],
+  },
 ]
 
 export default function Strategies() {
@@ -35,8 +60,9 @@ export default function Strategies() {
                 />
               </div>
 
-              {/* vault clip goes here */}
-              <div className="mt-6 h-24 rounded-xl border border-white/[0.06] bg-ink-soft" />
+              <div className="relative mt-6 h-28 overflow-hidden rounded-xl border border-white/[0.06]">
+                <Auralis colors={s.colors} speed={0.24} grain={0.35} />
+              </div>
 
               <div className="mt-6">
                 <div className="text-[13px] text-white/40">{s.curator}</div>

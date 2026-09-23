@@ -1,6 +1,6 @@
 import Nav from './components/Nav'
 import Hero from './components/Hero'
-import { MoneyJourney, InvestmentJourney } from './components/Journey'
+import HowItWorks from './components/HowItWorks'
 import Portfolio from './components/Portfolio'
 import Strategies from './components/Strategies'
 import Faq from './components/Faq'
@@ -13,8 +13,7 @@ export default function App() {
       <Nav />
       <main>
         <Hero />
-        <MoneyJourney />
-        <InvestmentJourney />
+        <HowItWorks />
         <Portfolio />
         <Strategies />
         <Faq />

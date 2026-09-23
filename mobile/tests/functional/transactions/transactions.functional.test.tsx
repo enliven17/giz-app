@@ -57,26 +57,10 @@ test.each(["buy", "sell", "deposit", "withdraw"] as OperationKind[])(
     expect(await screen.findByRole("button", { name: "View operation · confirmed" })).toBeVisible();
     if (kind === "deposit") expect(screen.getByText("Available USDC: 184304")).toBeVisible();
     if (kind === "withdraw") expect(screen.getByText("Available USDC: 184103.58")).toBeVisible();
-    if (kind === "buy") {
-      await userEvent.press(screen.getByLabelText("Swap tab"));
-      expect(await screen.findByText(/10000.*VTX.*confirmed/)).toBeVisible();
-      await userEvent.press(screen.getByRole("button", { name: "See all activity" }));
-    } else await userEvent.press(screen.getByRole("button", { name: "View activity" }));
+    await userEvent.press(screen.getByRole("button", { name: "View activity" }));
     expect(await screen.findByText(/operation-1/)).toBeVisible();
   },
 );
-test("Swap selects a vault, flips direction and opens the correct unit input", async () => {
-  await enter();
-  await userEvent.press(screen.getByLabelText("Swap tab"));
-  await userEvent.press(screen.getByRole("radio", { name: "VTX" }));
-  await userEvent.press(screen.getByRole("button", { name: "Switch direction" }));
-  await userEvent.press(screen.getByRole("button", { name: "Sell vault units" }));
-  expect(await screen.findByLabelText("Amount in VTX")).toBeVisible();
-  await userEvent.press(screen.getByRole("button", { name: "25%" }));
-  expect(screen.getByLabelText("Amount in VTX")).toHaveDisplayValue("15527.61");
-  await userEvent.press(screen.getByRole("button", { name: "Max" }));
-  expect(screen.getByLabelText("Amount in VTX")).toHaveDisplayValue("62110.44");
-});
 test("malformed, zero and oversized amounts cannot advance; fee-aware Max can", async () => {
   await enter();
   await open("deposit");
@@ -205,16 +189,15 @@ test("late quote result after dismissal cannot open a review; quote failure can 
   expect(screen.queryByRole("button", { name: "Confirm deposit" })).toBeNull();
   expect(quote).toHaveBeenCalledTimes(2);
 });
-test("balance loading failure recovers and empty vault lists cannot trade", async () => {
+test("balance loading failure recovers from an available transaction entry point", async () => {
   const service = createMockTransactionService({ ...investmentFixture, vaults: [], holdings: [] });
   jest.spyOn(service, "load").mockRejectedValueOnce(new Error("offline"));
   renderApp(undefined, undefined, undefined, service);
   await userEvent.press(await screen.findByRole("button", { name: "Get started" }));
   await userEvent.press(screen.getByRole("button", { name: "Continue with passkey" }));
-  await userEvent.press(await screen.findByLabelText("Swap tab"));
+  await userEvent.press(await screen.findByRole("button", { name: "Deposit" }));
   await userEvent.press(await screen.findByRole("button", { name: "Reload balances" }));
-  expect(await screen.findByText("No vaults available.")).toBeVisible();
-  expect(screen.getByRole("button", { name: "Buy vault units" })).toBeDisabled();
+  expect(await screen.findByLabelText("Amount in USDC")).toBeVisible();
 });
 test("double confirm while submission is outstanding creates only one operation", async () => {
   const service = createMockTransactionService();

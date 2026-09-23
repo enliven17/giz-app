@@ -8,8 +8,9 @@ biometrics or wallet connection are performed.
 From welcome, choose **Get started**, then **Continue with passkey**. Settings
 provides **Open UI preview** and **Disconnect**. Home shows fixture holdings,
 chart periods and available account USDC. Browse vaults, search by name/ticker/
-strategy/manager, filter risk, and open vault details or Activity. Swap and the
-Buy/Sell/Deposit/Withdraw controls open the M4 mock trading flows.
+strategy/manager, filter risk, and open vault details or Activity. The
+Buy/Sell/Deposit/Withdraw controls open the M4 mock trading flows; Swap retains its
+animated coming-soon presentation.
 
 ## Prerequisites
 
@@ -114,6 +115,10 @@ An empty portfolio, missing vault and empty activity have explicit states. Servi
 adapters can inject those states in tests; no real network or OS connectivity is
 inferred. Disconnect clears the snapshot and invalidates pending requests.
 
+Home shows the vault-summary discovery list only when the account has no holdings.
+Accounts with holdings see their holdings list without the duplicate vault summaries;
+the full discovery catalog remains available from the Vaults tab.
+
 Notifications, buy/sell and deposit/withdraw are identified by availability notes.
 They do not simulate a successful operation.
 
@@ -154,8 +159,9 @@ See docs/FOUNDATION.md for the exact native and automated validation record.
 ## Latest frontend reconciliation (M3.3)
 
 Welcome now uses the Gizu logo and “DeFi in Stealth Mode” headline. Portfolio and
-vault discovery use “Confidential vaults”; the Swap tab now supports USDC/vault
-buy/sell through M4 mock services. Access supports passkeys only.
+vault discovery use “Confidential vaults”; the Swap tab shows the animated coming-soon
+presentation. Vault details provide buy/sell through M4 mock services. Access supports
+passkeys only.
 
 Request access opens a guest form with email, investment range and platform choices.
 Its isolated mock service sends and stores nothing and does not grant access or
@@ -164,10 +170,10 @@ duplicate prevention and dismissal. Notifications use the M5 mock inbox.
 
 ## Trading and transfers (M4)
 
-Home opens Deposit/Withdraw; vault details open Buy/Sell. Swap selects the vault
-and direction. Every operation requires amount validation and quote review. After
+Home opens Deposit/Withdraw; vault details open Buy/Sell. The Swap tab remains a
+coming-soon presentation. Every available operation requires amount validation and quote review. After
 submission, Check status reconciles the same operation; closing the modal does
-not cancel it. Home/Swap/Activity can reopen status. The session-scoped mock ledger
+not cancel it. Home and Activity can reopen status. The session-scoped mock ledger
 updates cash, units and activity only on confirmed responses and resets at sign-out.
 
 See [docs/TRADING.md](docs/TRADING.md) for exact fee, minimum, lockup, rounding,

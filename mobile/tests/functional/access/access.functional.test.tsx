@@ -192,10 +192,11 @@ test("updated branding, confidential vaults and Swap availability retain navigat
   renderApp();
   expect(await screen.findByRole("header", { name: /DeFi.*Stealth.*Mode/s })).toBeVisible();
   await signIn();
-  expect(screen.getByRole("header", { name: "Confidential vaults" })).toBeVisible();
+  expect(screen.queryByRole("header", { name: "Confidential vaults" })).toBeNull();
   await userEvent.press(screen.getByLabelText("Swap tab"));
-  expect(await screen.findByRole("header", { name: "Swap" })).toBeVisible();
-  expect(await screen.findByRole("button", { name: "Buy vault units" })).toBeVisible();
+  expect(await screen.findByRole("header", { name: /Swap.*coming soon/s })).toBeVisible();
+  expect(screen.getByText(/In-app swaps are not available yet/)).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Buy vault units" })).toBeNull();
   await userEvent.press(screen.getByLabelText("Vaults tab"));
   expect(await screen.findByRole("header", { name: "Confidential vaults" })).toBeVisible();
 });

@@ -452,3 +452,11 @@ animations; it does not establish intermediate animation frames.
 - M4 implementation is present; its native acceptance checkbox remains open.
   Real credentials, live quotes, backend idempotency and durable/on-chain
   reconciliation remain M6. No live transactions or new dependencies were added.
+
+### Swap coming-soon restoration — 2026-09-23
+
+- Restored the previously accepted fixed Swap presentation with semantic native text,
+  clipped chromatic glyph bands and synchronized Lottie accents. Reduced-motion,
+  background, focus and enlarged-text guards remain in place.
+- The Exchange route/deep link remains stable, but it no longer exposes order entry.
+  M4 buy/sell remains available from vault details; Home retains deposit/withdraw.

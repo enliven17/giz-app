@@ -7,10 +7,9 @@ User-facing mock banners remain omitted by the accepted product decision.
 
 ## Journeys and ownership
 
-- Home: Deposit and Withdraw. Vault detail: Buy and Sell. Swap: select a vault and
-  reverse USDC/vault direction, then enter an amount. Recent swaps shows the last
-  three buy/sell receipts this session; See all activity includes transfers and
-  pre-existing investment-history fixtures.
+- Home: Deposit and Withdraw. Vault detail: Buy and Sell. The Swap tab retains its
+  animated coming-soon presentation and does not start an order. Activity includes
+  session buy/sell receipts, transfers and pre-existing investment-history fixtures.
 - `domain/transactions.ts` owns decimal parsing, fee math, quote calculation and
   balance/minimum validation. All asset amounts use six-decimal base-unit integers
   carried as strings; no floating-point amounts or chart data authorize an order.
@@ -65,7 +64,7 @@ Check status reconciles its original key; status failures retain that operation.
 Before confirmation, closing discards the draft/quote and ignores late quote results.
 During signing, Cancel signing invalidates the attempt and ignores late authorization.
 Closing alone does not cancel signing or submission. Once submitted, dismissal does
-not cancel it: Home, Swap and Activity reopen status. New orders are blocked until
+not cancel it: Home, vault details and Activity reopen status. New orders are blocked until
 it resolves. Known rejection/non-acceptance/failure allows a new review with the
 amount preserved. No auto-dismiss or automatic resubmission occurs.
 
@@ -91,7 +90,7 @@ No scenario selector or arbitrary mock controls are included in customer UI.
 
 Functional tests under `tests/functional/transactions/` render real providers,
 navigation and controllers with mocked boundaries. They cover all four success
-journeys, direction/percentages/Max, minimum/lockup and malformed-input validation,
+journeys, percentages/Max, minimum/lockup and malformed-input validation,
 quote failure/expiry, rejection/retry, cancellation, pending dismissal, status
 recovery and duplicate prevention. Unit tests check exact rounding and validation;
 mock-adapter integration tests check idempotency and settlement ledger invariants.

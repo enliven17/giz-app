@@ -88,29 +88,39 @@ export function PortfolioScreen({ navigation }: BottomTabScreenProps<MainTabPara
               onPress={() => root.navigate("Activity")}
             />
           </View>
-          <View className="mt-3 flex-row flex-wrap items-center justify-between gap-2">
-            <Typography variant="heading">Confidential vaults</Typography>
-            <Button
-              label="See all vaults"
-              variant="quiet"
-              onPress={() => navigation.navigate("Vaults")}
-            />
-          </View>
-          <VaultList vaults={data.vaults} onOpen={(id) => root.navigate("VaultDetail", { id })} />
-          <Typography variant="heading">Holdings</Typography>
-          {holdings.length === 0 && <Typography>No holdings yet.</Typography>}
-          <Surface>
-            {holdings.map((holding) => (
-              <GroupedRow
-                key={holding.id}
-                label={holding.name}
-                detail={`${holding.units} ${holding.ticker} units · ${holding.change}%`}
-                value={dollars(holding.valueCents)}
-                accessibilityLabel={`Open ${holding.ticker} holding`}
-                onPress={() => root.navigate("VaultDetail", { id: holding.id })}
+          {holdings.length === 0 ? (
+            <>
+              <Typography>No holdings yet.</Typography>
+              <View className="mt-3 flex-row flex-wrap items-center justify-between gap-2">
+                <Typography variant="heading">Confidential vaults</Typography>
+                <Button
+                  label="See all vaults"
+                  variant="quiet"
+                  onPress={() => navigation.navigate("Vaults")}
+                />
+              </View>
+              <VaultList
+                vaults={data.vaults}
+                onOpen={(id) => root.navigate("VaultDetail", { id })}
               />
-            ))}
-          </Surface>
+            </>
+          ) : (
+            <>
+              <Typography variant="heading">Holdings</Typography>
+              <Surface>
+                {holdings.map((holding) => (
+                  <GroupedRow
+                    key={holding.id}
+                    label={holding.name}
+                    detail={`${holding.units} ${holding.ticker} units · ${holding.change}%`}
+                    value={dollars(holding.valueCents)}
+                    accessibilityLabel={`Open ${holding.ticker} holding`}
+                    onPress={() => root.navigate("VaultDetail", { id: holding.id })}
+                  />
+                ))}
+              </Surface>
+            </>
+          )}
         </>
       )}
     </Screen>

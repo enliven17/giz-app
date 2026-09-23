@@ -450,8 +450,9 @@ M4/M5. Font rights are a dependency only for custom-font embedding.
 
 ### M4 — Trading and transfers
 
-- [x] Implement Exchange, buy/sell, deposit/withdraw, amount validation, review,
-      and shared operation feedback through mock service interfaces.
+- [x] Implement vault-detail buy/sell, Home deposit/withdraw, amount validation,
+      review and shared operation feedback through mock service interfaces. Keep the
+      Exchange route presented as the animated Swap coming-soon screen.
 - [x] Resolve percentage/Max, asset direction, balance/minimum/lockup rules, and
       pending-operation dismissal behavior explicitly in `docs/TRADING.md`.
 - [x] Add deterministic rejection, failure, quote expiry, delayed confirmation,
@@ -485,6 +486,12 @@ Next requested step: real passkey registration/authentication, followed by the
 remaining M6 integrations after their provider and backend contracts are selected.
 
 ### M6 — Real integrations
+
+The first integration is now Mera-based native passkey wallets (user decision,
+2026-09-23). See [Mera passkey integration plan](docs/MERA_PASSKEY_PLAN.md) for
+the researched feasibility, proposed phases, device gate and unresolved choices.
+Wallet creation, backend authentication and live investment execution are separate
+deliveries; selecting Mera does not complete any of them.
 
 Depends on backend contracts, wallet/security architecture, supported networks,
 and product decisions listed below. UI milestones can proceed before these exist.

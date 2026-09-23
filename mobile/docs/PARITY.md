@@ -169,13 +169,16 @@ focused on reusable approaches. They supplement the journey statuses above.
 - Prioritize balances or vault identity before metadata. Vault tiles show ticker,
   change, chart, name, TVL and APY; use one column for narrow/large-text layouts.
   Keep financial values readable and feature state intact during text-size changes.
+  On Home, show vault summaries only when there are no holdings; invested users see
+  their holdings without the duplicate discovery list. Vaults always owns the full catalog.
 - Request access validates email, one investment range and at least one platform
   or Other. The range is not a commitment. Preserve answers on retry, lock controls
   while pending, ignore late results on dismissal and clear answers on reopening.
   Completion is user-dismissed. Its mock creates no real waitlist entry or session.
-- Exchange keeps its route/deep link and is presented as Swap. M4 now implements
-  mock buy/sell and deposit/withdraw with explicit review, signing, submission,
-  pending/unknown and result states. The old coming-soon heading is retired.
+- Exchange keeps its route/deep link and is presented as Swap with the animated
+  coming-soon heading. M4 buy/sell remains available from vault details, and
+  deposit/withdraw remains available from Home, with explicit review, signing,
+  submission, pending/unknown and result states.
   Notifications/account actions are implemented in M5; use a distinct sell tone without
   making successful sales look like failures. See `TRADING.md` for current rules.
 

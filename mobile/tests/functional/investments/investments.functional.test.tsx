@@ -20,6 +20,8 @@ async function openVault() {
 test("browses portfolio, periods, holdings, filtered vault details and activity", async () => {
   await enter();
   expect(await screen.findByText("$810,838.24")).toBeVisible();
+  expect(screen.queryByRole("header", { name: "Confidential vaults" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "See all vaults" })).toBeNull();
   await userEvent.press(screen.getByRole("radio", { name: "1D" }));
   expect(screen.getByText(/1D index:.*8 samples/)).toBeVisible();
   await openVault();
@@ -29,7 +31,7 @@ test("browses portfolio, periods, holdings, filtered vault details and activity"
   await userEvent.press(screen.getByRole("radio", { name: "1Y" }));
   expect(screen.getByText(/1Y index:.*48 samples/)).toBeVisible();
   await userEvent.press(screen.getByRole("button", { name: "Back" }));
-  await userEvent.press(await screen.findByRole("button", { name: "See all vaults" }));
+  await userEvent.press(screen.getByLabelText("Vaults tab"));
   const search = screen.getByLabelText("Search name, ticker, strategy or manager");
   await userEvent.type(search, "OBSIDIAN PARTNERS");
   await userEvent.press(screen.getByRole("radio", { name: "Low risk" }));
@@ -112,6 +114,15 @@ test("empty portfolio, charts, discovery and activity remain navigable", async (
   await userEvent.press(await screen.findByRole("button", { name: "See all vaults" }));
   expect(screen.getByText("No vaults available.")).toBeVisible();
 });
+test("users without holdings see vault summaries instead of an empty holdings list", async () => {
+  await enter({ load: async () => ({ ...investmentFixture, holdings: [] }) });
+  expect(await screen.findByText("No holdings yet.")).toBeVisible();
+  expect(screen.getByRole("header", { name: "Confidential vaults" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "View Helix Alpha" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "See all vaults" })).toBeVisible();
+  expect(screen.queryByRole("header", { name: "Holdings" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Open HLX holding" })).toBeNull();
+});
 test("missing vault has a recoverable empty state", async () => {
   await enter({ load: async () => ({ ...investmentFixture, vaults: [] }) });
   await userEvent.press(await screen.findByRole("button", { name: "Open HLX holding" }));
@@ -180,7 +191,7 @@ test("timestamp details are optional and clearing filters is contextual", async 
   expect(screen.getByText(`As of ${investmentFixture.asOf}`)).toBeVisible();
   await userEvent.press(screen.getByRole("button", { name: "Hide data timestamp" }));
   expect(screen.queryByText(`As of ${investmentFixture.asOf}`)).toBeNull();
-  await userEvent.press(screen.getByRole("button", { name: "See all vaults" }));
+  await userEvent.press(screen.getByLabelText("Vaults tab"));
   expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
   await userEvent.press(screen.getByRole("radio", { name: "High risk" }));
   expect(screen.getByText("1 vault found")).toBeVisible();

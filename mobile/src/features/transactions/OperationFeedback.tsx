@@ -41,7 +41,8 @@ export function OperationFeedback({ onReview }: { onReview: () => void }) {
       )}
       {["signing", "submitting", "pending", "unknown"].includes(phase) && (
         <Typography>
-          Closing this screen does not cancel the operation. Reopen its status from Home or Swap.
+          Closing this screen does not cancel the operation. Reopen its status from Home or
+          Activity.
         </Typography>
       )}
       {(phase === "pending" || phase === "unknown") && (

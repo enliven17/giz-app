@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Helvetica Neue LT';
+  src: url('/fonts/HelveticaNeue-400.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Helvetica Neue LT';
+  src: url('/fonts/HelveticaNeue-500.ttf') format('truetype');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Helvetica Neue LT';
+  src: url('/fonts/HelveticaNeue-700.ttf') format('truetype');
+  font-weight: 600 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Helvetica Neue LT';
+  src: url('/fonts/HelveticaNeue-800.ttf') format('truetype');
+  font-weight: 800;
+  font-display: swap;
+}
+
+:root {
+  --nav-p: 0;
+  --neon: #31c47e;
+  --font-sans: 'Helvetica Neue LT', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #050706;
+  color: #eef4f1;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Every navbar property is a pure function of --nav-p, so one scrubbed value
+   drives the whole morph from bar to floating pill. */
+.nav-shell {
+  padding-top: calc(var(--nav-p) * 0.9rem);
+  padding-inline: calc(var(--nav-p) * 1rem);
+}
+
+.nav-bar {
+  height: calc(5rem - var(--nav-p) * 1rem);
+  max-width: calc(1200px - var(--nav-p) * 22rem);
+  padding-inline: calc(1.5rem + var(--nav-p) * 0.25rem);
+  border-radius: calc(var(--nav-p) * 999px);
+  border: 1px solid rgb(255 255 255 / calc(0.1 * var(--nav-p)));
+  background: rgb(10 14 12 / calc(0.72 * var(--nav-p)));
+  box-shadow: 0 18px 50px -30px rgb(0 0 0 / calc(0.9 * var(--nav-p)));
+  backdrop-filter: blur(calc(var(--nav-p) * 20px)) saturate(1.1);
+  -webkit-backdrop-filter: blur(calc(var(--nav-p) * 20px)) saturate(1.1);
+  transition: none;
+}
+
+.nav-links {
+  gap: calc(2.25rem - var(--nav-p) * 0.75rem);
+}
+
+.nav-cta {
+  height: calc(2.75rem - var(--nav-p) * 0.25rem);
+  padding-inline: calc(1.5rem - var(--nav-p) * 0.25rem);
+}
+
+@media (min-width: 768px) {
+  .nav-shell {
+    padding-inline: calc(var(--nav-p) * 1.5rem);
+  }
+}
+
+@layer components {
+  .shell {
+    @apply mx-auto w-full max-w-shell px-6 md:px-10;
+  }
+  .card {
+    @apply rounded-2xl border border-white/10 bg-ink-card;
+  }
+  .card-private {
+    @apply rounded-2xl border border-neon/25 bg-[#0c1712];
+  }
+  .eyebrow {
+    @apply font-medium uppercase tracking-[0.22em] text-[11px] text-white/35;
+  }
+  .btn-neon {
+    @apply inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-neon px-7 text-[15px] font-semibold text-ink transition-transform;
+  }
+  .btn-ghost {
+    @apply inline-flex h-[52px] items-center justify-center gap-2 rounded-full border border-white/10 px-7 text-[15px] font-medium text-white/80;
+  }
+}
+
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}

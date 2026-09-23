@@ -676,13 +676,14 @@ function Batch({ on }: { on: boolean }) {
           transition={{ duration: 14, repeat: on ? Infinity : 0, ease: 'linear' }}
           style={{ transformOrigin: '150px 73px' }}
         />
-        <motion.circle
-          cx="150"
-          cy="73"
-          r="6"
-          fill="#31c47e"
+        <motion.image
+          href="/gizulogo.svg"
+          x="141.9"
+          y="61"
+          width="16.2"
+          height="22"
           initial={false}
-          animate={{ opacity: on ? [0.5, 1, 0.5] : 0.4 }}
+          animate={{ opacity: on ? [0.65, 1, 0.65] : 0.45 }}
           transition={{ duration: 1.6, repeat: on ? Infinity : 0, ease: 'easeInOut' }}
         />
 

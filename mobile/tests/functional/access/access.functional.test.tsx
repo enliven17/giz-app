@@ -1,5 +1,5 @@
 import { act, screen, userEvent } from "@testing-library/react-native";
-import { Linking } from "react-native";
+import { AccessibilityInfo, Linking } from "react-native";
 import { AccessRejectedError, type DemoSession, walletProviders } from "@/services/access";
 import { deferred, renderApp } from "../../support/renderApp";
 
@@ -16,7 +16,7 @@ async function signIn() {
 test("welcome, access, all tabs, UI preview and disconnect form a complete demo journey", async () => {
   renderApp();
   await signIn();
-  for (const name of ["Vaults", "Exchange", "Settings"]) {
+  for (const name of ["Vaults", "Swap", "Settings"]) {
     await userEvent.press(screen.getByLabelText(`${name} tab`));
   }
   expect(screen.getByText("Access method: Passkey")).toBeVisible();
@@ -27,7 +27,7 @@ test("welcome, access, all tabs, UI preview and disconnect form a complete demo 
   await userEvent.press(await screen.findByRole("button", { name: "Disconnect" }));
   expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
   expect(screen.queryByLabelText("Settings tab")).toBeNull();
-  await userEvent.press(screen.getByRole("button", { name: "I have access" }));
+  await userEvent.press(screen.getByRole("button", { name: "Get started" }));
   await userEvent.press(screen.getByRole("button", { name: "Back" }));
   expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
 });
@@ -145,7 +145,7 @@ test("runtime links are gated before access and work only inside a demo session"
   await userEvent.press(screen.getByRole("button", { name: "Disconnect" }));
   await screen.findByRole("button", { name: "Get started" });
   await send("gizu-dev://exchange");
-  expect(screen.queryByLabelText("Exchange tab")).toBeNull();
+  expect(screen.queryByLabelText("Swap tab")).toBeNull();
 });
 
 test("UI preview demonstrates action, filter and feedback states without changing the account", async () => {
@@ -153,6 +153,8 @@ test("UI preview demonstrates action, filter and feedback states without changin
   await signIn();
   await userEvent.press(screen.getByLabelText("Settings tab"));
   await userEvent.press(screen.getByRole("button", { name: "Open UI preview" }));
+  expect(await screen.findByLabelText("Animated Gizu glitch wordmark")).toBeVisible();
+  expect(screen.getByLabelText("Animated smooth Gizu glitch wordmark")).toBeVisible();
   for (const name of [
     "Primary example",
     "Secondary example",
@@ -201,3 +203,29 @@ test("new account actions remain unavailable and the selected capsule tab is acc
   await userEvent.press(screen.getByRole("button", { name: "Disconnect" }));
   expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
 });
+
+test("updated branding, confidential vaults and Swap availability retain navigation", async () => {
+  renderApp();
+  expect(await screen.findByRole("header", { name: /DeFi.*Stealth.*Mode/s })).toBeVisible();
+  await signIn();
+  expect(screen.getByRole("header", { name: "Confidential vaults" })).toBeVisible();
+  await userEvent.press(screen.getByLabelText("Swap tab"));
+  expect(await screen.findByRole("header", { name: /Swap.*coming soon/s })).toBeVisible();
+  expect(screen.getByText(/In-app swaps are not available yet/)).toBeVisible();
+  await userEvent.press(screen.getByLabelText("Vaults tab"));
+  expect(await screen.findByRole("header", { name: "Confidential vaults" })).toBeVisible();
+});
+
+test.each([true, false])(
+  "Swap text remains present with reduced motion %s",
+  async (reduceMotion) => {
+    jest.spyOn(AccessibilityInfo, "isReduceMotionEnabled").mockResolvedValue(reduceMotion);
+    renderApp();
+    await signIn();
+    await userEvent.press(screen.getByLabelText("Swap tab"));
+    expect(await screen.findByRole("header", { name: "Swap coming soon" })).toBeVisible();
+    expect(screen.getByText("coming soon", { includeHiddenElements: true })).toBeOnTheScreen();
+    await userEvent.press(screen.getByLabelText("Home tab"));
+    expect(await screen.findByRole("header", { name: "Your portfolio" })).toBeVisible();
+  },
+);

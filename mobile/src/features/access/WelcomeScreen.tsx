@@ -1,3 +1,4 @@
+import { GizuLogo } from "@/components/atoms/GizuLogo";
 import colors from "@/theme/colors.json";
 import { View } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -11,22 +12,29 @@ export function WelcomeScreen({
 }: NativeStackScreenProps<RootStackParamList, "Welcome">) {
   return (
     <Screen>
-      <Typography variant="label">Gizu</Typography>
+      <View className="flex-row items-center gap-3">
+        <GizuLogo />
+        <Typography variant="row">Gizu</Typography>
+      </View>
       <AmbientArtwork />
       <View className="mt-auto gap-5">
         <Typography variant="title">
-          Private{" "}
           <Typography variant="title" style={{ color: colors.accent }}>
-            capital
-          </Typography>
-          {"\n"}without the gate.
+            DeFi
+          </Typography>{" "}
+          in
+          {"\n"}
+          <Typography variant="title" style={{ color: colors.accent }}>
+            Stealth
+          </Typography>{" "}
+          Mode
         </Typography>
-        <Typography>Explore curated private vaults and investment strategies.</Typography>
+        <Typography>Explore curated confidential vaults and investment strategies.</Typography>
         <Button label="Get started" onPress={() => navigation.navigate("Access")} />
         <Button
-          label="I have access"
+          label="Request access"
           variant="quiet"
-          onPress={() => navigation.navigate("Access")}
+          onPress={() => navigation.navigate("RequestAccess")}
         />
       </View>
     </Screen>

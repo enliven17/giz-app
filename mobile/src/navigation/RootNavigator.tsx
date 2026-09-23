@@ -1,3 +1,4 @@
+import { RequestAccessScreen } from "@/features/access/RequestAccessScreen";
 import { VaultDetailScreen } from "@/features/investments/VaultDetailScreen";
 import { ActivityScreen } from "@/features/investments/ActivityScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -38,6 +39,11 @@ export function RootNavigator() {
       ) : (
         <Stack.Group navigationKey="guest">
           <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ title: "Gizu" }} />
+          <Stack.Screen
+            name="RequestAccess"
+            component={RequestAccessScreen}
+            options={{ presentation: "modal" }}
+          />
           <Stack.Screen name="Access" component={AccessScreen} options={{ title: "Demo access" }} />
           <Stack.Screen
             name="WalletPicker"

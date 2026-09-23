@@ -3,7 +3,10 @@ import { BottomTabBarHeightContext } from "@react-navigation/bottom-tabs";
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export function Screen({ children }: PropsWithChildren) {
+export function Screen({
+  children,
+  scrollable = true,
+}: PropsWithChildren<{ scrollable?: boolean }>) {
   const tabHeight = useContext(BottomTabBarHeightContext);
   const insets = useSafeAreaInsets();
   return (
@@ -21,16 +24,22 @@ export function Screen({ children }: PropsWithChildren) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={insets.top}
       >
-        <ScrollView
-          contentContainerClassName="grow gap-4 px-5 py-4"
-          contentContainerStyle={
-            tabHeight === undefined ? undefined : { paddingBottom: tabHeight + 16 }
-          }
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="on-drag"
-        >
-          {children}
-        </ScrollView>
+        {scrollable ? (
+          <ScrollView
+            contentContainerClassName="grow gap-4 px-5 py-4"
+            contentContainerStyle={
+              tabHeight === undefined ? undefined : { paddingBottom: tabHeight + 16 }
+            }
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+          >
+            {children}
+          </ScrollView>
+        ) : (
+          <View className="flex-1 gap-4 px-5 py-4" style={{ paddingBottom: (tabHeight ?? 0) + 16 }}>
+            {children}
+          </View>
+        )}
       </KeyboardAvoidingView>
     </View>
   );

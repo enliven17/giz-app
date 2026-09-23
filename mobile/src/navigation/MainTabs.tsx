@@ -12,7 +12,7 @@ export function MainTabs() {
       backBehavior="initialRoute"
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarAccessibilityLabel: `${route.name} tab`,
+        tabBarAccessibilityLabel: `${route.name === "Exchange" ? "Swap" : route.name} tab`,
       })}
     >
       <Tabs.Screen name="Home" component={PortfolioScreen} />

@@ -150,3 +150,15 @@ error/retry and stale/offline feedback remain available.
 System fonts are used because no mobile redistribution licence was found for the
 frontend Helvetica assets. Decorative artwork is static and supports reduced motion.
 See docs/FOUNDATION.md for the exact native and automated validation record.
+
+## Latest frontend reconciliation (M3.3)
+
+Welcome now uses the Gizu logo and “DeFi in Stealth Mode” headline. Portfolio and
+vault discovery use “Confidential vaults”; Exchange is presented as “Swap coming
+soon” while retaining its existing route. Both passkey and external-wallet access
+remain available.
+
+Request access opens a guest form with email, investment range and platform choices.
+Its isolated mock service sends and stores nothing and does not grant access or
+create a real waitlist entry. Functional tests cover validation, submission, retry,
+duplicate prevention and dismissal. Sell flows remain M4 and notifications M5.

@@ -19,7 +19,7 @@ export function VaultsScreen({ navigation }: BottomTabScreenProps<MainTabParamLi
   const filtered = filterVaults(data?.vaults ?? [], query, risk);
   return (
     <Screen>
-      <Typography variant="heading">Private vaults</Typography>
+      <Typography variant="heading">Confidential vaults</Typography>
 
       <Typography variant="caption">Search by name, ticker, strategy or manager</Typography>
       <SearchInput

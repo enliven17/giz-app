@@ -20,7 +20,7 @@ export function GroupedRow({
   icon?: LucideIcon;
 }) {
   const content = (
-    <View className="flex-row flex-wrap items-center gap-3 border-b border-border px-5 py-4">
+    <View className="min-h-[60px] flex-row flex-wrap items-center gap-3 border-b border-border px-5 py-4">
       {Icon && <Icon size={19} color={colors.muted} />}
       <View className="min-w-0 flex-1 gap-1">
         <Typography variant="row">{label}</Typography>

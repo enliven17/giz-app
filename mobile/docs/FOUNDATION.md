@@ -295,3 +295,37 @@ pointer input and are hidden from accessibility; all motion uses system Reduce M
 Native crossfade timing, smoothness and reduced-motion behavior have not been
 visually verified for this change. Jest validates navigation behavior with mocked
 animations; it does not establish intermediate animation frames.
+
+## M3.3 frontend reconciliation — 2026-09-23
+
+- Adopted logo, welcome headline, confidential-vault headings, Swap placeholder,
+  roomier vault sparklines and account-row alignment from frontend `64d7cf2`.
+- Retained both passkey and external-wallet access by user decision. Request access
+  is a separate guest modal using an injected development mock with no persistence,
+  network, invitation email or real waitlist registration.
+- Passed: TypeScript, ESLint, formatting, 49 tests across 7 suites with coverage.
+  After the final responsive form-layout adjustment, TypeScript, ESLint and all
+  5 request-access functional tests passed again.
+- Native: inspected welcome/logo, Swap placeholder and two-column form on iPhone
+  17 Pro / iOS 26.5. Entered a synthetic email, selected investment range/platform,
+  and completed the mocked request through the native UI.
+- Not run for this update: Android, small-device/enlarged-text visual checks,
+  software-keyboard coverage, VoiceOver, reduced-motion and Expo Doctor.
+- Trading/transfers and notification/account functionality remain M4/M5 work.
+
+### Swap placeholder layout correction — 2026-09-23
+
+- Fixed heading clipping by matching explicit line height to responsive font size.
+  Added a fixed-content option to the screen template; only Swap opts out of scrolling.
+- Passed: TypeScript and 21 access/navigation functional tests. On iPhone 17 Pro /
+  iOS 26.5 after reload, the complete heading is visible and a scroll attempt leaves
+  the content stationary. Android and enlarged-text native checks were not run.
+
+### Coming-soon Lottie heading — 2026-09-23
+
+- Added a separate coming-soon animation asset and feature-local heading renderer;
+  retained a single accessible heading and native text fallback. No dependencies added.
+- Passed: TypeScript and lint for the new components/asset. Native preview was
+  interrupted by simulator window/element-reference errors; appearance and motion
+  on iOS/Android still require verification. Existing Lottie text-font resolution
+  remains platform-dependent; rendering failure falls back to native text.

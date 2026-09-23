@@ -1,3 +1,4 @@
+import { GizuLogo } from "@/components/atoms/GizuLogo";
 import { View, useWindowDimensions } from "react-native";
 import { Fingerprint, Wallet } from "lucide-react-native";
 import { BackAction } from "@/navigation/BackAction";
@@ -16,6 +17,7 @@ export function AccessScreen({ navigation }: NativeStackScreenProps<RootStackPar
   return (
     <Screen>
       <BackAction />
+      <GizuLogo />
       <Typography variant="title">Create access</Typography>
       <Typography>Choose how you want to access Gizu.</Typography>
       <View className={stacked ? "gap-3" : "flex-row gap-3"}>

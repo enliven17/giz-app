@@ -586,3 +586,14 @@ version-sensitive installation details before scaffolding.
 
 This supersedes M3.1's shared header Back design. Existing native QA gaps remain
 open; headerless verification is recorded in docs/FOUNDATION.md.
+
+## Frontend reconciliation follow-up (M3.3)
+
+- [x] Adopt Gizu logo, “DeFi in Stealth Mode”, confidential-vault wording,
+      Swap coming-soon presentation, chart spacing and account row alignment.
+- [x] Keep both passkey and external-wallet options by user decision.
+- [x] Add a guest request-access modal backed by an isolated development mock,
+      including validation, loading, retry, duplicate prevention and dismissal.
+- [ ] During M4, use a dedicated sell tone and explicit Confirm buy / Confirm sell.
+- [ ] During M5, add native notification read/unread and mark-all behavior.
+- [ ] Replace the request-access mock with an agreed real submission service before production.

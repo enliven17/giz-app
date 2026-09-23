@@ -67,7 +67,7 @@ export function PortfolioScreen({ navigation }: BottomTabScreenProps<MainTabPara
             Deposits, withdrawals and notifications are not available yet.
           </Typography>
           <View className="mt-3 flex-row flex-wrap items-center justify-between gap-2">
-            <Typography variant="heading">Private vaults</Typography>
+            <Typography variant="heading">Confidential vaults</Typography>
             <Button
               label="See all vaults"
               variant="quiet"

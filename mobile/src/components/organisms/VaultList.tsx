@@ -27,7 +27,9 @@ export function VaultList({ vaults, onOpen }: { vaults: Vault[]; onOpen: (id: st
               negative={Number(vault.change24h) < 0}
             />
           </View>
-          <Sparkline series={vault.series} negative={Number(vault.change24h) < 0} />
+          <View className="py-2">
+            <Sparkline series={vault.series} negative={Number(vault.change24h) < 0} height={56} />
+          </View>
           <Typography variant="row">{vault.name}</Typography>
           <View className="flex-row flex-wrap justify-between gap-2">
             <Typography variant="caption">{vault.tvl} TVL</Typography>

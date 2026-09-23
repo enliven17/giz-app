@@ -16,6 +16,8 @@ import { SnapshotStatus } from "@/components/molecules/SnapshotStatus";
 import { Choice } from "@/components/molecules/Choice";
 import { VaultList } from "@/components/organisms/VaultList";
 import { useInvestments } from "@/features/investments/InvestmentProvider";
+import { GlitchText } from "@/components/atoms/GlitchText";
+import { smoothGlitchWordmark } from "@/animations/smoothGlitchWordmark";
 export function PreviewScreen() {
   const [selected, setSelected] = useState(false);
   const [feedback, setFeedback] = useState(
@@ -26,6 +28,15 @@ export function PreviewScreen() {
     <Screen>
       <BackAction fallback="Settings" />
       <Typography variant="heading">UI preview</Typography>
+      <Typography variant="label">Pixel glitch</Typography>
+      <GlitchText />
+      <Typography variant="label">Clean type glitch</Typography>
+      <GlitchText
+        source={smoothGlitchWordmark}
+        accessibilityLabel="Animated smooth Gizu glitch wordmark"
+        testID="gizu-smooth-glitch-animation"
+        text="GIZU"
+      />
       <Metric emphasis label="Example portfolio · USD" value="$810,838.24" />
       <MetricGroup
         metrics={[

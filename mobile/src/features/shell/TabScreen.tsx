@@ -1,3 +1,4 @@
+import { ComingSoonHeading } from "./ComingSoonHeading";
 import { View } from "react-native";
 import { Fingerprint, ShieldCheck, Bell, Globe, FileText, LifeBuoy } from "lucide-react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
@@ -37,8 +38,8 @@ const groups = [
 export function TabScreen({ route, navigation }: BottomTabScreenProps<MainTabParamList>) {
   const { session, disconnect } = useSession();
   return (
-    <Screen>
-      <Typography variant="title">{route.name === "Settings" ? "Account" : "Exchange"}</Typography>
+    <Screen scrollable={route.name === "Settings"}>
+      {route.name === "Settings" && <Typography variant="title">Account</Typography>}
       {route.name === "Settings" ? (
         <>
           <Surface>
@@ -84,15 +85,12 @@ export function TabScreen({ route, navigation }: BottomTabScreenProps<MainTabPar
           <Typography variant="caption">Gizu v0.1.0</Typography>
         </>
       ) : (
-        <Surface>
-          <View className="gap-4 p-6">
-            <Typography>Exchange is not available yet.</Typography>
-            <Typography variant="caption">
-              Trading and transfers will arrive in the next release.
-            </Typography>
-            <Button label="Exchange" disabled onPress={() => {}} />
-          </View>
-        </Surface>
+        <View className="flex-1 items-center justify-center gap-6 px-4">
+          <ComingSoonHeading />
+          <Typography style={{ textAlign: "center" }}>
+            In-app swaps are not available yet. Explore confidential vaults and your portfolio.
+          </Typography>
+        </View>
       )}
     </Screen>
   );

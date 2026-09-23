@@ -50,7 +50,7 @@ function TabIcon({ icon: Icon, selected }: { icon: LucideIcon; selected: boolean
       importantForAccessibility="no-hide-descendants"
     >
       <Icon
-        size={21}
+        size={22}
         color={selected ? colors.ink : colors.muted}
         strokeWidth={selected ? 2.4 : 1.8}
       />
@@ -118,9 +118,9 @@ export function FloatingTabs({ state, descriptors, navigation, insets }: BottomT
         backgroundColor: "transparent",
       }}
     >
-      <View className="self-center rounded-full border border-border bg-surface p-2">
+      <View className="self-center rounded-full border border-border bg-surface p-2.5">
         {/* Keep measured tabs and absolute circles in the same border-free coordinates. */}
-        <View className="relative flex-row">
+        <View className="relative flex-row gap-1">
           {bounds && (
             <>
               <Animated.View

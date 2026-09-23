@@ -123,3 +123,64 @@ access cancellation and disconnect retain their implemented behavior. Profile co
 is an isolated presentation fixture without a connected address. New deposit/withdraw,
 buy/sell, notification and account-row controls are disabled and explicitly unavailable.
 M4/M5 scope is unchanged. No web-only glitch/blur animation or unlicensed font is copied.
+
+## M3.3 frontend reconciliation — 2026-09-23
+
+Compared frontend `42c51e2` to `64d7cf2`. Adopted Gizu logo, welcome headline,
+confidential-vault terminology, roomier charts, aligned account rows and the Swap
+coming-soon treatment. The existing Exchange route/deep link remains stable.
+
+P01 now has a separate Request access modal with email, investment range, platform
+multiselect and optional Other. Submission uses an injected development mock, with
+no network, persistence or real waitlist enrollment. Validation, pending, failure/retry,
+dismissal, completion and stale-result handling are part of the new functional journey.
+P02/P03 retain both passkey and external-wallet access by explicit user decision;
+the frontend's passkey-only change is not adopted. No real credentials are created.
+
+M4 buy/sell and transfers remain pending; use the frontend sell tone and explicit
+confirmation labels when implementing them. M5 notifications remain pending; prefer
+a native screen/sheet over the desktop dropdown. Preserve native navigation, reduced
+motion support, readable type and no top navigation bars.
+
+## Product and interaction decisions retained from agent guidance
+
+These feature-specific decisions live here so engineering instructions can remain
+focused on reusable approaches. They supplement the journey statuses above.
+
+- Access sessions remain memory-only with `kind: "demo"`. Restart/disconnect clears
+  the session; signed-out protected/unknown links are discarded. The UI preview
+  remains available under Settings. Keep both passkey and external-wallet entry.
+- Keep user-facing copy free of demo/simulated prefixes and repetitive banners.
+  Preserve engineering mock provenance and labeled native share summaries; do not
+  claim actual biometrics, credential creation, connectivity or settlement.
+- Use a session-scoped investment snapshot. Charts are performance indexes using
+  fixture windows, not market history or executable quotes. Preserve old snapshots
+  with stale/offline feedback after refresh failure; metadata comes from adapters.
+- Search combines name, ticker, strategy, manager and risk. Preserve search/filter
+  and chart selections across navigation; show Clear only when applicable. Advanced
+  filters remain unavailable until specified. Share text without inventing a public
+  URL or treating share-sheet dismissal as delivery.
+- Hide all top navigator headers. Place accessible screen titles and Back controls
+  in content, with safe direct-link fallbacks. Keep bottom tabs on main screens.
+- Bottom navigation is a floating capsule over a transparent overlay. Reserve its
+  measured height in scroll padding and pass touches through outside the capsule.
+  Selection uses a centered measured circle, icon pop, outgoing fade (150 ms) and
+  incoming fade (180 ms). Motion follows accepted navigation, retargets on interruption,
+  honors reduced motion and does not replay on repeated selection.
+- Prioritize balances or vault identity before metadata. Vault tiles show ticker,
+  change, chart, name, TVL and APY; use one column for narrow/large-text layouts.
+  Keep financial values readable and feature state intact during text-size changes.
+- Request access validates email, one investment range and at least one platform
+  or Other. The range is not a commitment. Preserve answers on retry, lock controls
+  while pending, ignore late results on dismissal and clear answers on reopening.
+  Completion is user-dismissed. Its mock creates no real waitlist entry or session.
+- Exchange keeps its route/deep link but is presented as Swap coming soon. Trading
+  and transfers remain M4; notifications/account actions remain M5. Use a distinct
+  sell tone with explicit confirmation labels; do not make sale success look like failure.
+- Swap's coming-soon placeholder uses a fixed, non-scrolling viewport centered
+  above the measured tab bar. Its heading scales for screen width with explicit
+  line height to prevent glyph clipping; other content screens remain scrollable.
+- Swap's “coming soon” heading now has a dedicated Lottie glitch: brief cyan/mint
+  text offsets and scan accents in a five-second loop. Swap and body copy stay still.
+  The effect runs only on the focused tab while the app is active; reduced motion,
+  enlarged text and animation failure use native text. The screen remains fixed.

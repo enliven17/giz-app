@@ -13,7 +13,7 @@ const HERE = dirname(fileURLToPath(import.meta.url))
 /* -------------------------------------------------------------- tokens */
 
 const W = 2440
-const H = 1520
+const H = 1440
 
 const INK = '#070a09'
 const CARD = '#0d1211'
@@ -188,10 +188,7 @@ const tag = (cx, cy, s) => {
 /* -------------------------------------------------------------- canvas */
 
 add(`<rect width="${W}" height="${H}" fill="${INK}"/>`)
-add(text(120, 96, 'One passkey. The complete Earn cycle.', { size: 46, weight: 700, ls: -1.2 }))
-add(
-  `<text x="120" y="138" font-family="${SANS}" font-size="20" fill="${MUTED}">Monad <tspan fill="${NEON}" font-weight="600">&#8250;</tspan> confidential balance <tspan fill="${NEON}" font-weight="600">&#8250;</tspan> Ethereum vaults <tspan fill="${NEON}" font-weight="600">&#8250;</tspan> fresh Monad wallets</text>`,
-)
+add(text(120, 108, 'One passkey. The complete Earn cycle.', { size: 62, weight: 700, ls: -1.8 }))
 add(`<path d="M120,178 H2320" stroke="${HAIR_SOFT}"/>`)
 
 /* --------------------------------------------------------------- zones */
@@ -206,7 +203,7 @@ zone(Z2.x, Z2.y, Z2.w, Z2.h, 'Confidential layer · FAR private ledger', {
   stroke: 'rgba(49,196,126,0.22)',
   fill: NEON,
 })
-zone(Z3.x, Z3.y, Z3.w, Z3.h, 'Ethereum · vault chain')
+zone(Z3.x, Z3.y, Z3.w, Z3.h, 'Monad')
 zone(Z4.x, Z4.y, Z4.w, Z4.h, 'Monad · payout')
 
 /* ------------------------------------------------------------ column 1 */
@@ -302,7 +299,7 @@ const wallets = AX.map((x, i) => tile(x, Z3.y + 64, AW, 'wallet', `A${i + 1}`))
 const invest = block(Z3.x + 30, wallets[0].bottom + 86, Z3.w - 60, {
   step: '5',
   title: 'Invest in vaults',
-  sub: 'Morpho / Aave / compatible Zama application',
+  sub: 'Morpho / Aave / compatible Euler application',
   chips: ['A1 position', 'A2 position', 'A3 position', 'A4 position'],
 })
 
@@ -339,7 +336,7 @@ wallets2.forEach((w, i) => {
   if (i === 0 || i === 2) add(tag(w.cx + 62, exitStep.bottom + 42, 'Redeem'))
   add(flowV(w.cx, w.bottom, deposits[i].y))
 })
-add(label(Z3.x + Z3.w / 2, deposits[0].bottom + 40, 'Same investment wallets · separate Ethereum deposit addresses', { anchor: 'middle' }))
+add(label(Z3.x + Z3.w / 2, deposits[0].bottom + 40, 'Same investment wallets · separate deposit addresses', { anchor: 'middle' }))
 
 // deposits return to the confidential layer
 deposits.forEach((d, i) => {
@@ -371,32 +368,19 @@ const freshNote = block(Z4.x + 30, fresh[0].bottom + 28, Z4.w - 60, {
 })
 
 // payout quotes back to the fresh wallets
-const payoutRail = fresh[0].y - 30
+const payoutRail = fresh[0].y - 18
 add(
   route(
     [
       [quotes.x, quotes.cy],
       [Z4.x + Z4.w + 28, quotes.cy],
       [Z4.x + Z4.w + 28, payoutRail],
-      [fresh[2].cx, payoutRail],
+      [fresh[0].cx, payoutRail],
     ],
     { private: true, r: 14 },
   ),
 )
 fresh.forEach((f) => add(flowV(f.cx, payoutRail, f.y, { private: true })))
-
-/* ------------------------------------------------------------ footnotes */
-
-add(`<path d="M120,${H - 140} H2320" stroke="${HAIR_SOFT}"/>`)
-;[
-  ['Key custody', 'One passkey controls F, C, A1-A4 and R1-R3. New addresses never require a new passkey.'],
-  ['Visibility', 'Public: chain transfers and vault activity. Private: FAR balances and routing.'],
-  ['Limits', 'Amounts and timing can still correlate activity. Routes are coordinated, not atomic.'],
-].forEach(([head, body], i) => {
-  const x = 120 + i * 740
-  add(label(x, H - 96, head, { fill: NEON }))
-  add(text(x, H - 68, body, { size: 13.5, fill: MUTED }))
-})
 
 /* ------------------------------------------------------------------ svg */
 

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="2440" height="1520" viewBox="0 0 2440 1520">
+<svg xmlns="http://www.w3.org/2000/svg" width="2440" height="1440" viewBox="0 0 2440 1440">
   <defs>
     <marker id="tipN" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
       <path d="M0,1.5 L8.5,5 L0,8.5 Z" fill="rgba(242,247,244,0.3)"/>
@@ -7,16 +7,15 @@
       <path d="M0,1.5 L8.5,5 L0,8.5 Z" fill="#31c47e" fill-opacity="0.85"/>
     </marker>
   </defs>
-  <rect width="2440" height="1520" fill="#070a09"/>
-  <text x="120" y="96" font-family="Helvetica Neue" font-size="46" font-weight="700" fill="#f2f7f4" letter-spacing="-1.2" text-anchor="start">One passkey. The complete Earn cycle.</text>
-  <text x="120" y="138" font-family="Helvetica Neue" font-size="20" fill="rgba(242,247,244,0.58)">Monad <tspan fill="#31c47e" font-weight="600">&#8250;</tspan> confidential balance <tspan fill="#31c47e" font-weight="600">&#8250;</tspan> Ethereum vaults <tspan fill="#31c47e" font-weight="600">&#8250;</tspan> fresh Monad wallets</text>
+  <rect width="2440" height="1440" fill="#070a09"/>
+  <text x="120" y="108" font-family="Helvetica Neue" font-size="62" font-weight="700" fill="#f2f7f4" letter-spacing="-1.8" text-anchor="start">One passkey. The complete Earn cycle.</text>
   <path d="M120,178 H2320" stroke="rgba(255,255,255,0.06)"/>
   <rect x="120" y="216" width="620" height="560" rx="16" fill="rgba(255,255,255,0.014)" stroke="rgba(255,255,255,0.06)"/>
   <text x="148" y="250" font-family="Helvetica Neue" font-size="11" font-weight="600" fill="rgba(242,247,244,0.58)" letter-spacing="1.8" text-anchor="start">MONAD · SOURCE CHAIN</text>
   <rect x="800" y="216" width="700" height="1160" rx="16" fill="rgba(255,255,255,0.014)" stroke="rgba(49,196,126,0.22)"/>
   <text x="828" y="250" font-family="Helvetica Neue" font-size="11" font-weight="600" fill="#31c47e" letter-spacing="1.8" text-anchor="start">CONFIDENTIAL LAYER · FAR PRIVATE LEDGER</text>
   <rect x="1560" y="216" width="760" height="1160" rx="16" fill="rgba(255,255,255,0.014)" stroke="rgba(255,255,255,0.06)"/>
-  <text x="1588" y="250" font-family="Helvetica Neue" font-size="11" font-weight="600" fill="rgba(242,247,244,0.58)" letter-spacing="1.8" text-anchor="start">ETHEREUM · VAULT CHAIN</text>
+  <text x="1588" y="250" font-family="Helvetica Neue" font-size="11" font-weight="600" fill="rgba(242,247,244,0.58)" letter-spacing="1.8" text-anchor="start">MONAD</text>
   <rect x="120" y="816" width="620" height="560" rx="16" fill="rgba(255,255,255,0.014)" stroke="rgba(255,255,255,0.06)"/>
   <text x="148" y="850" font-family="Helvetica Neue" font-size="11" font-weight="600" fill="rgba(242,247,244,0.58)" letter-spacing="1.8" text-anchor="start">MONAD · PAYOUT</text>
   <rect x="150" y="280" width="560" height="278" rx="12" fill="#0d1211" stroke="rgba(255,255,255,0.1)"/>
@@ -92,7 +91,7 @@
   <rect x="1590" y="470" width="700" height="174" rx="12" fill="#0d1211" stroke="rgba(255,255,255,0.1)"/>
   <circle cx="1635" cy="515" r="13" fill="#31c47e"/><text x="1635" y="520" font-family="Helvetica Neue" font-size="13" font-weight="700" fill="#06170e" letter-spacing="0" text-anchor="middle">5</text>
   <text x="1662" y="519" font-family="Helvetica Neue" font-size="20" font-weight="600" fill="#f2f7f4" letter-spacing="-0.3" text-anchor="start">Invest in vaults</text>
-  <text x="1662" y="543" font-family="Helvetica Neue" font-size="14" font-weight="400" fill="rgba(242,247,244,0.58)" letter-spacing="0" text-anchor="start">Morpho / Aave / compatible Zama application</text>
+  <text x="1662" y="543" font-family="Helvetica Neue" font-size="14" font-weight="400" fill="rgba(242,247,244,0.58)" letter-spacing="0" text-anchor="start">Morpho / Aave / compatible Euler application</text>
   <rect x="1622" y="564" width="150" height="44" rx="10" fill="rgba(255,255,255,0.035)" stroke="rgba(255,255,255,0.06)"/><text x="1697" y="592" font-family="Helvetica Neue" font-size="13.5" font-weight="500" fill="#f2f7f4" letter-spacing="0" text-anchor="middle">A1 position</text><rect x="1784" y="564" width="150" height="44" rx="10" fill="rgba(255,255,255,0.035)" stroke="rgba(255,255,255,0.06)"/><text x="1859" y="592" font-family="Helvetica Neue" font-size="13.5" font-weight="500" fill="#f2f7f4" letter-spacing="0" text-anchor="middle">A2 position</text><rect x="1946" y="564" width="150" height="44" rx="10" fill="rgba(255,255,255,0.035)" stroke="rgba(255,255,255,0.06)"/><text x="2021" y="592" font-family="Helvetica Neue" font-size="13.5" font-weight="500" fill="#f2f7f4" letter-spacing="0" text-anchor="middle">A3 position</text><rect x="2108" y="564" width="150" height="44" rx="10" fill="rgba(255,255,255,0.035)" stroke="rgba(255,255,255,0.06)"/><text x="2183" y="592" font-family="Helvetica Neue" font-size="13.5" font-weight="500" fill="#f2f7f4" letter-spacing="0" text-anchor="middle">A4 position</text>
   <rect x="1590" y="708" width="700" height="118" rx="12" fill="#0d1211" stroke="rgba(255,255,255,0.1)"/>
   <circle cx="1635" cy="753" r="13" fill="#31c47e"/><text x="1635" y="758" font-family="Helvetica Neue" font-size="13" font-weight="700" fill="#06170e" letter-spacing="0" text-anchor="middle">6</text>
@@ -147,7 +146,7 @@
   <path d="M2030,1016 V1070" stroke="rgba(242,247,244,0.3)" stroke-width="1.5" fill="none" marker-end="url(#tipN)"/>
   <path d="M2210,826 V912" stroke="rgba(242,247,244,0.3)" stroke-width="1.5" fill="none" marker-end="url(#tipN)"/>
   <path d="M2210,1016 V1070" stroke="rgba(242,247,244,0.3)" stroke-width="1.5" fill="none" marker-end="url(#tipN)"/>
-  <text x="1940" y="1214" font-family="Helvetica Neue" font-size="11" font-weight="600" fill="rgba(242,247,244,0.34)" letter-spacing="1.8" text-anchor="middle">SAME INVESTMENT WALLETS · SEPARATE ETHEREUM DEPOSIT ADDRESSES</text>
+  <text x="1940" y="1214" font-family="Helvetica Neue" font-size="11" font-weight="600" fill="rgba(242,247,244,0.34)" letter-spacing="1.8" text-anchor="middle">SAME INVESTMENT WALLETS · SEPARATE DEPOSIT ADDRESSES</text>
   <path d="M1670,1174 L1670,1240 Q1670,1252 1658,1252 L1548,1252 Q1536,1252 1536,1240 L1536,875 Q1536,863 1524,863 L1470,863" stroke="rgba(49,196,126,0.55)" stroke-width="1.5" fill="none" marker-end="url(#tipP)"/>
   <path d="M1850,1174 L1850,1256 Q1850,1268 1838,1268 L1532,1268 Q1520,1268 1520,1256 L1520,875 Q1520,863 1508,863 L1470,863" stroke="rgba(49,196,126,0.55)" stroke-width="1.5" fill="none" marker-end="url(#tipP)"/>
   <path d="M2030,1174 L2030,1272 Q2030,1284 2018,1284 L1516,1284 Q1504,1284 1504,1272 L1504,875 Q1504,863 1492,863 L1470,863" stroke="rgba(49,196,126,0.55)" stroke-width="1.5" fill="none" marker-end="url(#tipP)"/>
@@ -166,15 +165,8 @@
   <text x="182" y="1085" font-family="Helvetica Neue" font-size="14" font-weight="400" fill="rgba(242,247,244,0.58)" letter-spacing="0" text-anchor="start">Controlled by the same Mera passkey, no new enrolment</text>
   <rect x="182" y="1106" width="40" height="40" rx="10" fill="rgba(255,255,255,0.045)" stroke="rgba(255,255,255,0.06)"/><g transform="translate(190 1114) scale(1)" color="rgba(242,247,244,0.7)" stroke="rgba(242,247,244,0.7)" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 5H17a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3.5"/><path d="M9.5 8.5 6 12l3.5 3.5"/><path d="M6 12h7.5"/></g>
   <text x="246" y="1131" font-family="Helvetica Neue" font-size="13.5" font-weight="400" fill="rgba(242,247,244,0.58)" letter-spacing="0" text-anchor="start">One quote per address</text>
-  <path d="M830,1267 L782,1267 Q768,1267 768,1253 L768,864 Q768,850 754,850 L615,850" stroke="rgba(49,196,126,0.55)" stroke-width="1.5" fill="none" marker-end="url(#tipP)"/>
-  <path d="M235,850 V880" stroke="rgba(49,196,126,0.55)" stroke-width="1.5" fill="none" marker-end="url(#tipP)"/>
-  <path d="M425,850 V880" stroke="rgba(49,196,126,0.55)" stroke-width="1.5" fill="none" marker-end="url(#tipP)"/>
-  <path d="M615,850 V880" stroke="rgba(49,196,126,0.55)" stroke-width="1.5" fill="none" marker-end="url(#tipP)"/>
-  <path d="M120,1380 H2320" stroke="rgba(255,255,255,0.06)"/>
-  <text x="120" y="1424" font-family="Helvetica Neue" font-size="11" font-weight="600" fill="#31c47e" letter-spacing="1.8" text-anchor="start">KEY CUSTODY</text>
-  <text x="120" y="1452" font-family="Helvetica Neue" font-size="13.5" font-weight="400" fill="rgba(242,247,244,0.58)" letter-spacing="0" text-anchor="start">One passkey controls F, C, A1-A4 and R1-R3. New addresses never require a new passkey.</text>
-  <text x="860" y="1424" font-family="Helvetica Neue" font-size="11" font-weight="600" fill="#31c47e" letter-spacing="1.8" text-anchor="start">VISIBILITY</text>
-  <text x="860" y="1452" font-family="Helvetica Neue" font-size="13.5" font-weight="400" fill="rgba(242,247,244,0.58)" letter-spacing="0" text-anchor="start">Public: chain transfers and vault activity. Private: FAR balances and routing.</text>
-  <text x="1600" y="1424" font-family="Helvetica Neue" font-size="11" font-weight="600" fill="#31c47e" letter-spacing="1.8" text-anchor="start">LIMITS</text>
-  <text x="1600" y="1452" font-family="Helvetica Neue" font-size="13.5" font-weight="400" fill="rgba(242,247,244,0.58)" letter-spacing="0" text-anchor="start">Amounts and timing can still correlate activity. Routes are coordinated, not atomic.</text>
+  <path d="M830,1267 L782,1267 Q768,1267 768,1253 L768,876 Q768,862 754,862 L235,862" stroke="rgba(49,196,126,0.55)" stroke-width="1.5" fill="none" marker-end="url(#tipP)"/>
+  <path d="M235,862 V880" stroke="rgba(49,196,126,0.55)" stroke-width="1.5" fill="none" marker-end="url(#tipP)"/>
+  <path d="M425,862 V880" stroke="rgba(49,196,126,0.55)" stroke-width="1.5" fill="none" marker-end="url(#tipP)"/>
+  <path d="M615,862 V880" stroke="rgba(49,196,126,0.55)" stroke-width="1.5" fill="none" marker-end="url(#tipP)"/>
 </svg>

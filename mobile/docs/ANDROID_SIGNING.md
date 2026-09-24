@@ -1,7 +1,7 @@
 # Local Android passkey signing
 
 This configures the development package `com.example.gizu.dev` only. The former Android Mera probe is retired. Its signing configuration is retained
-for the planned native signer; see [the retirement record](MERA_NATIVE_PROBE.md).
+for the implemented native signer; see [the retirement record](NATIVE_SIGNER.md#retired-javascript-probe).
 
 ## This Mac
 
@@ -58,7 +58,7 @@ Reference: https://developer.android.com/identity/credential-manager/prerequisit
 The old JavaScript Mera probe and its raw native PRF bridge were removed on
 2026-09-24. Use `EXPO_PUBLIC_PASSKEY_MODE=mock` for the demo. Neither `probe` nor
 `native` is currently available. Keep the local signing key and association
-configuration for the replacement described in [N0](NATIVE_SIGNER_N0.md).
+configuration for the native signer described in [N0](NATIVE_SIGNER.md).
 
 Rebuild and replace existing Android development clients with `npm run android`
 after clearing an old probe-mode environment setting. Metro reload alone does not

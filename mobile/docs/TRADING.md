@@ -1,8 +1,10 @@
 # Trading and transfers — M4
 
-This implements mobile journeys with injected mock services. No network, real
-credential, transaction hash, live quote or on-chain settlement is involved.
-Production wallet/API contracts, custody, recovery and settlement remain M6.
+This reference covers explicit demo-mode journeys with injected mock services.
+These fixtures involve no real credentials, live quotes or on-chain settlement.
+Normal native Deposit/Withdraw and Activity use the separate
+[native signer contract](NATIVE_SIGNER.md); the six-decimal fixture rules below
+do not apply to native MON. Production investment services remain deferred.
 User-facing mock banners remain omitted by the accepted product decision.
 
 ## Journeys and ownership

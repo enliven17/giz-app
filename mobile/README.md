@@ -53,12 +53,12 @@ Custom icons, fonts and launch artwork remain future product work.
 
 ## Commands
 
-Passkey P0 configuration and the pending real-device gate are documented in
+Passkey configuration and platform prerequisites are documented in
 [PASSKEY_CONFIGURATION.md](docs/PASSKEY_CONFIGURATION.md). `npm run passkeys:check`
-checks mock-mode configuration; `npm run passkeys:templates` prepares review files;
-`npm run passkeys:verify-domain` verifies hosted associations after real signing
+checks passkey configuration; `npm run passkeys:templates` prepares review files;
+`npm run passkeys:verify-domain` verifies the hosted Apple association after real signing
 metadata is supplied. Nothing is published automatically.
-The [former P1 probe](docs/MERA_NATIVE_PROBE.md) has been removed. Native mode uses
+The [former P1 probe](docs/NATIVE_SIGNER.md#retired-javascript-probe) has been removed. Native mode uses
 the native signer; raw PRF is never exposed to JavaScript. Rebuild older clients
 to remove the old bridge and install the current signer.
 
@@ -241,9 +241,9 @@ The normal app uses native services for access, balance and account identity.
 Existing Deposit/Withdraw and Activity now use native wallet services. For fixture flows,
 launch `npm run start:demo` explicitly.
 
-See [native wallet access](docs/NATIVE_SIGNER_N3.md) for signer scope,
-[the implementation plan](PLAN.md#m61--real-passkey-and-wallet-behavior-in-the-existing-gizu-app)
-for product integration, and [the cleanup plan](docs/CODE_CLEANUP_PLAN.md).
+See [native wallet access](docs/NATIVE_SIGNER.md) for signer scope,
+[the implementation plan](PLAN.md#current-implementation)
+for product integration, and [structural improvements](PLAN.md#structural-improvements).
 
 ## Wallet integration organization
 

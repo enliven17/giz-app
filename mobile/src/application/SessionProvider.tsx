@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, type PropsWithChildren } from "react";
-import { demoAccessService, type AccessService, type DemoSession } from "@/services/access";
+import { demoAccessService, type AccessService, type AppSession } from "@/services/access";
 const SessionContext = createContext<{
-  session: DemoSession | null;
-  signIn: (session: DemoSession) => void;
+  session: AppSession | null;
+  signIn: (session: AppSession) => void;
   disconnect: () => void;
   accessService: AccessService;
 } | null>(null);
@@ -10,10 +10,18 @@ export function SessionProvider({
   children,
   accessService = demoAccessService,
 }: PropsWithChildren<{ accessService?: AccessService }>) {
-  const [session, setSession] = useState<DemoSession | null>(null);
+  const [session, setSession] = useState<AppSession | null>(null);
   return (
     <SessionContext.Provider
-      value={{ session, signIn: setSession, disconnect: () => setSession(null), accessService }}
+      value={{
+        session,
+        signIn: setSession,
+        disconnect: () => {
+          accessService.cancel?.();
+          setSession(null);
+        },
+        accessService,
+      }}
     >
       {children}
     </SessionContext.Provider>

@@ -51,10 +51,11 @@ final class NativeTransferJournal {
     try handle.synchronize()
   }
   func unresolved() throws -> Bool { try read().contains { !["finalized", "reverted"].contains($0["status"] as? String ?? "") } }
-  func beforeBroadcast(operation: String, step: Int, tx: NativeSignedTransfer) throws {
+  func beforeBroadcast(operation: String, step: Int, tx: NativeSignedTransfer, intent: TransferIntent) throws {
+    guard let value = UInt64(intent.valueHex.dropFirst(2), radix: 16) else { throw TransferFailure.stopped }
     var entries = try read(); guard entries.count < 256 else { throw TransferFailure.stopped }
     entries.append(["operationId": operation, "step": step, "chainId": 10143, "from": tx.from, "nonce": tx.nonce,
-                    "intentHash": tx.intentHash, "transactionHash": tx.transactionHash, "status": "unknown"])
+                    "intentHash": tx.intentHash, "transactionHash": tx.transactionHash, "status": "unknown", "to": intent.to, "valueWei": String(value)])
     try save(entries)
   }
   func publicStatus() throws -> String { String(decoding: try JSONSerialization.data(withJSONObject: read()), as: UTF8.self) }
@@ -236,7 +237,7 @@ final class NativeTransferController: UIViewController, ASAuthorizationControlle
           try Task.checkCancellation()
           guard completion != nil, UIApplication.shared.applicationState == .active else { throw TransferFailure.stopped }
           let tx = try operation.signNext(pendingNonce: nonce, chainId: chain, recipientCode: code, senderCode: senderCode)
-          try journal.beforeBroadcast(operation: operationId, step: step, tx: tx)
+          try journal.beforeBroadcast(operation: operationId, step: step, tx: tx, intent: intent)
           try Task.checkCancellation()
           let returned = try await rpc.text("eth_sendRawTransaction", [tx.rawTransaction])
           guard returned.lowercased() == tx.transactionHash.lowercased() else { throw TransferFailure.stopped }

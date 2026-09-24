@@ -1,3 +1,4 @@
+import { useSession } from "@/application/SessionProvider";
 import { GizuLogo } from "@/components/atoms/GizuLogo";
 import { Fingerprint } from "lucide-react-native";
 import { BackAction } from "@/navigation/BackAction";
@@ -8,13 +9,18 @@ import { Notice } from "@/components/molecules/Notice";
 import { AccessCard } from "@/components/molecules/AccessCard";
 import { useAccessController } from "./useAccessController";
 export function AccessScreen() {
+  const native = useSession().accessService.method === "Passkey";
   const controller = useAccessController();
   return (
     <Screen>
       <BackAction />
       <GizuLogo />
-      <Typography variant="title">Create access</Typography>
-      <Typography>Continue with a passkey to access Gizu.</Typography>
+      <Typography variant="title">{native ? "Your testnet wallet" : "Create access"}</Typography>
+      <Typography>
+        {native
+          ? "Create or open a passkey for your Monad testnet wallet. The native prompt lets you choose. No transaction is signed."
+          : "Continue with a passkey to access Gizu."}
+      </Typography>
       <AccessCard
         icon={Fingerprint}
         label={controller.pending ? "Opening access" : "Continue with passkey"}

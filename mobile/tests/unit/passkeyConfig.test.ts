@@ -33,13 +33,13 @@ test("freezes shared RP and deterministic account-zero recipe without wallet sec
   expect(identity.minimumPasskeyOs).toEqual({ iosMajor: 18, androidApi: 28 });
 });
 
-test("mock is explicit and invalid/native modes cannot silently use demo success", () => {
+test("native modes are explicit and invalid modes cannot silently use demo success", () => {
   expect(validatePasskeyMode(undefined)).toBe("mock");
   expect(validatePasskeyMode("mock")).toBe("mock");
   expect(validatePasskeyMode("native-probe")).toBe("native-probe");
   expect(() => validatePasskeyMode("probe")).toThrow("removed");
   expect(() => validatePasskeyMode("typo")).toThrow("PASSKEY_MODE");
-  expect(() => validatePasskeyMode("native")).toThrow("not implemented");
+  expect(validatePasskeyMode("native")).toBe("native");
 });
 
 test("iOS identity rejects placeholders and RP drift but ignores deferred Android metadata", () => {
@@ -57,11 +57,11 @@ test("iOS identity rejects placeholders and RP drift but ignores deferred Androi
   ).not.toThrow();
 });
 
-test("valid-looking identity still cannot enable an unimplemented native adapter", () => {
+test("native mode selection is independent of mutable identity data", () => {
   const original = { ...identity };
   try {
     Object.assign(identity, fixture);
-    expect(() => validatePasskeyMode("native")).toThrow("not implemented");
+    expect(validatePasskeyMode("native")).toBe("native");
   } finally {
     Object.assign(identity, original);
   }

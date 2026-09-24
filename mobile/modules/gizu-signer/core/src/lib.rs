@@ -93,6 +93,26 @@ pub fn run_native_probe(prf: Vec<u8>, operation_id: String) -> Result<Vec<ProbeP
     Ok(proofs)
 }
 
+/// Native-only address derivation for local wallet access. No signature or retained session.
+#[uniffi::export]
+pub fn derive_wallet_address(prf: Vec<u8>) -> Result<String, ProbeError> {
+    let prf = Zeroizing::new(prf);
+    if prf.len() != 32 {
+        return Err(ProbeError::InvalidInput);
+    }
+    let mnemonic =
+        Mnemonic::from_entropy_in(Language::English, &prf).map_err(|_| ProbeError::CryptoFailed)?;
+    let seed = Zeroizing::new(mnemonic.to_seed(""));
+    drop(mnemonic);
+    drop(prf);
+    let path: DerivationPath = "m/44'/60'/0'/0/0"
+        .parse()
+        .map_err(|_| ProbeError::CryptoFailed)?;
+    let child =
+        XPrv::derive_from_path(seed.as_ref(), &path).map_err(|_| ProbeError::CryptoFailed)?;
+    Ok(address(child.private_key().verifying_key()))
+}
+
 /// Public synthetic vector only; never uses a provider or creates an account to fund.
 #[uniffi::export]
 pub fn run_synthetic_check() -> Result<Vec<ProbeProof>, ProbeError> {
@@ -145,6 +165,21 @@ mod tests {
             assert_ne!(address(&altered), proof.address);
         }
     }
+    #[test]
+    fn wallet_access_returns_only_the_frozen_account_zero_address() {
+        assert_eq!(
+            derive_wallet_address(vec![0; 32]).unwrap(),
+            run_synthetic_check().unwrap()[0].address
+        );
+        assert_ne!(
+            derive_wallet_address(vec![1; 32]).unwrap(),
+            derive_wallet_address(vec![0; 32]).unwrap()
+        );
+        for len in [0, 31, 33] {
+            assert!(derive_wallet_address(vec![0; len]).is_err());
+        }
+    }
+
     #[test]
     fn independent_js_vectors_match() {
         let lines: Vec<_> = include_str!("../tests/reference-vectors.txt")

@@ -202,8 +202,18 @@ passkey prompts, hashes, and outcome; do not record credentials or signing secre
    restart and block new signing until reconciliation. A completed-record restart
    does not prove this case. No automatic resend or journal deletion is permitted.
 
-Physical cancellation, completed/uncertain restart recovery and batch execution
-remain **not run** until actual device observations are recorded.
+Physical follow-up: the user reported one unlock and one native approval for two
+successful 0.001 MON transfers. RPC receipts confirmed success, Account 0, the same
+recipient and consecutive nonces 1 and 2:
+
+- 0x6f67dafae7bb847dae6e6a1c6ebda51947fc98eccfc46e0c83028962252eee97
+- 0x1bd53bddc7b452dac29f69ce1de2ab5e9ad357275d11dd84bf942ed090602bdb
+
+The user also reported all three finalized records visible after reopening, and
+still three after cancelling before approval. These are user-observed device
+results, not instrumented lifecycle/security proof. The 13-transfer batch,
+partial-batch cancellation and uncertain-submission restart cases remain
+**not run**; further manual testing was paused at the user's request.
 
 Follow-up verification passed: 25 focused Jest tests, TypeScript, scoped ESLint,
 12 Rust tests, eight Android JVM tests (including aggregate funding and transport

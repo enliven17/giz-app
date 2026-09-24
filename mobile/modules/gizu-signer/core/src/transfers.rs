@@ -29,6 +29,7 @@ struct Transfer {
     account_index: u32,
     to: String,
     value_wei: String,
+    expected_from: Option<String>,
 }
 
 fn parse(proposal: &str) -> Result<Proposal, ProbeError> {
@@ -45,6 +46,13 @@ fn parse(proposal: &str) -> Result<Proposal, ProbeError> {
     }
     let mut total = 0u128;
     for t in &p.transfers {
+        if let Some(expected) = &t.expected_from
+            && (expected.len() != 42
+                || !expected.starts_with("0x")
+                || expected.parse::<Address>().is_err())
+        {
+            return Err(ProbeError::InvalidInput);
+        }
         let value = decimal(&t.value_wei)?;
         if t.account_index > 15 || value == 0 || value > PER_TRANSFER {
             return Err(ProbeError::InvalidInput);
@@ -169,9 +177,16 @@ impl TransferOperation {
         let mut intents = Vec::new();
         for t in p.transfers {
             let key = derive(&seed, t.account_index)?;
+            let from = address(key.private_key().verifying_key());
+            if t.expected_from
+                .as_ref()
+                .is_some_and(|expected| !expected.eq_ignore_ascii_case(&from))
+            {
+                return Err(ProbeError::InvalidInput);
+            }
             intents.push(TransferIntent {
                 account_index: t.account_index,
-                from: address(key.private_key().verifying_key()),
+                from,
                 to: t
                     .to
                     .parse::<Address>()
@@ -481,6 +496,17 @@ mod tests {
             );
         }
         assert!(sign(&op, "0xd").is_err());
+    }
+
+    #[test]
+    fn expected_sender_binds_wallet_proposal_before_preparation() {
+        let mut p: serde_json::Value = serde_json::from_str(&proposal(1)).unwrap();
+        let address = crate::derive_wallet_address(vec![0; 32]).unwrap();
+        p["transfers"][0]["expectedFrom"] = serde_json::json!(address.to_lowercase());
+        assert!(TransferOperation::new(p.to_string(), vec![0; 32]).is_ok());
+        assert!(TransferOperation::new(p.to_string(), vec![1; 32]).is_err());
+        p["transfers"][0]["expectedFrom"] = serde_json::json!("invalid");
+        assert!(validate_transfer_proposal(p.to_string()).is_err());
     }
 
     #[test]

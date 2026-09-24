@@ -184,6 +184,12 @@ above do not substitute for that evidence.
 
 ### N3 — Lifecycle and application integration
 
+First slice implemented: native address-only passkey access, local wallet view,
+public address/copy, live Monad testnet balance, reviewed transfers and
+account-scoped local outgoing history. See
+[N3 implementation](NATIVE_SIGNER_N3.md). This does not complete the lifecycle,
+full lifecycle or adversarial acceptance items below.
+
 - [ ] Implement native lifecycle/expiry handling and terminal cleanup.
 - [ ] Wire React Native controllers to public results and operation status only.
 - [ ] Keep the retired JS probe and raw PRF bridge absent; verify native module exports

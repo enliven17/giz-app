@@ -1,3 +1,4 @@
+import { WalletScreen, type WalletDependencies } from "@/features/wallet/WalletScreen";
 import { AccountProvider, type AccountDependencies } from "@/features/account/AccountProvider";
 import { NotificationProvider } from "@/features/notifications/NotificationProvider";
 import type { NotificationService } from "@/services/notifications";
@@ -32,13 +33,20 @@ function AppNavigation({
   transactionService,
   accountDependencies,
   notificationService,
+  walletDependencies,
 }: {
   investmentService?: InvestmentService;
   transactionService?: TransactionService;
   accountDependencies?: AccountDependencies;
   notificationService?: NotificationService;
+  walletDependencies?: WalletDependencies;
 }) {
   const { session } = useSession();
+  if (session?.kind === "testnet") {
+    return (
+      <WalletScreen key={session.accountId} session={session} dependencies={walletDependencies} />
+    );
+  }
   return (
     <NavigationContainer
       key={session ? `demo:${session.accountId ?? "default"}` : "guest"}
@@ -68,6 +76,7 @@ export function AppRoot({
   transactionService,
   accountDependencies,
   notificationService,
+  walletDependencies,
 }: {
   accessService?: AccessService;
   earlyAccessService?: EarlyAccessService;
@@ -75,6 +84,7 @@ export function AppRoot({
   transactionService?: TransactionService;
   accountDependencies?: AccountDependencies;
   notificationService?: NotificationService;
+  walletDependencies?: WalletDependencies;
 }) {
   return (
     <SafeAreaProvider>
@@ -83,6 +93,7 @@ export function AppRoot({
           <EarlyAccessProvider service={earlyAccessService}>
             <StatusBar style="light" />
             <AppNavigation
+              walletDependencies={walletDependencies}
               accountDependencies={accountDependencies}
               notificationService={notificationService}
               investmentService={investmentService}

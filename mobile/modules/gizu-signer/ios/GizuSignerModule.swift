@@ -7,6 +7,27 @@ public final class GizuSignerModule: Module {
   private var probe: AnyObject?
   private var transfer: AnyObject?
   private var reconciling = false
+  private func openAccess(_ promise: Promise, walletOnly: Bool) {
+      DispatchQueue.main.async {
+        #if DEBUG
+        guard #available(iOS 18.0, *), self.probe == nil, self.transfer == nil, !self.reconciling, let presenter = self.appContext?.utilities?.currentViewController(), let window = presenter.view.window else {
+          promise.reject("UNAVAILABLE", "Native probe unavailable"); return
+        }
+        let probe = NativeProbe(presenter: presenter, window: window, walletOnly: walletOnly) { results in
+          self.probe = nil
+          switch results {
+          case .success(.wallet(let address)): promise.resolve(["address": address, "accountIndex": 0, "chainId": 10143] as [String: Any])
+          case .success(.proofs(let proofs)): promise.resolve(proofs.map { ["accountIndex": $0.accountIndex, "address": $0.address, "message": $0.message, "signature": $0.signatureHex] as [String: Any] })
+          case .failure: promise.reject("PROBE_FAILED", "Native probe cancelled, unsupported or failed. Open existing after partial creation.")
+          }
+        }
+        self.probe = probe
+        probe.present()
+        #else
+        promise.reject("UNAVAILABLE", "Development probe only")
+        #endif
+      }
+  }
   public func definition() -> ModuleDefinition {
     Name("GizuSigner")
     Function("getCapabilities") {
@@ -55,51 +76,36 @@ public final class GizuSignerModule: Module {
         (self.transfer as? NativeTransferController)?.cancel(); (self.probe as? NativeProbe)?.cancel()
       }
     } }
-    AsyncFunction("openNativeProbe") { (promise: Promise) in
-      DispatchQueue.main.async {
-        #if DEBUG
-        guard #available(iOS 18.0, *), self.probe == nil, self.transfer == nil, !self.reconciling, let presenter = self.appContext?.utilities?.currentViewController(), let window = presenter.view.window else {
-          promise.reject("UNAVAILABLE", "Native probe unavailable"); return
-        }
-        let probe = NativeProbe(presenter: presenter, window: window) { results in
-          self.probe = nil
-          switch results {
-          case .success(let proofs): promise.resolve(proofs.map { ["accountIndex": $0.accountIndex, "address": $0.address, "message": $0.message, "signature": $0.signatureHex] as [String: Any] })
-          case .failure: promise.reject("PROBE_FAILED", "Native probe cancelled, unsupported or failed. Open existing after partial creation.")
-          }
-        }
-        self.probe = probe
-        probe.present()
-        #else
-        promise.reject("UNAVAILABLE", "Development probe only")
-        #endif
-      }
-    }
+    AsyncFunction("openNativeProbe") { (promise: Promise) in self.openAccess(promise, walletOnly: false) }
+    AsyncFunction("openWallet") { (promise: Promise) in self.openAccess(promise, walletOnly: true) }
     Function("cancelProbe") { DispatchQueue.main.async { if #available(iOS 18.0, *) { (self.probe as? NativeProbe)?.cancel() } } }
     OnDestroy { DispatchQueue.main.async { if #available(iOS 18.0, *) { (self.transfer as? NativeTransferController)?.cancel(); (self.probe as? NativeProbe)?.cancel() } } }
   }
 }
 
+private enum NativeAccessResult { case wallet(String); case proofs([ProbeProof]) }
+
 @available(iOS 18.0, *)
 private final class NativeProbe: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
   private let presenter: UIViewController
   private let window: UIWindow
-  private var completion: ((Result<[ProbeProof], Error>) -> Void)?
+  private let walletOnly: Bool
+  private var completion: ((Result<NativeAccessResult, Error>) -> Void)?
   private var controller: ASAuthorizationController?
   private var timeout: DispatchWorkItem?
   private var createdId: Data?
   private var alert: UIAlertController?
   private enum Failure: Error { case failed }
-  init(presenter: UIViewController, window: UIWindow, completion: @escaping (Result<[ProbeProof], Error>) -> Void) { self.presenter = presenter; self.window = window; self.completion = completion }
+  init(presenter: UIViewController, window: UIWindow, walletOnly: Bool, completion: @escaping (Result<NativeAccessResult, Error>) -> Void) { self.presenter = presenter; self.window = window; self.walletOnly = walletOnly; self.completion = completion }
   private func random() throws -> Data {
     var data = Data(count: 32)
     let status = data.withUnsafeMutableBytes { SecRandomCopyBytes(kSecRandomDefault, 32, $0.baseAddress!) }
     guard status == errSecSuccess else { throw Failure.failed }; return data
   }
   func present() {
-    let alert = UIAlertController(title: "Native compatibility test", message: "Approve 16 fixed test signatures across accounts 0–15 using an unfunded test passkey. No transactions, login or spending. Keys stay in native memory. Creation may show two prompts.", preferredStyle: .alert)
+    let alert = UIAlertController(title: walletOnly ? "Open Gizu testnet wallet" : "Native compatibility test", message: walletOnly ? "Create or open a passkey to view Account 0 on Monad testnet. No transaction or message will be signed. This opens a local wallet view, not a backend login. Creation may require two prompts." : "Approve 16 fixed test signatures across accounts 0–15 using an unfunded test passkey. No transactions, login or spending. Keys stay in native memory. Creation may show two prompts.", preferredStyle: .alert)
     alert.addAction(UIAlertAction(title: "Open existing", style: .default) { _ in self.request(create: false) })
-    alert.addAction(UIAlertAction(title: "Create test passkey", style: .default) { _ in self.request(create: true) })
+    alert.addAction(UIAlertAction(title: walletOnly ? "Create passkey" : "Create test passkey", style: .default) { _ in self.request(create: true) })
     alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in self.cancel() })
     self.alert = alert
     presenter.present(alert, animated: true)
@@ -112,7 +118,7 @@ private final class NativeProbe: NSObject, ASAuthorizationControllerDelegate, AS
       let provider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: "gizu.io")
       let request: ASAuthorizationRequest
       if create {
-        let registration = provider.createCredentialRegistrationRequest(challenge: try random(), name: "gizu-native-test", userID: try random())
+        let registration = provider.createCredentialRegistrationRequest(challenge: try random(), name: walletOnly ? "gizu-testnet-wallet" : "gizu-native-test", userID: try random())
         registration.userVerificationPreference = .required
         registration.prf = .checkForSupport
         request = registration
@@ -143,14 +149,18 @@ private final class NativeProbe: NSObject, ASAuthorizationControllerDelegate, AS
     defer { bytes.resetBytes(in: 0..<bytes.count) }
     do {
       guard UIApplication.shared.applicationState != .background else { throw Failure.failed }
+      if walletOnly {
+        finish(.success(.wallet(try deriveWalletAddress(prf: bytes))))
+        return
+      }
       let id = try random().map { String(format: "%02x", $0) }.joined()
       let result = try runNativeProbe(prf: bytes, operationId: id)
-      finish(.success(result))
+      finish(.success(.proofs(result)))
     } catch { cancel() }
   }
   func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) { cancel() }
   func cancel() { let pending = controller; finish(.failure(Failure.failed)); pending?.cancel(); alert?.dismiss(animated: false); alert = nil }
-  private func finish(_ result: Result<[ProbeProof], Error>) {
+  private func finish(_ result: Result<NativeAccessResult, Error>) {
     timeout?.cancel(); timeout = nil
     let callback = completion; completion = nil; controller = nil; callback?(result)
   }

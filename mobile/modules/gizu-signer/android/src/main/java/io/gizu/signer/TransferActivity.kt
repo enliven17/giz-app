@@ -78,11 +78,12 @@ internal class TransferJournal(context: Context) {
   private fun read() = JSONArray(preferences.getString("entries", "[]"))
   private fun save(entries: JSONArray) { check(preferences.edit().putString("entries", entries.toString()).commit()) }
   fun unresolved(): Boolean { val entries = read(); return (0 until entries.length()).any { entries.getJSONObject(it).getString("status") !in listOf("finalized", "reverted") } }
-  fun beforeBroadcast(operation: String, step: Int, tx: NativeSignedTransfer) {
+  fun beforeBroadcast(operation: String, step: Int, tx: NativeSignedTransfer, intent: TransferIntent) {
     val entries = read(); check(entries.length() < 256)
     entries.put(JSONObject().put("operationId", operation).put("step", step).put("chainId", 10143)
       .put("from", tx.from).put("nonce", tx.nonce).put("intentHash", tx.intentHash)
-      .put("transactionHash", tx.transactionHash).put("status", "unknown"))
+      .put("transactionHash", tx.transactionHash).put("status", "unknown")
+      .put("to", intent.to).put("valueWei", intent.valueHex.removePrefix("0x").toBigInteger(16).toString()))
     save(entries)
   }
   suspend fun reconcile(rpc: MonadRpc): String {
@@ -258,7 +259,7 @@ class TransferActivity : Activity() {
       val senderCode = rpc.text("eth_getCode", intent.from, "pending")
       check(!finished && hasWindowFocus())
       val tx = operation!!.signNext(nonce, chain, code, senderCode)
-      journal.beforeBroadcast(operationId, step, tx)
+      journal.beforeBroadcast(operationId, step, tx, intent)
       check(!finished && hasWindowFocus())
       // Even a network exception leaves the prewritten expected hash as unknown.
       val returned = rpc.text("eth_sendRawTransaction", tx.rawTransaction)

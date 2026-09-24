@@ -48,9 +48,7 @@ function validatePasskeyMode(mode) {
     );
   }
   if (mode !== "native") throw new Error("PASSKEY_MODE must be mock, native-probe or native.");
-  throw new Error(
-    "Native passkey mode is not implemented. Complete the native signer boundary first.",
-  );
+  return "native";
 }
 
 function associationFiles(value = identity) {

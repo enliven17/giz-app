@@ -207,3 +207,18 @@ explicitly unavailable pending their integrations. Real passkeys are next.
 See [docs/ACCOUNT.md](docs/ACCOUNT.md) for availability and persistence rules.
 M5 adds native storage/clipboard modules: rebuild an existing development client
 with `npm run ios` or `npm run android` from `mobile/` before testing this version.
+
+## Native testnet wallet
+
+The first product integration is available in development builds:
+
+    EXPO_PUBLIC_PASSKEY_MODE=native npm start -- --port 8086
+
+Rebuild the native client after native signer changes. Open **Get started**,
+then **Continue with passkey**, and select **Open existing** or **Create passkey**
+in the native prompt. Account 0 and its live Monad testnet balance are shown in
+a separate wallet view. Review transfers there and refresh local outgoing history.
+Use test tokens only. The investment demo remains mock
+mode; native-probe retains the separate developer diagnostics.
+
+See [native wallet access](docs/NATIVE_SIGNER_N3.md) for build steps and scope.

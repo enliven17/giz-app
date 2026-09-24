@@ -16,6 +16,8 @@ import {
   type TvlRecord,
 } from "./merkl-opportunity.schema.ts";
 
+const MAIN_PROTOCOL_IDS = "aave,morpho,curvance";
+
 export class HttpMerklOpportunities implements Opportunities {
   constructor(
     private readonly apiUrl: string,
@@ -28,8 +30,10 @@ export class HttpMerklOpportunities implements Opportunities {
     listUrl.searchParams.set("page", String(query.page));
     listUrl.searchParams.set("items", String(query.items));
     listUrl.searchParams.set("chainId", String(query.chainId));
+    listUrl.searchParams.set("mainProtocolId", MAIN_PROTOCOL_IDS);
     const countUrl = new URL("/v4/opportunities/count", this.apiUrl);
     countUrl.searchParams.set("chainId", String(query.chainId));
+    countUrl.searchParams.set("mainProtocolId", MAIN_PROTOCOL_IDS);
     if (query.search.length > 0) {
       listUrl.searchParams.set("search", query.search);
       countUrl.searchParams.set("search", query.search);

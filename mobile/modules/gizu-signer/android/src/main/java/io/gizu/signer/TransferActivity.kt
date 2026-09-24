@@ -52,7 +52,17 @@ internal class MonadRpc {
       val payload = JSONObject().put("jsonrpc", "2.0").put("id", 1).put("method", method).put("params", params).toString()
       connection.outputStream.use { it.write(payload.toByteArray(Charsets.UTF_8)) }
       check(connection.responseCode == 200)
-      val bytes = connection.inputStream.use { it.readNBytes(1_048_577) }
+      val bytes = connection.inputStream.use { input ->
+        val output = java.io.ByteArrayOutputStream()
+        val buffer = ByteArray(8192)
+        while (true) {
+          val count = input.read(buffer)
+          if (count == -1) break
+          check(output.size() + count <= 1_048_576)
+          output.write(buffer, 0, count)
+        }
+        output.toByteArray()
+      }
       check(bytes.size <= 1_048_576)
       val response = JSONObject(String(bytes, Charsets.UTF_8))
       check(!response.has("error") && response.getInt("id") == 1 && response.getString("jsonrpc") == "2.0")

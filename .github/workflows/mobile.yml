@@ -60,6 +60,11 @@ jobs:
       - run: sdkmanager "ndk;27.1.12297006"
       - run: npm run signer:build -- android
         working-directory: mobile
+      # Ephemeral CI-only key. Never add its fingerprint to the gizu.io association.
+      - run: |
+          mkdir -p .credentials
+          keytool -genkeypair -noprompt -keystore .credentials/android-debug.keystore -alias androiddebugkey -storepass android -keypass android -keyalg RSA -keysize 2048 -validity 1 -dname "CN=Gizu CI Only"
+        working-directory: mobile
       - run: npx expo prebuild --platform android --no-install
         working-directory: mobile
       - run: ./gradlew assembleDebug --no-daemon -PreactNativeArchitectures=arm64-v8a

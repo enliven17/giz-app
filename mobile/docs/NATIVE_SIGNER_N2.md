@@ -126,7 +126,9 @@ installed on the phone and no live transaction was submitted in this change.
   `scripts/verify-transfer.mjs <output-path>` script (viem 2.56.8).
 - Passed: TypeScript, ESLint, 138 Jest tests across 17 suites, coverage thresholds.
 - CI updated: locked Rust policy tests/checks and binding/library generation before
-  Android/iOS builds. Linux Android support added to the build script. Hosted CI
+  Android/iOS builds. CI generates an ephemeral Android signing key for compilation
+  only; its fingerprint must never be associated with gizu.io. Linux Android support
+  added to the build script. Hosted CI
   and Linux builds have not been executed locally.
 - Outstanding: known Expo Doctor patch mismatch from N1 (57.0.24 versus 57.0.25);
   live receipts, physical review/lifecycle/bridge tests, independent security audit.

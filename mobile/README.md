@@ -244,3 +244,11 @@ launch `npm run start:demo` explicitly.
 See [native wallet access](docs/NATIVE_SIGNER_N3.md) for signer scope,
 [the implementation plan](PLAN.md#m61--real-passkey-and-wallet-behavior-in-the-existing-gizu-app)
 for product integration, and [the cleanup plan](docs/CODE_CLEANUP_PLAN.md).
+
+## Wallet integration organization
+
+Wallet adapters are grouped in `src/services/wallet/`; pure amounts, proposals and
+public contracts live in `src/domain/wallet/`. Features depend on those interfaces,
+not generated cryptographic bindings. Native RPC, journal and transfer UI sources
+are separated by responsibility. See the [native signer module guide](modules/gizu-signer/README.md)
+for ownership, external dependencies, generated artifacts and rebuild instructions.

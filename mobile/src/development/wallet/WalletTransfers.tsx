@@ -3,7 +3,7 @@ import colors from "@/theme/colors.json";
 import { Keyboard, TextInput, View } from "react-native";
 import { Typography } from "@/components/atoms/Typography";
 import { Button } from "@/components/atoms/Button";
-import type { WalletTransferService } from "@/services/walletTransfers";
+import type { WalletTransferService } from "@/domain/wallet/types";
 import { useWalletTransfers } from "@/features/wallet/useWalletTransfers";
 
 export function WalletTransfers({

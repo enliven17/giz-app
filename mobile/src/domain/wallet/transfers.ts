@@ -1,8 +1,4 @@
-export type NativeTransfers = {
-  executeOperation(proposal: string): Promise<string>;
-  getOperationStatus(): Promise<string>;
-  cancelOperation(): void;
-};
+export const walletAddressPattern = /^0x[0-9a-f]{40}$/i;
 export type TransferStatus = { transactionHash: string; status: string };
 export function parseNativeStatus(value: string): TransferStatus[] {
   const rows: unknown = JSON.parse(value);

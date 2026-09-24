@@ -1,5 +1,6 @@
 import { WalletTransfers } from "./WalletTransfers";
-import { nativeWalletTransfers, type WalletTransferService } from "@/services/walletTransfers";
+import { nativeWalletTransfers } from "@/services/wallet/transfers";
+import { type WalletTransferService } from "@/domain/wallet/types";
 import { View } from "react-native";
 import { GizuLogo } from "@/components/atoms/GizuLogo";
 import { Typography } from "@/components/atoms/Typography";
@@ -8,7 +9,7 @@ import { Surface } from "@/components/molecules/Surface";
 import { Screen } from "@/components/templates/Screen";
 import { Notice } from "@/components/molecules/Notice";
 import { clipboardService, type ClipboardService } from "@/services/clipboard";
-import { monadBalanceService, type WalletBalanceService } from "@/services/nativeWallet";
+import { monadBalanceService, type WalletBalanceService } from "@/services/wallet/balance";
 import { useSession } from "@/application/SessionProvider";
 import type { WalletSession } from "@/services/access";
 import { useWalletController } from "@/features/wallet/useWalletController";

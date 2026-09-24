@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ClipboardService } from "@/services/clipboard";
-import { formatMon, type WalletBalanceService } from "@/services/nativeWallet";
+import { formatMon } from "@/domain/wallet/amounts";
+import { type WalletBalanceService } from "@/services/wallet/balance";
 
 export function useWalletController(
   address: string,

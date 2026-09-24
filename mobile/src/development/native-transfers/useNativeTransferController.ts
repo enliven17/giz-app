@@ -3,14 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import {
   parseNativeStatus,
   transferProposal,
-  type NativeTransfers,
   type TransferStatus,
-} from "@/domain/nativeTransfers";
-export {
-  parseNativeStatus,
-  transferProposal,
-  type NativeTransfers,
-} from "@/domain/nativeTransfers";
+} from "@/domain/wallet/transfers";
+import { type NativeTransfers } from "@/services/wallet/nativeBridge";
 export function useNativeTransferController(service: NativeTransfers | null) {
   const [account, setAccount] = useState("0");
   const [recipient, setRecipient] = useState("");

@@ -1,6 +1,6 @@
 import { AppRoot } from "@/application/AppRoot";
 import type { AccessService } from "@/services/access";
-import { nativeWalletAccess } from "@/services/nativeWallet";
+import { nativeWalletAccess } from "@/services/wallet/access";
 import { WalletScreen, type WalletDependencies } from "./wallet/WalletScreen";
 
 /** Standalone native-wallet harness, never part of the product navigator. */

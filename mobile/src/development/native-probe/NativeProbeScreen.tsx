@@ -6,7 +6,7 @@ import { Typography } from "@/components/atoms/Typography";
 import { Button } from "@/components/atoms/Button";
 
 import { NativeTransferScreen } from "@/development/native-transfers/NativeTransferScreen";
-import type { NativeTransfers } from "@/development/native-transfers/useNativeTransferController";
+import type { NativeTransfers } from "@/services/wallet/nativeBridge";
 
 type PublicProof = { accountIndex: number; address: string; message: string; signature: string };
 export type NativeProbe = {

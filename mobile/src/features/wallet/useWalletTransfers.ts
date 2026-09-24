@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { WalletHistory, WalletTransferService } from "@/services/walletTransfers";
-import { transferProposal } from "@/domain/nativeTransfers";
+import type { WalletHistory, WalletTransferService } from "@/domain/wallet/types";
+import { transferProposal } from "@/domain/wallet/transfers";
 
 export function useWalletTransfers(
   address: string,

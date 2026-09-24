@@ -1,4 +1,6 @@
-import { createNativeWalletAccess, formatMon, monadBalanceService } from "@/services/nativeWallet";
+import { createNativeWalletAccess } from "@/services/wallet/access";
+import { formatMon } from "@/domain/wallet/amounts";
+import { monadBalanceService } from "@/services/wallet/balance";
 const address = "0x" + "1".repeat(40);
 test("native results are explicitly allowlisted and invalid chains/accounts fail", async () => {
   for (const result of [

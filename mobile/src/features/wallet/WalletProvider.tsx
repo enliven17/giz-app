@@ -1,9 +1,10 @@
 import { AppState } from "react-native";
 import { useWalletTransfers } from "./useWalletTransfers";
-import { nativeWalletTransfers, type WalletTransferService } from "@/services/walletTransfers";
+import { nativeWalletTransfers } from "@/services/wallet/transfers";
+import { type WalletTransferService } from "@/domain/wallet/types";
 import { createContext, useContext, useEffect, type PropsWithChildren } from "react";
 import type { WalletSession } from "@/services/access";
-import { monadBalanceService, type WalletBalanceService } from "@/services/nativeWallet";
+import { monadBalanceService, type WalletBalanceService } from "@/services/wallet/balance";
 import { clipboardService } from "@/services/clipboard";
 import { useWalletController } from "./useWalletController";
 

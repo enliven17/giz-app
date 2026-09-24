@@ -23,6 +23,9 @@ Paths below are relative to `mobile/` unless stated otherwise.
 - Keep business rules in `src/domain/`, typed service adapters in `src/services/`,
   persistence adapters in `src/storage/`, and app/provider composition in
   `src/application/`. Navigation belongs in `src/navigation/`.
+- Keep native platform/cryptographic integration in `modules/`, app-facing adapters
+  in `src/services/`, and pure wallet rules/contracts in `src/domain/`. Keep
+  generated bindings separate from maintained source; regenerate rather than edit them.
 - Shared UI receives data and callbacks; it does not fetch data, sign transactions
   or own feature rules. Imports flow toward reusable UI and domain/services, never
   from primitives back into features. Avoid cycles and pass-through abstractions.

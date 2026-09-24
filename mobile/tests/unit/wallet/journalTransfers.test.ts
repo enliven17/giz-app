@@ -1,4 +1,5 @@
-import { createWalletTransfers, walletHistory } from "@/services/walletTransfers";
+import { createWalletTransfers } from "@/services/wallet/transfers";
+import { walletHistory } from "@/services/wallet/journal";
 const address = "0x" + "1".repeat(40);
 const recipient = "0x" + "2".repeat(40);
 const hash = "0x" + "a".repeat(64);

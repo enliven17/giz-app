@@ -12,7 +12,8 @@ playground under `src/development/`; removed the playground from Settings and
 product routes. Explicit debug commands preserve access. Shared wallet controllers,
 adapters and transfer validation remain reusable outside that directory.
 
-Everything below is planned, not implemented by this separation.
+The wallet adapter split and native RPC/journal extraction below are now implemented.
+Other cleanup remains planned; this does not establish device/security acceptance.
 
 ## 1. Make application composition explicit — alongside M6.1a
 
@@ -31,8 +32,9 @@ Everything below is planned, not implemented by this separation.
 - Reuse wallet balance/clipboard and transfer reconciliation services in existing
   Home, Account, Transaction and Activity controllers. Avoid copying the harness
   forms into product screens.
-- Separate access, balance RPC and formatting responsibilities in
-  `src/services/nativeWallet.ts` when integration gives them distinct consumers.
+- Implemented: access, balance RPC, native bridge, transfers and public journal
+  validation are separated in `src/services/wallet/`; pure formatting and proposal
+  validation live in `src/domain/wallet/`.
   Keep amount/chain/address rules in domain code, transport in adapters.
 - Make the native journal the authoritative local outgoing-operation record.
   Do not maintain a second mock-ledger-shaped version of live transfers.
@@ -43,9 +45,10 @@ Everything below is planned, not implemented by this separation.
 
 ## 3. Decompose native orchestration carefully — after M6.1
 
-- Inspect Android `TransferActivity.kt` and iOS `NativeTransfers.swift` for
-  separable RPC transport, journal persistence, lifecycle and native review work.
-  Extract one responsibility per change with existing behavior preserved.
+- Implemented: Android `rpc/`, `storage/` and `transfers/`; iOS `RPC/`,
+  `Storage/` and `Transfers/` under the native module. Review controllers now
+  call dedicated RPC/journal classes. Further credential/lifecycle decomposition
+  should be a separate bounded change, preserving behavior.
 - Keep intent validation, sender binding, limits, expiry and signing authorization
   in the trusted native/core boundary. Never create a generic JS-callable signer.
 - Preserve write-before-broadcast and pending/unknown reconciliation semantics.

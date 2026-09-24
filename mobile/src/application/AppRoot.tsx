@@ -1,6 +1,6 @@
-import type { WalletTransferService } from "@/services/walletTransfers";
+import type { WalletTransferService } from "@/domain/wallet/types";
 import { WalletProvider } from "@/features/wallet/WalletProvider";
-import type { WalletBalanceService } from "@/services/nativeWallet";
+import type { WalletBalanceService } from "@/services/wallet/balance";
 import type { ReactNode } from "react";
 import { AccountProvider, type AccountDependencies } from "@/features/account/AccountProvider";
 import { NotificationProvider } from "@/features/notifications/NotificationProvider";

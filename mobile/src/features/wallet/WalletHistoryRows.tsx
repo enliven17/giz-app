@@ -1,8 +1,8 @@
 import { View } from "react-native";
 import { Typography } from "@/components/atoms/Typography";
 import { Surface } from "@/components/molecules/Surface";
-import { formatMon } from "@/services/nativeWallet";
-import type { WalletTransfer } from "@/services/walletTransfers";
+import { formatMon } from "@/domain/wallet/amounts";
+import type { WalletTransfer } from "@/domain/wallet/types";
 const labels: Record<string, string> = {
   pending: "Pending",
   unknown: "Unknown — refresh status",

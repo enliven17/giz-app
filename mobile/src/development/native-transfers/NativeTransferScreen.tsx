@@ -2,7 +2,8 @@ import { Keyboard, TextInput } from "react-native";
 import { Screen } from "@/components/templates/Screen";
 import { Typography } from "@/components/atoms/Typography";
 import { Button } from "@/components/atoms/Button";
-import { useNativeTransferController, type NativeTransfers } from "./useNativeTransferController";
+import { useNativeTransferController } from "./useNativeTransferController";
+import type { NativeTransfers } from "@/services/wallet/nativeBridge";
 
 export function NativeTransferScreen({
   service,

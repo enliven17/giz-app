@@ -446,6 +446,44 @@ mod tests {
         assert!(sign(&op, "0x2").is_err());
     }
     #[test]
+    fn same_account_batch_cancellation_revokes_remaining_signatures() {
+        let proposal = proposal(13);
+        let mut parsed: serde_json::Value = serde_json::from_str(&proposal).unwrap();
+        for transfer in parsed["transfers"].as_array_mut().unwrap() {
+            transfer["accountIndex"] = serde_json::json!(0);
+        }
+        let op = TransferOperation::new(parsed.to_string(), vec![0; 32]).unwrap();
+        let review = op.prepare((0..13).map(|_| quote()).collect()).unwrap();
+        assert!(review.contains("Transfer 13 / 13"));
+        op.approve().unwrap();
+        assert_eq!(sign(&op, "0x0").unwrap().nonce, "0");
+        op.invalidate();
+        assert!(sign(&op, "0x1").is_err());
+        assert!(op.approve().is_err());
+        // A fresh operation must prepare and obtain approval again.
+        let reopened = TransferOperation::new(parsed.to_string(), vec![0; 32]).unwrap();
+        assert!(sign(&reopened, "0x1").is_err());
+    }
+
+    #[test]
+    fn thirteen_same_account_transfers_use_consecutive_nonces_after_one_approval() {
+        let mut parsed: serde_json::Value = serde_json::from_str(&proposal(13)).unwrap();
+        for transfer in parsed["transfers"].as_array_mut().unwrap() {
+            transfer["accountIndex"] = serde_json::json!(0);
+        }
+        let op = TransferOperation::new(parsed.to_string(), vec![0; 32]).unwrap();
+        op.prepare((0..13).map(|_| quote()).collect()).unwrap();
+        op.approve().unwrap();
+        for nonce in 0..13 {
+            assert_eq!(
+                sign(&op, &format!("0x{nonce:x}")).unwrap().nonce,
+                nonce.to_string()
+            );
+        }
+        assert!(sign(&op, "0xd").is_err());
+    }
+
+    #[test]
     fn rejects_bad_quotes_and_aggregate_fees_or_balance() {
         for field in 0..8 {
             let op = TransferOperation::new(proposal(1), vec![0; 32]).unwrap();

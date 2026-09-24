@@ -64,3 +64,45 @@ test("unavailable clients cannot initiate or reconcile transfers", () => {
   expect(screen.getByRole("button", { name: "Review native transfer" })).toBeDisabled();
   expect(screen.getByRole("button", { name: "Refresh native status" })).toBeDisabled();
 });
+
+test("submits thirteen explicit transfers in one native operation", async () => {
+  const native = service();
+  render(<NativeTransferScreen service={native} onBack={jest.fn()} />);
+  fireEvent.changeText(screen.getByLabelText("Recipient address"), recipient);
+  fireEvent.changeText(screen.getByLabelText("Number of transfers"), "13");
+  await userEvent.press(screen.getByRole("button", { name: "Review native transfer" }));
+  expect(native.executeOperation).toHaveBeenCalledTimes(1);
+  const proposal = JSON.parse(native.executeOperation.mock.calls[0][0]);
+  expect(proposal.transfers).toEqual(
+    Array.from({ length: 13 }, () => ({
+      accountIndex: 0,
+      to: recipient,
+      valueWei: "1000000000000000",
+    })),
+  );
+  expect(await screen.findByText("pending: " + hash)).toBeVisible();
+});
+
+test("reopening reconciles the native journal without resubmitting or unlocking", async () => {
+  const native = service();
+  const first = render(<NativeTransferScreen service={native} onBack={jest.fn()} />);
+  first.unmount();
+  render(<NativeTransferScreen service={native} onBack={jest.fn()} />);
+  await userEvent.press(screen.getByRole("button", { name: "Refresh native status" }));
+  expect(await screen.findByText("finalized: " + hash)).toBeVisible();
+  expect(native.executeOperation).not.toHaveBeenCalled();
+  expect(native.getOperationStatus).toHaveBeenCalledTimes(1);
+});
+
+test("cancelled native review can be reconciled without creating a transaction", async () => {
+  const native = service();
+  native.executeOperation.mockRejectedValue(new Error("cancelled"));
+  native.getOperationStatus.mockResolvedValue("[]");
+  render(<NativeTransferScreen service={native} onBack={jest.fn()} />);
+  fireEvent.changeText(screen.getByLabelText("Recipient address"), recipient);
+  await userEvent.press(screen.getByRole("button", { name: "Review native transfer" }));
+  expect(await screen.findByText(/Operation stopped or unavailable/)).toBeVisible();
+  await userEvent.press(screen.getByRole("button", { name: "Refresh native status" }));
+  expect(await screen.findByText("No native transfers recorded.")).toBeVisible();
+  expect(native.executeOperation).toHaveBeenCalledTimes(1);
+});

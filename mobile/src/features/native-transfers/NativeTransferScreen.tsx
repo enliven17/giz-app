@@ -41,7 +41,7 @@ export function NativeTransferScreen({
         autoCorrect={false}
         className="rounded-2xl border border-border p-4 text-text"
       />
-      <Typography>Amount in testnet MON (maximum 0.1)</Typography>
+      <Typography>Amount per transfer in testnet MON (maximum 0.1)</Typography>
       <TextInput
         accessibilityLabel="Amount in MON"
         value={c.amount}
@@ -50,6 +50,19 @@ export function NativeTransferScreen({
         keyboardType="decimal-pad"
         className="rounded-2xl border border-border p-4 text-text"
       />
+      <Typography>Number of transfers (1–16)</Typography>
+      <TextInput
+        accessibilityLabel="Number of transfers"
+        value={c.count}
+        onChangeText={c.setCount}
+        editable={!c.busy}
+        keyboardType="number-pad"
+        className="rounded-2xl border border-border p-4 text-text"
+      />
+      <Typography>
+        Each transfer sends the entered amount to the same recipient. One unlock and native review
+        cover the batch. Transfers are sequential; cancelling cannot undo completed transfers.
+      </Typography>
       <Button
         label="Review native transfer"
         disabled={!service || c.busy}

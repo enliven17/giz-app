@@ -112,8 +112,8 @@ Build using the N1 instructions and launch with
    submission, restart reconciliation and backgrounding. Record device, OS,
    provider, prompts and resulting hashes/statuses.
 
-The device was disconnected during N2 verification, so the new APK has not been
-installed on the phone and no live transaction was submitted in this change.
+The initial build was verified before device installation. The subsequent Android
+installation and first successful live transfer are recorded below.
 
 ## Verification — 2026-09-24
 
@@ -131,7 +131,7 @@ installed on the phone and no live transaction was submitted in this change.
   added to the build script. Hosted CI
   and Linux builds have not been executed locally.
 - Outstanding: known Expo Doctor patch mismatch from N1 (57.0.24 versus 57.0.25);
-  live receipts, physical review/lifecycle/bridge tests, independent security audit.
+  further physical review/lifecycle/bridge tests and independent security audit.
 
 ## Android preparation follow-up
 
@@ -152,3 +152,63 @@ Five JVM HTTP regression tests passed: success, redirect rejection, oversized
 response rejection, stalled-call timeout and cancellation of an in-flight call.
 Android CI runs these before packaging. A new device retry is needed to identify
 whether the original issue was connectivity, endpoint behavior or account state.
+
+## Android live acceptance and follow-up — 2026-09-24
+
+The user completed a physical Android transfer after funding Account 0. Read-only
+Monad testnet RPC checks confirmed a successful receipt (status 0x1), chain 10143,
+0.001 MON, 21,000 gas, and a receipt block below the finalized head:
+
+- Sender: 0x90ad2f19302ED5439B69659Bbc5D6d8c5b7dDf95
+- Recipient: 0x0e4e77B43a94A704E2a7a005238038F3EF00f407
+- Transaction: 0xb3b9b115ec88086227c30cb712ba832b3604b2baaae771d9b70bf1b4ddbe9cb6
+
+This records one Android success, not complete N2 acceptance or an iOS result.
+The earlier generic estimation error disappeared after funding. Android now checks
+the selected account's entire batch amount plus maximum fees before estimation;
+insufficient funds get explicit testnet funding guidance. Rust remains the
+authoritative quote/approval validator. This early funding-message improvement is
+Android-only; iOS still uses its existing preparation failure behavior.
+
+The development form exposes a count of 1–16 transfers (default 1), repeating the
+entered amount and recipient for the selected account, with a 1 MON aggregate
+value cap. It submits one proposal, never multiple unlock requests. Native review
+lists every transfer and the totals. Batches are sequential, not atomic; the
+existing 120-second operation lifetime still applies and can stop a long batch.
+Tests with mocked services cannot establish the number of actual provider prompts.
+
+### Physical follow-up checklist
+
+Use small testnet amounts and a recipient you control. Record the number of
+passkey prompts, hashes, and outcome; do not record credentials or signing secrets.
+
+1. **Insufficient funds:** select a known unfunded derived account. Preparation
+   must show funding guidance before approval, with no new journal entry.
+2. **Cancel before approval:** unlock a transfer, then cancel native review.
+   Refresh status: only the previous journal entries should remain. Repeat by
+   backgrounding during review; returning must not revive signing authority.
+3. **Restart recovery:** after a known finalized transfer, stop and reopen the app.
+   Refresh native status without unlocking. The same finalized hash must remain
+   and no transfer may be resubmitted. This is completed-record persistence only.
+4. **Two transfers, then thirteen:** begin with count 2 and 0.000001 MON per
+   transfer. Review both transfers and totals; approve once. Expect one unlock,
+   distinct transaction hashes and consecutive nonces. After that succeeds,
+   repeat with count 13 to exercise the 12+ signature requirement.
+5. **Partial execution:** cancel/background during a batch. Already submitted
+   steps may complete; remaining steps must not sign. Refresh/restart to reconcile
+   recorded hashes. Do not retry the whole batch while any result is unknown.
+6. **Uncertain submission recovery:** a controlled interruption after journaling
+   but before a known RPC result must retain unknown/pending state across process
+   restart and block new signing until reconciliation. A completed-record restart
+   does not prove this case. No automatic resend or journal deletion is permitted.
+
+Physical cancellation, completed/uncertain restart recovery and batch execution
+remain **not run** until actual device observations are recorded.
+
+Follow-up verification passed: 25 focused Jest tests, TypeScript, scoped ESLint,
+12 Rust tests, eight Android JVM tests (including aggregate funding and transport
+cancellation), Android arm64 APK build, Markdown formatting and diff checks.
+The APK was installed successfully on the connected Android phone with `install -r`;
+app data was preserved. The screen-reopening Jest test mocks native persistence:
+it does not establish process-death durability. No iOS build or new live batch was
+executed for this follow-up.

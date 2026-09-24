@@ -22,3 +22,11 @@ test.each(["{}", '[{"status":"confirmed","transactionHash":"0x123"}]', "null"])(
     expect(() => parseNativeStatus(input)).toThrow();
   },
 );
+
+test.each(["0", "17", "01", "-1", "1.5", ""])("rejects invalid batch count %s", (count) => {
+  expect(() => transferProposal("0", recipient, "0.001", count)).toThrow();
+});
+test("bounds aggregate value independently of per-transfer value", () => {
+  expect(() => transferProposal("0", recipient, "0.1", "11")).toThrow();
+  expect(JSON.parse(transferProposal("0", recipient, "0.1", "10")).transfers).toHaveLength(10);
+});

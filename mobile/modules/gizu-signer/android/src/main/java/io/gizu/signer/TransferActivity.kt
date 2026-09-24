@@ -59,7 +59,7 @@ internal class MonadRpc(private val progress: (String) -> Unit = {}) {
       val response = JSONObject(transport.post(payload))
       if (response.has("error")) {
         val message = response.optJSONObject("error")?.optString("message")?.lowercase().orEmpty()
-        throw RpcFailure(if ("insufficient" in message && "fund" in message) RpcFailureCode.INSUFFICIENT_FUNDS else RpcFailureCode.RPC)
+        throw RpcFailure(if ("insufficient" in message && ("fund" in message || "balance" in message)) RpcFailureCode.INSUFFICIENT_FUNDS else RpcFailureCode.RPC)
       }
       check(response.getInt("id") == 1 && response.getString("jsonrpc") == "2.0")
       android.util.Log.i("GizuTransfer", "RPC complete: $method")
@@ -192,6 +192,11 @@ class TransferActivity : Activity() {
     val quotes = intents.map { intent ->
       val nonce = nonces[intent.from] ?: rpc.text("eth_getTransactionCount", intent.from, "pending").also { nonces[intent.from] = it }
       val balance = balances[intent.from] ?: rpc.text("eth_getBalance", intent.from, "pending").also { balances[intent.from] = it }
+      requireTransferBalance(
+        balance,
+        intents.filter { it.from == intent.from }.map { it.valueHex },
+        maxFee
+      )
       val tx = JSONObject().put("from", intent.from).put("to", intent.to).put("value", intent.valueHex).put("data", "0x")
       val gas = rpc.call("eth_estimateGas", JSONArray().put(tx)) as String
       TransferQuote(chain, nonce, gas, maxFee, priority, balance,

@@ -1,3 +1,4 @@
+import type { Cache } from "../../ports/cache.port.ts";
 import type {
   Opportunities,
   TvlRecord,
@@ -5,9 +6,19 @@ import type {
 } from "../../ports/opportunities.port.ts";
 
 export class GetOpportunityTvlRecordsUseCase {
-  constructor(private readonly opportunities: Opportunities) {}
+  constructor(
+    private readonly opportunities: Opportunities,
+    private readonly cache: Cache,
+  ) {}
 
   async execute(input: TvlRecordsQuery): Promise<TvlRecord[]> {
-    return this.opportunities.tvlRecords(input);
+    const cacheKey = `opportunities:tvl:${input.id}:${input.items}`;
+    const cached = await this.cache.get<TvlRecord[]>(cacheKey);
+    if (cached !== null) {
+      return cached;
+    }
+    const list = await this.opportunities.tvlRecords(input);
+    await this.cache.set(cacheKey, list);
+    return list;
   }
 }

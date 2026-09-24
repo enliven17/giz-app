@@ -34,9 +34,11 @@ From `mobile/`, on macOS with Xcode, CocoaPods, Java 17, Android SDK/NDK
 rustup target add aarch64-apple-ios aarch64-apple-ios-sim aarch64-linux-android
 npm run signer:build
 npm run signer:test
-EXPO_PUBLIC_PASSKEY_MODE=native-probe npm run android -- --device
+npm run android -- --device --no-bundler
 # Or an Apple Silicon iOS simulator:
-EXPO_PUBLIC_PASSKEY_MODE=native-probe npm run ios
+npm run ios -- --no-bundler
+# Then launch the retained developer diagnostics:
+npm run debug:signer
 ```
 
 `signer:build -- android` and `signer:build -- ios` build a single platform.

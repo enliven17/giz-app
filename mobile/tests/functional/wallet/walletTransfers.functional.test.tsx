@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, userEvent } from "@testing-library/react-native";
-import { WalletTransfers } from "@/features/wallet/WalletTransfers";
+import { WalletTransfers } from "@/development/wallet/WalletTransfers";
 import type { WalletHistory } from "@/services/walletTransfers";
 import { deferred } from "../../support/renderApp";
 const address = "0x" + "1".repeat(40);

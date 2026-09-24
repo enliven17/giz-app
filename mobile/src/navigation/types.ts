@@ -12,7 +12,6 @@ export type RootStackParamList = {
   Access: undefined;
   RequestAccess: undefined;
   Main: NavigatorScreenParams<MainTabParamList>;
-  Preview: undefined;
   VaultDetail: { id: string };
   Activity: undefined;
   Notifications: undefined;

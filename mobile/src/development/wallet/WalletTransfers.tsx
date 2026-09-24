@@ -5,7 +5,7 @@ import { Button } from "@/components/atoms/Button";
 import { Surface } from "@/components/molecules/Surface";
 import { formatMon } from "@/services/nativeWallet";
 import type { WalletTransferService } from "@/services/walletTransfers";
-import { useWalletTransfers } from "./useWalletTransfers";
+import { useWalletTransfers } from "@/features/wallet/useWalletTransfers";
 
 const labels: Record<string, string> = {
   pending: "Pending",

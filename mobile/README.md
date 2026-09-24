@@ -208,17 +208,41 @@ See [docs/ACCOUNT.md](docs/ACCOUNT.md) for availability and persistence rules.
 M5 adds native storage/clipboard modules: rebuild an existing development client
 with `npm run ios` or `npm run android` from `mobile/` before testing this version.
 
-## Native testnet wallet
+## Developer diagnostics
 
-The first product integration is available in development builds:
+Normal startup uses the existing Gizu app and has no UI-preview route, wallet
+harness or signer probe:
 
-    EXPO_PUBLIC_PASSKEY_MODE=native npm start -- --port 8086
+    npm start
 
-Rebuild the native client after native signer changes. Open **Get started**,
-then **Continue with passkey**, and select **Open existing** or **Create passkey**
-in the native prompt. Account 0 and its live Monad testnet balance are shown in
-a separate wallet view. Review transfers there and refresh local outgoing history.
-Use test tokens only. The investment demo remains mock
-mode; native-probe retains the separate developer diagnostics.
+The diagnostics remain in `src/development/`. Open one explicitly in a development
+build, from `mobile/`:
 
-See [native wallet access](docs/NATIVE_SIGNER_N3.md) for build steps and scope.
+    npm run debug:wallet -- --port 8086
+    npm run debug:signer -- --port 8085
+    npm run debug:ui -- --port 8087
+
+Stop the previous Metro process or open the development-client URL for the selected
+port. Restart Metro when changing entry points. These Node-based commands work on
+Windows and macOS/Linux and set both debug selection and passkey mode. Normal
+`npm start` clears inherited debug settings. The old
+`EXPO_PUBLIC_PASSKEY_MODE=native npm start` command no longer opens the harness.
+
+- **wallet:** existing native passkey create/open, Account 0 balance, transfer and
+  local outgoing-history harness.
+- **signer:** native signature probe and restricted batch-transfer diagnostics.
+- **ui:** standalone atomic-component and animation playground.
+
+Debug selection is rejected outside `__DEV__`; no product route or deep link opens
+these screens. This is an entry/navigation boundary, not a claim that diagnostic
+code has been audited out of a release binary. Native authorization remains
+responsible for enforcing signing policy.
+
+Rebuild the native client after signer changes. Use Monad test tokens only.
+The normal app still uses the current mock services until M6.1 connects native
+infrastructure to its existing screens; hiding diagnostics does not complete that
+integration.
+
+See [native wallet access](docs/NATIVE_SIGNER_N3.md) for signer scope,
+[the implementation plan](PLAN.md#m61--real-passkey-and-wallet-behavior-in-the-existing-gizu-app)
+for product integration, and [the cleanup plan](docs/CODE_CLEANUP_PLAN.md).

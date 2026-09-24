@@ -8,7 +8,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useSession } from "@/application/SessionProvider";
 import { WelcomeScreen } from "@/features/access/WelcomeScreen";
 import { AccessScreen } from "@/features/access/AccessScreen";
-import { PreviewScreen } from "@/features/shell/PreviewScreen";
 import { MainTabs } from "./MainTabs";
 import type { RootStackParamList } from "./types";
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -39,11 +38,6 @@ export function RootNavigator() {
             options={{ title: "Activity" }}
           />
           <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
-          <Stack.Screen
-            name="Preview"
-            component={PreviewScreen}
-            options={{ title: "Design system" }}
-          />
         </Stack.Group>
       ) : (
         <Stack.Group navigationKey="guest">

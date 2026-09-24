@@ -98,7 +98,7 @@ journal crash/restart and adversarial bridge tests remain acceptance work.
 ## How to test
 
 Build using the N1 instructions and launch with
-`EXPO_PUBLIC_PASSKEY_MODE=native-probe`. On the first screen, select
+`npm run debug:signer`. On the first screen, select
 **Test native transfers**.
 
 1. Use an existing test passkey and fund its selected account with faucet MON.

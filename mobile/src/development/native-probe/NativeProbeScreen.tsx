@@ -5,8 +5,8 @@ import { Screen } from "@/components/templates/Screen";
 import { Typography } from "@/components/atoms/Typography";
 import { Button } from "@/components/atoms/Button";
 
-import { NativeTransferScreen } from "@/features/native-transfers/NativeTransferScreen";
-import type { NativeTransfers } from "@/features/native-transfers/useNativeTransferController";
+import { NativeTransferScreen } from "@/development/native-transfers/NativeTransferScreen";
+import type { NativeTransfers } from "@/development/native-transfers/useNativeTransferController";
 
 type PublicProof = { accountIndex: number; address: string; message: string; signature: string };
 export type NativeProbe = {

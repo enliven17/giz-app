@@ -144,8 +144,8 @@ N0 decision record: [Native boundary and dependencies](NATIVE_SIGNER_N0.md).
 Selected: local Expo module with Swift/Kotlin adapters and native review, shared
 Rust core and private UniFFI bindings. User selected Monad testnet native-token
 transfers (chain 10143). The record freezes paths, limits, typed requests, native
-submission ownership and dependency starting pins. Dependency resolution/native
-builds remain N1 acceptance checks, not completed work.
+submission ownership and dependency starting pins. Dependency resolution and Android/iOS simulator builds have since passed; physical
+provider and security acceptance remain separate gates.
 
 Exit: design decisions recorded; no native isolation claim until implementation
 and adversarial/device acceptance pass.
@@ -168,7 +168,9 @@ is available; iOS remains a separate gate, not covered by Android success.
 ### N2 — Implement native review and enforce the approved operation
 
 Implementation: [N2 record](NATIVE_SIGNER_N2.md). Local builds and synthetic tests
-pass; physical native-review, hostile-bridge and live-transfer acceptance remain open.
+pass. Basic Android live transfer, one-unlock batching, cancellation and completed
+history restart evidence is recorded in N2. Hostile-bridge, partial/interrupted
+submission and physical iOS acceptance remain open.
 
 - [x] Build accessible native confirmation from parsed canonical operation data.
 - [x] Bind approval to immutable payloads and validate every signing step natively.
@@ -187,15 +189,17 @@ above do not substitute for that evidence.
 First slice implemented: native address-only passkey access, local wallet view,
 public address/copy, live Monad testnet balance, reviewed transfers and
 account-scoped local outgoing history. See
-[N3 implementation](NATIVE_SIGNER_N3.md). This does not complete the lifecycle,
-full lifecycle or adversarial acceptance items below.
+[N3 implementation](NATIVE_SIGNER_N3.md). This does not complete lifecycle or adversarial acceptance. Native mode still
+uses a standalone wallet screen rather than the main tabs; the next product work
+is specified in [M6.1 in the mobile implementation plan](../PLAN.md#m61--real-passkey-and-wallet-behavior-in-the-existing-gizu-app).
 
 - [ ] Implement native lifecycle/expiry handling and terminal cleanup.
-- [ ] Wire React Native controllers to public results and operation status only.
+- [x] Wire wallet controllers to public results and operation status only.
+- [ ] Migrate wallet behavior into the existing main tabs and product screens (M6.1); no new wallet UI.
 - [ ] Keep the retired JS probe and raw PRF bridge absent; verify native module exports
       on each rebuilt platform and prevent any JS fallback.
 - [ ] Implement per-step progress, uncertain-outcome reconciliation and restart behavior.
-- [ ] Keep real accounts separate from mock balances/orders. Do not connect live
+- [x] Keep real accounts separate from mock balances/orders. Do not connect live
       signing to existing fixture transaction contracts.
 
 Exit: integrated flows preserve authorization boundaries through interruptions.

@@ -11,7 +11,7 @@ import { clipboardService, type ClipboardService } from "@/services/clipboard";
 import { monadBalanceService, type WalletBalanceService } from "@/services/nativeWallet";
 import { useSession } from "@/application/SessionProvider";
 import type { WalletSession } from "@/services/access";
-import { useWalletController } from "./useWalletController";
+import { useWalletController } from "@/features/wallet/useWalletController";
 
 export type WalletDependencies = {
   balance?: WalletBalanceService;

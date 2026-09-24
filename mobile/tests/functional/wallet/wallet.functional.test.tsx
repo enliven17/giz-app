@@ -1,6 +1,6 @@
 import { act, render, screen, userEvent } from "@testing-library/react-native";
 import { Linking } from "react-native";
-import { AppRoot } from "@/application/AppRoot";
+import { WalletDebugApp } from "@/development/WalletDebugApp";
 import { createNativeWalletAccess, type NativeWalletBridge } from "@/services/nativeWallet";
 import { deferred } from "../../support/renderApp";
 
@@ -17,7 +17,7 @@ function setup(
   const balance = { getBalance: jest.fn().mockResolvedValue("1000000000000001") };
   const clipboard = { copy: jest.fn().mockResolvedValue(undefined) };
   const view = render(
-    <AppRoot
+    <WalletDebugApp
       accessService={createNativeWalletAccess(() => bridge)}
       walletDependencies={{
         balance,

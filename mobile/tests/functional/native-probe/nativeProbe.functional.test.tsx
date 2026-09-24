@@ -1,5 +1,5 @@
 import { act, render, screen, userEvent } from "@testing-library/react-native";
-import { NativeProbeScreen, type NativeProbe } from "@/features/native-probe/NativeProbeScreen";
+import { NativeProbeScreen, type NativeProbe } from "@/development/native-probe/NativeProbeScreen";
 import { deferred } from "../../support/renderApp";
 
 test("reports unavailable native builds without offering an action", () => {

@@ -1,7 +1,7 @@
 import {
   parseNativeStatus,
   transferProposal,
-} from "@/features/native-transfers/useNativeTransferController";
+} from "@/development/native-transfers/useNativeTransferController";
 const recipient = "0x" + "1".repeat(40);
 test.each(["-1", "01", "1e-3", "0", "0.100000000000000001", "0.0000000000000000001", "NaN"])(
   "rejects ambiguous or excessive MON amount %s",

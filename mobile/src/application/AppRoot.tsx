@@ -1,4 +1,4 @@
-import { WalletScreen, type WalletDependencies } from "@/features/wallet/WalletScreen";
+import type { ReactNode } from "react";
 import { AccountProvider, type AccountDependencies } from "@/features/account/AccountProvider";
 import { NotificationProvider } from "@/features/notifications/NotificationProvider";
 import type { NotificationService } from "@/services/notifications";
@@ -14,7 +14,7 @@ import { StatusBar } from "expo-status-bar";
 import { RootNavigator } from "@/navigation/RootNavigator";
 import colors from "@/theme/colors.json";
 import { SessionProvider, useSession } from "./SessionProvider";
-import type { AccessService } from "@/services/access";
+import type { AccessService, WalletSession } from "@/services/access";
 import { createLinking } from "@/navigation/linking";
 import { ErrorBoundary } from "./ErrorBoundary";
 const theme = {
@@ -33,19 +33,18 @@ function AppNavigation({
   transactionService,
   accountDependencies,
   notificationService,
-  walletDependencies,
+  renderNativeSession,
 }: {
   investmentService?: InvestmentService;
   transactionService?: TransactionService;
   accountDependencies?: AccountDependencies;
   notificationService?: NotificationService;
-  walletDependencies?: WalletDependencies;
+  renderNativeSession?: (session: WalletSession) => ReactNode;
 }) {
   const { session } = useSession();
   if (session?.kind === "testnet") {
-    return (
-      <WalletScreen key={session.accountId} session={session} dependencies={walletDependencies} />
-    );
+    if (!renderNativeSession) throw new Error("Native app integration is not configured.");
+    return renderNativeSession(session);
   }
   return (
     <NavigationContainer
@@ -76,7 +75,7 @@ export function AppRoot({
   transactionService,
   accountDependencies,
   notificationService,
-  walletDependencies,
+  renderNativeSession,
 }: {
   accessService?: AccessService;
   earlyAccessService?: EarlyAccessService;
@@ -84,7 +83,7 @@ export function AppRoot({
   transactionService?: TransactionService;
   accountDependencies?: AccountDependencies;
   notificationService?: NotificationService;
-  walletDependencies?: WalletDependencies;
+  renderNativeSession?: (session: WalletSession) => ReactNode;
 }) {
   return (
     <SafeAreaProvider>
@@ -93,7 +92,7 @@ export function AppRoot({
           <EarlyAccessProvider service={earlyAccessService}>
             <StatusBar style="light" />
             <AppNavigation
-              walletDependencies={walletDependencies}
+              renderNativeSession={renderNativeSession}
               accountDependencies={accountDependencies}
               notificationService={notificationService}
               investmentService={investmentService}

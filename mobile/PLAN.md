@@ -493,6 +493,13 @@ the researched feasibility, proposed phases, device gate and unresolved choices.
 Wallet creation, backend authentication and live investment execution are separate
 deliveries; selecting Mera does not complete any of them.
 
+Status update (2026-09-24): native wallet access, testnet MON balance, reviewed
+transfers and local outgoing history are implemented; Android has live wallet and
+transfer evidence. M6 remains partial: the main tabs still use demo providers,
+and backend/investment integrations are not connected. Next is the
+M6.1 below, integrating the native infrastructure into the existing Gizu screens.
+Basic Android flows do not complete security or release acceptance.
+
 Depends on backend contracts, wallet/security architecture, supported networks,
 and product decisions listed below. UI milestones can proceed before these exist.
 
@@ -505,6 +512,109 @@ and product decisions listed below. UI milestones can proceed before these exist
 
 Exit: real integration evidence replaces simulation for each supported feature;
 pending operations reconcile after app restart and retries do not double-submit.
+
+### M6.1 — Real passkey and wallet behavior in the existing Gizu app
+
+User direction (2026-09-24): integrate the infrastructure into this implementation
+plan and the existing product. Do not create a wallet-only UI, new wallet tab,
+alternate dashboard, or a parallel product roadmap. This section supersedes the
+separate A1–A5 wallet UI integration outline.
+
+Preserve the approved M2–M5 designs, tab bar, routes, page hierarchy, components
+and motion. Change their data sources, controllers and supported behavior.
+Necessary network/asset/status copy must be accurate, but this is not a redesign.
+
+| Existing Gizu flow                                  | Actual integration                                                                                   | Preserve / boundary                                                                                 |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Welcome → Access → Main                             | Existing native create/open passkey adapter; enter normal MainTabs after success                     | Keep current onboarding; no standalone WalletScreen destination                                     |
+| Home / Portfolio                                    | Actual Account 0 MON balance and account-scoped loading/error/refresh behavior                       | Keep portfolio composition; never label MON as USD or invent returns/chart history                  |
+| Home Deposit → existing Transaction screen          | Show the current receiving address, network and copy action inside the existing deposit presentation | Receiving MON is wallet funding, not a vault investment; do not simulate an incoming deposit        |
+| Home Withdraw → existing Transaction screen         | Recipient/amount → native review/sign/broadcast → public result                                      | Keep the existing transaction presentation; no separate Send page; native approval is authoritative |
+| Existing Activity                                   | Native journal reconciliation and current-wallet outgoing history                                    | Reuse existing page/rows and status feedback; no new history destination                            |
+| Existing Account and passkey/signing pages          | Real address/copy, wallet identity, disconnect and accurate passkey information                      | Keep account page structure; no fixture member identity or claim of backend login                   |
+| Vaults, vault detail, buy/sell, Swap, notifications | Preserve existing destinations; enable only behavior with an actual service                          | Passkey integration does not supply investment contracts, valuations or push                        |
+
+Preparatory separation (2026-09-24): diagnostic wallet, signer/transfer probe and
+UI playground now live under `src/development/`, launched only with explicit
+development commands. Normal navigation has no diagnostic routes. This does not
+complete M6.1a: native access still needs integration with the existing MainTabs.
+See [code cleanup plan](docs/CODE_CLEANUP_PLAN.md) for staged structural work.
+
+#### M6.1a — App composition and access
+
+- [ ] Integrate native sessions into the existing RootNavigator/MainTabs flow.
+      The standalone WalletScreen is now injected only by the developer harness;
+      the normal app fails closed for unconfigured native sessions.
+- [ ] Compose real wallet adapters explicitly; never let native sessions fall back
+      to mock investment/transaction/profile services.
+- [ ] Connect the existing access controller to native creation/opening, including
+      cancellation, failure and existing-passkey recovery after partial creation.
+- [ ] Scope public state to account/network; clear navigation and stale results on
+      disconnect or account change. Protect deep links and unsupported actions.
+- [ ] Keep local wallet access distinct from a future authenticated backend session.
+
+Exit: a real passkey opens the existing Gizu app, with no wallet-only detour.
+
+#### M6.1b — Existing Home and Account data
+
+- [ ] Feed public wallet state into existing Home and Account controllers/view models.
+      Reuse the current balance card, address rows, clipboard and disconnect actions.
+- [ ] Show actual MON units until a pricing source exists. Keep the current layout;
+      use truthful unavailable states for valuations, charts and investment positions.
+      Unavailable data must not appear as zero or a fictitious holding.
+- [ ] Replace fixture profile/member information; keep working local preferences
+      and explicitly unavailable server/recovery/document actions.
+- [ ] Keep all existing tab destinations, including Vaults and Swap, with capability
+      guards. Demo fixtures may remain in explicit demo mode, never presented as
+      the native wallet's holdings or executable investment opportunities.
+
+Exit: current Home/Account designs reflect the selected real wallet without mixing
+mock financial state or implying unsupported investment functionality.
+
+#### M6.1c — Existing Deposit/Withdraw and operation feedback
+
+- [ ] Integrate receiving-address/network/copy behavior into the current Deposit
+      route/presentation. Do not require a signing prompt merely to show an address.
+- [ ] Integrate native MON withdrawal into the current TransactionScreen and
+      controller boundaries, without using mock quotes or timer-driven success.
+- [ ] Reuse existing validation, loading and result components. Keep Account 0,
+      Monad testnet, 0.1 MON policy and expected-sender binding.
+- [ ] Preserve one authoritative native approval; do not add a second wallet
+      confirmation UI or expose signing authority to JavaScript.
+- [ ] Treat cancelled/rejected, pending, unknown, finalized and reverted outcomes
+      distinctly. Refresh balances and reconcile uncertain submissions before retry.
+
+Exit: Home's existing actions use real wallet behavior; no standalone transfer form
+is necessary. Vault buy/sell remains unavailable until its own contracts exist.
+
+#### M6.1d — Existing Activity and account continuity
+
+- [ ] Replace fixture activity with account/chain-filtered local outgoing records in
+      ActivityScreen. Retain the current visual components and navigation.
+- [ ] Show public status/hash and amount/recipient when stored. Do not fabricate
+      missing details for older entries.
+- [ ] Clarify that incoming deposits and external activity are not indexed yet.
+- [ ] Reconcile on explicit refresh and appropriate foreground/screen entry without
+      a passkey prompt; retain duplicate prevention and native unresolved-record gates.
+- [ ] Preserve restart history; prevent stale results appearing under another wallet.
+
+Exit: the known recorded transactions appear in existing Activity, not a new page.
+
+#### M6.1e — Completion and verification
+
+- [x] Isolate standalone wallet/probe/playground UI from normal navigation; retain
+      explicit developer launch commands.
+- [ ] Complete migration of wallet behavior into existing product screens; verify
+      normal native access never depends on a diagnostic destination.
+- [ ] Update parity/run documentation and add focused functional coverage for the
+      existing journeys with actual adapters mocked only at external boundaries.
+- [ ] Run affected native checks; preserve the existing native security boundary.
+      This plan does not resume the manual tests paused by the user.
+- [ ] Track unresolved acceptance and the Expo patch mismatch separately.
+
+Implement M6.1a + M6.1b first, then M6.1c + M6.1d, then M6.1e. Existing native
+services are sufficient to start. Production, physical iOS, independent recovery,
+adversarial acceptance, real investments and backend APIs remain separate gates.
 
 ### M7 — Release readiness
 

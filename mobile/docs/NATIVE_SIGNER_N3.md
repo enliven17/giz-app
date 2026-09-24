@@ -1,13 +1,14 @@
 # N3 — Native wallet integration
 
-Wallet access, reviewed transfers and local outgoing history are implemented.
+Wallet access, reviewed transfers and local outgoing history are implemented in
+a retained developer harness under src/development/, hidden from the normal app.
 This is not full N3 acceptance.
 Development builds only, Monad testnet (10143), Account 0, RP gizu.io and the
 frozen derivation from N0. Production remains blocked.
 
 ## Behavior and boundary
 
-- Start with EXPO_PUBLIC_PASSKEY_MODE=native. Existing welcome/access screens
+- Start with npm run debug:wallet. Existing welcome/access screens
   open a native choice to create a passkey or open an existing one.
 - Registration can require a subsequent assertion. If interrupted, try the
   existing credential before creating another.
@@ -39,13 +40,14 @@ frozen derivation from N0. Production remains blocked.
 Rebuild native libraries and development clients after pulling this change:
 
     npm run signer:build
-    EXPO_PUBLIC_PASSKEY_MODE=native npm run android
+    npm run android -- --no-bundler
 
 For an installed compatible client:
 
-    EXPO_PUBLIC_PASSKEY_MODE=native npm start -- --port 8086
+    npm run debug:wallet -- --port 8086
 
-Use native-probe instead of native for the separate development diagnostics.
+Use npm run debug:signer for the signature and transfer probes.
+Use npm start for the normal app; M6.1 will integrate native services there.
 There is no JS Mera or raw PRF fallback. Older clients fail access and do not
 silently enter demo mode. Native/probe modes reject release JavaScript execution,
 and both native platforms independently gate access to debug builds.

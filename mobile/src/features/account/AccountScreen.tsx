@@ -86,13 +86,7 @@ export function AccountScreen({ navigation }: BottomTabScreenProps<MainTabParamL
           </Surface>
         </View>
       ))}
-      <Button
-        label="Open UI preview"
-        variant="quiet"
-        onPress={() =>
-          navigation.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate("Preview")
-        }
-      />
+
       <Button
         variant="destructive"
         label="Disconnect"

@@ -9,7 +9,7 @@
   },
   "packageManager": "npm@11.12.1",
   "scripts": {
-    "start": "expo start --dev-client",
+    "start": "node scripts/start-app.cjs app",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "prebuild": "expo prebuild",
@@ -29,7 +29,10 @@
     "passkeys:templates": "node scripts/passkeys.cjs templates",
     "passkeys:verify-domain": "node scripts/passkeys.cjs verify-domain",
     "signer:build": "bash modules/gizu-signer/scripts/build.sh",
-    "signer:test": "cargo test --locked --manifest-path modules/gizu-signer/core/Cargo.toml"
+    "signer:test": "cargo test --locked --manifest-path modules/gizu-signer/core/Cargo.toml",
+    "debug:wallet": "node scripts/start-app.cjs wallet",
+    "debug:signer": "node scripts/start-app.cjs signer",
+    "debug:ui": "node scripts/start-app.cjs ui"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",

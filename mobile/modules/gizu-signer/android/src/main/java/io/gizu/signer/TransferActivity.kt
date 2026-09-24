@@ -1,5 +1,10 @@
 package io.gizu.signer
 
+import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.StateListDrawable
+import android.content.res.ColorStateList
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -129,15 +134,37 @@ class TransferActivity : Activity() {
   private var expiry: Job? = null
   private val rpc = MonadRpc { phase -> preparationStatus?.text = "$phase…\nNo transaction has been signed." }
   private val operationId = random().joinToString("") { "%02x".format(it) }
+  // Mirrors src/theme/colors.json; presentation only, never supplied by JavaScript.
+  private val ink = Color.parseColor("#050706")
+  private val surface = Color.parseColor("#0b100d")
+  private val accent = Color.parseColor("#31c47e")
+  private val foregroundColor = Color.parseColor("#dfe8e3")
+  private val muted = Color.parseColor("#a7b2ab")
+  private val border = Color.parseColor("#1d2821")
+  private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
+  private fun rounded(color: Int) = GradientDrawable().apply {
+    setColor(color); cornerRadius = dp(20).toFloat(); setStroke(dp(1), border)
+  }
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     if (savedInstanceState != null || TransferHost.pending == null || TransferHost.complete == null || intent.getStringExtra("operationToken") != TransferHost.token) { finished = true; finish(); return }
     TransferHost.activity = this; journal = TransferJournal(this)
     window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
     if (Build.VERSION.SDK_INT >= 31) window.setHideOverlayWindows(true)
-    root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(32, 48, 32, 48); filterTouchesWhenObscured = true }
+    window.statusBarColor = ink; window.navigationBarColor = ink
+    window.decorView.systemUiVisibility = 0
+    root = LinearLayout(this).apply {
+      orientation = LinearLayout.VERTICAL; setPadding(dp(24), dp(24), dp(24), dp(24))
+      setBackgroundColor(ink); filterTouchesWhenObscured = true
+      setOnApplyWindowInsetsListener { v, insets ->
+        v.setPadding(dp(24) + insets.systemWindowInsetLeft, dp(16) + insets.systemWindowInsetTop,
+          dp(24) + insets.systemWindowInsetRight, dp(16) + insets.systemWindowInsetBottom)
+        insets
+      }
+    }
     setContentView(root)
-    text("Monad testnet transfer", 24f)
+    text("MONAD TESTNET · NATIVE APPROVAL", 13f)
+    text("Review transfer", 32f)
     text("Unlock an existing test passkey to derive sender addresses and fetch current fees. Nothing is signed until you approve the final native review.")
     button("Unlock test passkey") {
       it.isEnabled = false
@@ -148,8 +175,28 @@ class TransferActivity : Activity() {
     }
     button("Cancel") { cancel() }
   }
-  private fun text(value: String, size: Float = 17f) = TextView(this).also { it.text = value; it.textSize = size; it.setPadding(0, 12, 0, 12); root.addView(it) }
-  private fun button(label: String, action: (Button) -> Unit) = Button(this).also { b -> b.text = label; b.filterTouchesWhenObscured = true; b.setOnClickListener { action(b) }; root.addView(b) }
+  private fun text(value: String, size: Float = 17f) = TextView(this).also {
+    it.text = value; it.textSize = size
+    it.setTextColor(if (size >= 24f) foregroundColor else if (size == 13f) accent else muted)
+    if (size >= 24f) it.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+    it.setPadding(0, dp(8), 0, dp(12)); it.setLineSpacing(dp(3).toFloat(), 1f); root.addView(it)
+  }
+  private fun button(label: String, action: (Button) -> Unit) = Button(this).also { b ->
+    val primary = label != "Cancel" && label != "Reject" && label != "Close"
+    b.text = label; b.isAllCaps = false; b.textSize = 17f
+    b.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+    b.minHeight = dp(56); b.setPadding(dp(16), dp(14), dp(16), dp(14))
+    b.backgroundTintList = null
+    b.background = StateListDrawable().apply {
+      addState(intArrayOf(-android.R.attr.state_enabled), rounded(surface))
+      addState(intArrayOf(android.R.attr.state_pressed), rounded(border))
+      addState(intArrayOf(), rounded(if (primary) accent else surface))
+    }
+    b.setTextColor(ColorStateList(arrayOf(intArrayOf(-android.R.attr.state_enabled), intArrayOf(android.R.attr.state_pressed), intArrayOf()),
+      intArrayOf(muted, foregroundColor, if (primary) ink else foregroundColor)))
+    b.filterTouchesWhenObscured = true; b.setOnClickListener { action(b) }
+    root.addView(b, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(12) })
+  }
   private suspend fun unlockAndPrepare() {
     check(!journal.unresolved()) // Explicit refresh/reconciliation required before a fresh operation.
     providerPending = true
@@ -230,9 +277,15 @@ class TransferActivity : Activity() {
   private fun showReview(review: String, intents: List<TransferIntent>) {
     preparationStatus = null
     root.removeAllViews()
-    text("Review every transfer", 24f)
+    text("MONAD TESTNET · NATIVE APPROVAL", 13f)
+    text("Confirm transfers", 28f)
+    text("Review all details below to enable approval.", 15f)
     val scroll = ScrollView(this)
-    val content = TextView(this).apply { text = review; textSize = 17f; setPadding(8, 16, 8, 16) }
+    val content = TextView(this).apply {
+      text = review; textSize = 16f; setTextColor(foregroundColor)
+      setPadding(dp(20), dp(20), dp(20), dp(20)); setLineSpacing(dp(5).toFloat(), 1f)
+    }
+    scroll.background = rounded(surface); scroll.isFillViewport = true
     scroll.addView(content); root.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
     val approve = button("Approve exact testnet transfers") { b ->
       if (approved || finished || !hasWindowFocus()) return@button

@@ -103,6 +103,13 @@ final class NativeTransferController: UIViewController, ASAuthorizationControlle
   private var operationId = ""
   private var intents: [TransferIntent] = []
   private let stack = UIStackView()
+  // Mirrors src/theme/colors.json; transaction review stays entirely native.
+  private let ink = UIColor(red: 5/255, green: 7/255, blue: 6/255, alpha: 1)
+  private let surface = UIColor(red: 11/255, green: 16/255, blue: 13/255, alpha: 1)
+  private let accent = UIColor(red: 49/255, green: 196/255, blue: 126/255, alpha: 1)
+  private let foregroundColor = UIColor(red: 223/255, green: 232/255, blue: 227/255, alpha: 1)
+  private let muted = UIColor(red: 167/255, green: 178/255, blue: 171/255, alpha: 1)
+  private let border = UIColor(red: 29/255, green: 40/255, blue: 33/255, alpha: 1)
   private let review = UITextView()
   private let approve = UIButton(type: .system)
   private var approved = false
@@ -114,17 +121,19 @@ final class NativeTransferController: UIViewController, ASAuthorizationControlle
   required init?(coder: NSCoder) { fatalError("Unavailable") }
   override func viewDidLoad() {
     super.viewDidLoad()
-    view.backgroundColor = .systemBackground
+    view.backgroundColor = ink; overrideUserInterfaceStyle = .dark
     stack.axis = .vertical; stack.spacing = 16; stack.translatesAutoresizingMaskIntoConstraints = false
     view.addSubview(stack)
     NSLayoutConstraint.activate([stack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
       stack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
       stack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
       stack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)])
-    label("Monad testnet transfer")
+    label("MONAD TESTNET · NATIVE APPROVAL", style: .caption1)
+    label("Review transfer", style: .largeTitle)
     label("Unlock an existing test passkey to derive sender addresses and fetch current fees. Nothing is signed until you approve the final native review.")
     button("Unlock test passkey", #selector(unlock))
     button("Cancel", #selector(cancel))
+    stack.addArrangedSubview(UIView()) // Flexible space keeps preparation content at the top.
     observers.append(NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { [weak self] _ in
       guard let self else { return }; if !self.providerPending { self.cancel() }
     })
@@ -132,14 +141,32 @@ final class NativeTransferController: UIViewController, ASAuthorizationControlle
       let callback = self?.onActive; self?.onActive = nil; callback?()
     })
   }
-  private func label(_ value: String) {
+  private func label(_ value: String, style: UIFont.TextStyle = .body) {
     let label = UILabel(); label.text = value; label.numberOfLines = 0
-    label.font = .preferredFont(forTextStyle: .body); label.adjustsFontForContentSizeCategory = true; stack.addArrangedSubview(label)
+    label.font = .preferredFont(forTextStyle: style)
+    label.textColor = style == .caption1 ? accent : style == .body ? muted : foregroundColor
+    label.adjustsFontForContentSizeCategory = true
+    label.setContentHuggingPriority(.required, for: .vertical)
+    stack.addArrangedSubview(label)
   }
   private func button(_ title: String, _ selector: Selector) {
     let button = UIButton(type: .system); button.setTitle(title, for: .normal)
-    button.titleLabel?.font = .preferredFont(forTextStyle: .headline)
+    styleButton(button, primary: title != "Cancel" && title != "Reject" && title != "Close")
     button.addTarget(self, action: selector, for: .touchUpInside); stack.addArrangedSubview(button)
+  }
+  private func styleButton(_ button: UIButton, primary: Bool) {
+    var config = UIButton.Configuration.filled()
+    config.baseBackgroundColor = primary ? accent : surface
+    config.baseForegroundColor = primary ? ink : foregroundColor
+    config.background.cornerRadius = 20
+    config.background.strokeColor = border; config.background.strokeWidth = 1
+    config.contentInsets = NSDirectionalEdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 20)
+    button.configuration = config
+    button.titleLabel?.numberOfLines = 0
+    button.titleLabel?.font = .preferredFont(forTextStyle: .headline)
+    button.titleLabel?.adjustsFontForContentSizeCategory = true
+    button.heightAnchor.constraint(greaterThanOrEqualToConstant: 56).isActive = true
+    button.setContentHuggingPriority(.required, for: .vertical)
   }
   private func clear() { stack.arrangedSubviews.forEach { stack.removeArrangedSubview($0); $0.removeFromSuperview() } }
   private func deadline() {
@@ -211,10 +238,16 @@ final class NativeTransferController: UIViewController, ASAuthorizationControlle
     }
   }
   private func showReview(_ value: String) {
-    clear(); label("Review every transfer")
+    clear(); label("MONAD TESTNET · NATIVE APPROVAL", style: .caption1)
+    label("Confirm transfers", style: .title1)
+    label("Review all details below to enable approval.")
     review.text = value; review.isEditable = false; review.font = .preferredFont(forTextStyle: .body)
+    review.backgroundColor = surface; review.textColor = foregroundColor
+    review.layer.cornerRadius = 20; review.layer.borderWidth = 1; review.layer.borderColor = border.cgColor
+    review.textContainerInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
     review.adjustsFontForContentSizeCategory = true; review.delegate = self; stack.addArrangedSubview(review)
     approve.setTitle("Approve exact testnet transfers", for: .normal)
+    styleButton(approve, primary: true)
     approve.addTarget(self, action: #selector(confirm), for: .touchUpInside); approve.isEnabled = false
     stack.addArrangedSubview(approve); button("Reject", #selector(cancel))
     view.layoutIfNeeded(); scrollViewDidScroll(review)

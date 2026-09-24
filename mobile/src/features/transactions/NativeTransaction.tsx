@@ -1,3 +1,5 @@
+import { ArrowUpRight, ShieldCheck } from "lucide-react-native";
+import { GroupedRow } from "@/components/molecules/GroupedRow";
 import { useCallback } from "react";
 import { Keyboard, TextInput, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
@@ -66,41 +68,82 @@ export function NativeTransaction({
         <>
           <Surface>
             <View className="gap-4 p-5">
-              <Typography variant="caption">
-                Available:{" "}
-                {wallet.loading || wallet.error ? "Unavailable" : wallet.balance + " MON"}
-              </Typography>
-              <Typography>Recipient address</Typography>
-              <TextInput
-                accessibilityLabel="Recipient address"
-                value={c.recipient}
-                onChangeText={c.setRecipient}
-                editable={!c.busy}
-                autoCapitalize="none"
-                autoCorrect={false}
-                maxLength={42}
-                placeholder="0x…"
-                placeholderTextColor={colors.muted}
-                className="min-h-14 text-text"
-              />
-              <Typography>Amount · MON</Typography>
-              <TextInput
-                accessibilityLabel="Amount in MON"
-                value={c.amount}
-                onChangeText={c.setAmount}
-                editable={!c.busy}
-                keyboardType="decimal-pad"
-                maxLength={40}
-                className="min-h-14 text-3xl text-text"
-              />
+              <View className="flex-row items-center justify-between gap-3">
+                <Typography variant="label">SEND MON</Typography>
+                <View className="rounded-2xl bg-accent/10 p-3">
+                  <ArrowUpRight size={22} color={colors.accent} accessible={false} />
+                </View>
+              </View>
+              <Typography variant="caption">Amount to withdraw</Typography>
+              <View className="flex-row items-center gap-3">
+                <TextInput
+                  accessibilityLabel="Amount in MON"
+                  value={c.amount}
+                  onChangeText={c.setAmount}
+                  editable={!c.busy}
+                  keyboardType="decimal-pad"
+                  maxLength={40}
+                  placeholder="0.00"
+                  placeholderTextColor={colors.muted}
+                  className="min-h-16 min-w-0 flex-1 text-4xl text-text"
+                />
+                <Typography variant="value">MON</Typography>
+              </View>
+              <View className="gap-1 border-t border-border pt-4">
+                <Typography variant="caption">
+                  {wallet.loading
+                    ? "Loading available balance…"
+                    : wallet.error
+                      ? "Available balance unavailable"
+                      : "Available: " + wallet.balance + " MON"}
+                </Typography>
+                <Typography variant="caption">Maximum 0.1 testnet MON per transfer</Typography>
+              </View>
             </View>
           </Surface>
-          <Typography variant="caption">
-            Maximum 0.1 testnet MON per transfer. The native review shows exact fees and recipient
-            before approval. Use this wallet’s passkey.
-          </Typography>
+          <View className="gap-3">
+            <Typography variant="row">Send to</Typography>
+            <Surface>
+              <View className="gap-2 p-5">
+                <Typography variant="caption">Recipient address</Typography>
+                <TextInput
+                  accessibilityLabel="Recipient address"
+                  value={c.recipient}
+                  onChangeText={c.setRecipient}
+                  editable={!c.busy}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  maxLength={42}
+                  placeholder="0x…"
+                  placeholderTextColor={colors.muted}
+                  className="min-h-14 text-base text-text"
+                />
+              </View>
+            </Surface>
+          </View>
+          <Surface>
+            <GroupedRow label="From" value="Account 0" />
+            <View className="px-5 pb-4">
+              <Typography selectable variant="caption">
+                {wallet.session.address}
+              </Typography>
+            </View>
+            <GroupedRow label="Network" value="Monad testnet" />
+            <GroupedRow label="Network fee" value="Calculated in native review" />
+          </Surface>
+          <View className="flex-row items-start gap-3 px-1">
+            <ShieldCheck size={20} color={colors.accent} accessible={false} />
+            <View className="min-w-0 flex-1 gap-1">
+              <Typography variant="row">Review before you approve</Typography>
+              <Typography variant="caption">
+                Unlock this wallet’s passkey to review the exact recipient, amount and fees. Nothing
+                is signed until you approve in the native screen.
+              </Typography>
+            </View>
+          </View>
           <Button
             label="Review withdrawal"
+            loading={c.busy}
             disabled={c.busy || !c.ready || c.history.blocked}
             onPress={() => {
               Keyboard.dismiss();
@@ -119,6 +162,9 @@ export function NativeTransaction({
             disabled={c.busy}
             onPress={() => void c.refresh()}
           />
+          {c.history.entries.length > 0 && (
+            <Typography variant="heading">Recent withdrawals</Typography>
+          )}
           <WalletHistoryRows entries={c.history.entries} />
         </>
       ) : (

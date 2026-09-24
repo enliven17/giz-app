@@ -7,19 +7,19 @@ import Home from './components/Home'
 import Vaults from './components/Vaults'
 import ComingSoon from './components/ComingSoon'
 import Settings from './components/Settings'
-import VaultDetail from './components/VaultDetail'
+import OpportunityDetail from './components/OpportunityDetail'
 import SwapSheet from './components/SwapSheet'
 import TransferSheet from './components/TransferSheet'
 import Notifications from './components/Notifications'
 import SubPage from './components/SubPage'
 import RequestAccess from './components/RequestAccess'
 import BottomNav from './components/BottomNav'
-import type { Vault } from './data'
 import useIsDesktop from './useIsDesktop'
 import DesktopApp from './desktop/DesktopApp'
 
 type Screen = 'onboard' | 'auth' | 'app' | 'vault' | 'notifications' | 'sub'
 type Tab = 'home' | 'vaults' | 'swap' | 'settings'
+type Trade = { side: 'buy' | 'sell'; name: string; ticker: string; price: number }
 
 const slide = {
   initial: { opacity: 0, x: 24, filter: 'blur(6px)' },
@@ -30,8 +30,8 @@ export default function App() {
   const isDesktop = useIsDesktop()
   const [screen, setScreen] = useState<Screen>('onboard')
   const [tab, setTab] = useState<Tab>('home')
-  const [vault, setVault] = useState<Vault | null>(null)
-  const [trade, setTrade] = useState<'buy' | 'sell' | null>(null)
+  const [opportunityId, setOpportunityId] = useState('')
+  const [trade, setTrade] = useState<Trade | null>(null)
   const [transfer, setTransfer] = useState<'deposit' | 'withdraw' | null>(null)
   const [sub, setSub] = useState('')
   const [requesting, setRequesting] = useState(false)
@@ -41,12 +41,11 @@ export default function App() {
     setScreen('sub')
   }
 
-  const openVault = (v: Vault) => {
-    setVault(v)
+  const openOpportunity = (id: string) => {
+    setOpportunityId(id)
     setScreen('vault')
   }
 
-  // ponytail: vault ekraninda alt aksiyon bari var, nav gizleniyor
   const showNav = screen === 'app'
 
   if (isDesktop) return <DesktopApp />
@@ -65,14 +64,14 @@ export default function App() {
           {screen === 'auth' && <Auth onBack={() => setScreen('onboard')} onDone={() => setScreen('app')} />}
           {screen === 'app' && tab === 'home' && (
             <Home
-              onOpenVault={openVault}
+              onOpenOpportunity={openOpportunity}
               onNotifications={() => setScreen('notifications')}
               onSeeAllVaults={() => setTab('vaults')}
               onTransfer={setTransfer}
               onActivity={() => openSub('activity')}
             />
           )}
-          {screen === 'app' && tab === 'vaults' && <Vaults onOpenVault={openVault} />}
+          {screen === 'app' && tab === 'vaults' && <Vaults onOpenOpportunity={openOpportunity} />}
           {screen === 'app' && tab === 'swap' && <ComingSoon />}
           {screen === 'app' && tab === 'settings' && (
             <Settings
@@ -85,15 +84,29 @@ export default function App() {
           )}
           {screen === 'notifications' && <Notifications onBack={() => setScreen('app')} />}
           {screen === 'sub' && <SubPage id={sub} onBack={() => setScreen('app')} />}
-          {screen === 'vault' && vault && (
-            <VaultDetail vault={vault} onBack={() => setScreen('app')} onTrade={setTrade} />
+          {screen === 'vault' && opportunityId.length > 0 && (
+            <OpportunityDetail
+              id={opportunityId}
+              onBack={() => setScreen('app')}
+              onTrade={(side, asset) =>
+                setTrade({ side, name: asset.name, ticker: asset.ticker, price: asset.price })
+              }
+            />
           )}
         </motion.div>
 
       {showNav && <BottomNav active={tab} onChange={(id) => setTab(id as Tab)} />}
 
       <AnimatePresence>
-        {trade && vault && <SwapSheet vault={vault} side={trade} onClose={() => setTrade(null)} />}
+        {trade && (
+          <SwapSheet
+            name={trade.name}
+            ticker={trade.ticker}
+            price={trade.price}
+            side={trade.side}
+            onClose={() => setTrade(null)}
+          />
+        )}
         {transfer && <TransferSheet mode={transfer} onClose={() => setTransfer(null)} />}
         {requesting && <RequestAccess onClose={() => setRequesting(false)} />}
       </AnimatePresence>

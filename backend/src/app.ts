@@ -18,6 +18,7 @@ import { registerHealthRoutes } from "./http/routes/health.routes.ts";
 import { registerOpportunityRoutes } from "./http/routes/opportunities.routes.ts";
 import { CheckDatabaseHealthUseCase } from "./usecase/health/check-database-health.usecase.ts";
 import { GetOpportunityTvlRecordsUseCase } from "./usecase/opportunities/get-opportunity-tvl-records.usecase.ts";
+import { GetOpportunityUseCase } from "./usecase/opportunities/get-opportunity.usecase.ts";
 import { ListOpportunitiesUseCase } from "./usecase/opportunities/list-opportunities.usecase.ts";
 
 export async function buildApp(secret: ApiEnv): Promise<FastifyInstance> {
@@ -55,6 +56,7 @@ export async function buildApp(secret: ApiEnv): Promise<FastifyInstance> {
     app,
     new OpportunitiesController(
       new ListOpportunitiesUseCase(opportunities),
+      new GetOpportunityUseCase(opportunities),
       new GetOpportunityTvlRecordsUseCase(opportunities),
     ),
   );

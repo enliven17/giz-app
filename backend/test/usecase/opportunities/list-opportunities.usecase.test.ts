@@ -5,7 +5,7 @@ import { ListOpportunitiesUseCase } from "../../../src/usecase/opportunities/lis
 test("returns the page unchanged", async () => {
   const opportunity = {
     id: "1",
-    name: "Lend USDe",
+    name: "Lend USDC on Aave",
     status: "LIVE",
     apr: 4.75,
     totalApr: 4.75,
@@ -16,10 +16,13 @@ test("returns the page unchanged", async () => {
   };
   const useCase = new ListOpportunitiesUseCase({
     list: async () => ({ list: [opportunity], total: 1 }),
+    getById: async () => {
+      throw new Error("unused");
+    },
     tvlRecords: async () => [],
   });
   const result = await useCase.execute({
-    search: "USDe",
+    search: "USDC",
     page: 0,
     items: 20,
     chainId: 143,

@@ -1,9 +1,19 @@
 import { useEffect, useState } from 'react'
-import { listOpportunities, type OpportunityPage } from './opportunities'
+import {
+  getOpportunity,
+  listOpportunities,
+  type OpportunityDetail,
+  type OpportunityPage,
+} from './opportunities'
 
 type Load =
   | { kind: 'loading' }
   | { kind: 'ready'; page: OpportunityPage }
+  | { kind: 'failed'; message: string }
+
+type DetailLoad =
+  | { kind: 'loading' }
+  | { kind: 'ready'; opportunity: OpportunityDetail }
   | { kind: 'failed'; message: string }
 
 export function useOpportunities(query: {
@@ -35,6 +45,34 @@ export function useOpportunities(query: {
       })
     return () => controller.abort()
   }, [query.search, query.page, query.items, query.chainId])
+
+  return load
+}
+
+export function useOpportunity(id: string) {
+  const [load, setLoad] = useState<DetailLoad>({ kind: 'loading' })
+
+  useEffect(() => {
+    const controller = new AbortController()
+    setLoad({ kind: 'loading' })
+    getOpportunity(id)
+      .then((opportunity) => {
+        if (controller.signal.aborted) {
+          return
+        }
+        setLoad({ kind: 'ready', opportunity })
+      })
+      .catch((err: unknown) => {
+        if (controller.signal.aborted) {
+          return
+        }
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          return
+        }
+        setLoad({ kind: 'failed', message: 'Could not load vault' })
+      })
+    return () => controller.abort()
+  }, [id])
 
   return load
 }

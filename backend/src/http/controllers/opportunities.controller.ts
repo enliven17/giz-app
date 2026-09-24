@@ -1,8 +1,10 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { GetOpportunityTvlRecordsUseCase } from "../../usecase/opportunities/get-opportunity-tvl-records.usecase.ts";
+import type { GetOpportunityUseCase } from "../../usecase/opportunities/get-opportunity.usecase.ts";
 import type { ListOpportunitiesUseCase } from "../../usecase/opportunities/list-opportunities.usecase.ts";
 import type {
   ListOpportunitiesQuery,
+  OpportunityParams,
   TvlRecordsParams,
   TvlRecordsQuery,
 } from "../routes/opportunities.routes.ts";
@@ -10,6 +12,7 @@ import type {
 export class OpportunitiesController {
   constructor(
     private readonly listOpportunities: ListOpportunitiesUseCase,
+    private readonly getOpportunity: GetOpportunityUseCase,
     private readonly getOpportunityTvlRecords: GetOpportunityTvlRecordsUseCase,
   ) {}
 
@@ -29,6 +32,14 @@ export class OpportunitiesController {
       items: request.query.items,
       total: response.total,
     });
+  };
+
+  getById = async (
+    request: FastifyRequest<{ Params: OpportunityParams }>,
+    reply: FastifyReply,
+  ) => {
+    const opportunity = await this.getOpportunity.execute(request.params.id);
+    return reply.code(200).send({ opportunity });
   };
 
   tvlRecords = async (

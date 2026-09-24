@@ -132,3 +132,23 @@ installed on the phone and no live transaction was submitted in this change.
   and Linux builds have not been executed locally.
 - Outstanding: known Expo Doctor patch mismatch from N1 (57.0.24 versus 57.0.25);
   live receipts, physical review/lifecycle/bridge tests, independent security audit.
+
+## Android preparation follow-up
+
+A device report stopped at the generic preparation text. The old transport used
+blocking requests, displayed no per-request progress and removed the Cancel action.
+No crash was found in the inspected native crash log, and no broadcast journal
+file existed at that check; the exact original stalled request was not observable.
+
+Android now uses a private cancellable OkHttp transport (4.9.2 declaration, matching
+the React Native baseline), with redirects and connection retries disabled, a
+12-second call deadline, a 1 MiB response bound and a 30-second total preparation
+deadline. Preparation keeps a Cancel button and shows the current query category.
+Failure closes secret state and shows sanitized network/funding/policy guidance.
+Diagnostics record only fixed RPC method names and failure codes, never payloads
+or credential data. Screenshot protection remains enabled.
+
+Five JVM HTTP regression tests passed: success, redirect rejection, oversized
+response rejection, stalled-call timeout and cancellation of an in-flight call.
+Android CI runs these before packaging. A new device retry is needed to identify
+whether the original issue was connectivity, endpoint behavior or account state.

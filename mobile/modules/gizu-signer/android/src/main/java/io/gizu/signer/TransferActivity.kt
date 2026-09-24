@@ -13,8 +13,6 @@ import androidx.credentials.*
 import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
-import java.net.URL
-import javax.net.ssl.HttpsURLConnection
 import java.security.SecureRandom
 import uniffi.gizu_signer_core.*
 
@@ -41,33 +39,36 @@ internal object TransferHost {
   }
 }
 
-internal class MonadRpc {
-  suspend fun call(method: String, params: JSONArray = JSONArray()): Any = withContext(Dispatchers.IO) {
-    val connection = URL("https://testnet-rpc.monad.xyz").openConnection() as HttpsURLConnection
+internal class MonadRpc(private val progress: (String) -> Unit = {}) {
+  private val transport = NativeRpcTransport()
+  suspend fun call(method: String, params: JSONArray = JSONArray()): Any {
+    val phase = when (method) {
+      "eth_chainId" -> "Checking Monad testnet connection"
+      "eth_gasPrice", "eth_maxPriorityFeePerGas" -> "Fetching current network fees"
+      "eth_getTransactionCount" -> "Checking account nonce"
+      "eth_getBalance" -> "Checking testnet MON balance"
+      "eth_estimateGas" -> "Estimating transfer gas"
+      "eth_getCode" -> "Checking account type"
+      "eth_sendRawTransaction" -> "Submitting approved transfer"
+      else -> "Checking transaction status"
+    }
+    progress(phase)
+    android.util.Log.i("GizuTransfer", "RPC start: $method")
     try {
-      connection.instanceFollowRedirects = false
-      connection.connectTimeout = 15000; connection.readTimeout = 15000
-      connection.requestMethod = "POST"; connection.doOutput = true
-      connection.setRequestProperty("Content-Type", "application/json")
       val payload = JSONObject().put("jsonrpc", "2.0").put("id", 1).put("method", method).put("params", params).toString()
-      connection.outputStream.use { it.write(payload.toByteArray(Charsets.UTF_8)) }
-      check(connection.responseCode == 200)
-      val bytes = connection.inputStream.use { input ->
-        val output = java.io.ByteArrayOutputStream()
-        val buffer = ByteArray(8192)
-        while (true) {
-          val count = input.read(buffer)
-          if (count == -1) break
-          check(output.size() + count <= 1_048_576)
-          output.write(buffer, 0, count)
-        }
-        output.toByteArray()
+      val response = JSONObject(transport.post(payload))
+      if (response.has("error")) {
+        val message = response.optJSONObject("error")?.optString("message")?.lowercase().orEmpty()
+        throw RpcFailure(if ("insufficient" in message && "fund" in message) RpcFailureCode.INSUFFICIENT_FUNDS else RpcFailureCode.RPC)
       }
-      check(bytes.size <= 1_048_576)
-      val response = JSONObject(String(bytes, Charsets.UTF_8))
-      check(!response.has("error") && response.getInt("id") == 1 && response.getString("jsonrpc") == "2.0")
-      response.get("result")
-    } finally { connection.disconnect() }
+      check(response.getInt("id") == 1 && response.getString("jsonrpc") == "2.0")
+      android.util.Log.i("GizuTransfer", "RPC complete: $method")
+      return response.get("result")
+    } catch (failure: Exception) {
+      // Method names/codes only. Never log parameters, response bodies, credentials or errors.
+      android.util.Log.w("GizuTransfer", "RPC failed: $method code=" + ((failure as? RpcFailure)?.code?.name ?: "INVALID_RESPONSE"))
+      throw failure
+    }
   }
   suspend fun text(method: String, vararg params: Any): String = call(method, JSONArray(params.toList())) as String
 }
@@ -123,7 +124,9 @@ class TransferActivity : Activity() {
   private var foreground: CompletableDeferred<Unit>? = null
   private lateinit var root: LinearLayout
   private lateinit var journal: TransferJournal
-  private val rpc = MonadRpc()
+  private var preparationStatus: TextView? = null
+  private var expiry: Job? = null
+  private val rpc = MonadRpc { phase -> preparationStatus?.text = "$phase…\nNo transaction has been signed." }
   private val operationId = random().joinToString("") { "%02x".format(it) }
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -139,7 +142,7 @@ class TransferActivity : Activity() {
       it.isEnabled = false
       scope.launch {
         try { unlockAndPrepare() }
-        catch (_: Exception) { cancel() }
+        catch (failure: Exception) { showFailure(failure) }
       }
     }
     button("Cancel") { cancel() }
@@ -166,13 +169,19 @@ class TransferActivity : Activity() {
       operation = TransferOperation(TransferHost.pending ?: error("cancelled"), prf)
     } finally { prf.fill(0) }
     // Start secret expiry immediately after the result, including any pending foreground transition.
-    scope.launch { delay(120000); cancel() }
+    expiry = scope.launch { delay(120000); cancel() }
     if (!hasWindowFocus()) {
       foreground = CompletableDeferred()
       withTimeout(10000) { foreground!!.await() }
     }
     check(!finished && hasWindowFocus())
-    root.removeAllViews(); text("Preparing exact transfers…")
+    root.removeAllViews()
+    preparationStatus = text("Preparing exact transfers…")
+    root.addView(ProgressBar(this))
+    button("Cancel preparation") { cancel() }
+    withTimeout(30_000) { prepareTransfers() }
+  }
+  private suspend fun prepareTransfers() {
     val op = operation ?: error("closed")
     val intents = op.intents()
     val chain = rpc.text("eth_chainId")
@@ -191,7 +200,29 @@ class TransferActivity : Activity() {
     check(!finished && hasWindowFocus())
     showReview(op.prepare(quotes), intents)
   }
+  private fun showFailure(failure: Exception) {
+    if (finished) return
+    val wasPreparing = preparationStatus != null
+    expiry?.cancel()
+    operation?.invalidate(); operation?.destroy(); operation = null
+    preparationStatus = null
+    root.removeAllViews()
+    text("Preparation stopped", 24f)
+    val detail = when {
+      failure is TimeoutCancellationException -> if (wasPreparing) "The network did not finish preparing within 30 seconds." else "The passkey or foreground wait timed out. Close and try again."
+      failure is RpcFailure -> when (failure.code) {
+        RpcFailureCode.INSUFFICIENT_FUNDS -> "This account needs more testnet MON to cover the amount and fees."
+        RpcFailureCode.TIMEOUT -> "The Monad testnet request timed out. Check your connection and try again."
+        RpcFailureCode.NETWORK -> "The phone could not reach the Monad testnet endpoint. Check mobile data or Wi-Fi."
+        else -> "The Monad testnet endpoint rejected or returned an invalid response."
+      }
+      else -> "The transfer could not pass native preparation checks. Check the account, recipient and available testnet MON."
+    }
+    text("$detail No transaction was signed.")
+    button("Close") { cancel() }
+  }
   private fun showReview(review: String, intents: List<TransferIntent>) {
+    preparationStatus = null
     root.removeAllViews()
     text("Review every transfer", 24f)
     val scroll = ScrollView(this)

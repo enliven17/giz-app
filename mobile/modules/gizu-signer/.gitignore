@@ -1,0 +1,8 @@
+core/target/
+generated/
+ios/GizuSignerCore.xcframework/
+android/src/main/jniLibs/
+ios/Generated/
+
+android/build/
+android/.cxx/

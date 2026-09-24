@@ -36,6 +36,7 @@ test("freezes shared RP and deterministic account-zero recipe without wallet sec
 test("mock is explicit and invalid/native modes cannot silently use demo success", () => {
   expect(validatePasskeyMode(undefined)).toBe("mock");
   expect(validatePasskeyMode("mock")).toBe("mock");
+  expect(validatePasskeyMode("native-probe")).toBe("native-probe");
   expect(() => validatePasskeyMode("probe")).toThrow("removed");
   expect(() => validatePasskeyMode("typo")).toThrow("PASSKEY_MODE");
   expect(() => validatePasskeyMode("native")).toThrow("not implemented");

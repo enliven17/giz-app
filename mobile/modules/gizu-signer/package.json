@@ -1,0 +1,7 @@
+{
+  "name": "gizu-signer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Native-only fixed-message compatibility probe",
+  "license": "UNLICENSED"
+}

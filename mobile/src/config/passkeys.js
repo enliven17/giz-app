@@ -41,12 +41,13 @@ function validateAndroidIdentity(value = identity) {
 /** @param {string | undefined} mode */
 function validatePasskeyMode(mode) {
   if (mode === undefined || mode === "mock") return "mock";
+  if (mode === "native-probe") return "native-probe";
   if (mode === "probe") {
     throw new Error(
       "The JavaScript passkey probe was removed. Use mock mode until the native signer is implemented.",
     );
   }
-  if (mode !== "native") throw new Error("PASSKEY_MODE must be mock or native.");
+  if (mode !== "native") throw new Error("PASSKEY_MODE must be mock, native-probe or native.");
   throw new Error(
     "Native passkey mode is not implemented. Complete the native signer boundary first.",
   );

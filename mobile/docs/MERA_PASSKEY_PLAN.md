@@ -152,12 +152,14 @@ and adversarial/device acceptance pass.
 
 ### N1 — Prove native-only retrieval, derivation and signing
 
+Implementation and remaining gates: [N1 record](NATIVE_SIGNER_N1.md).
+
 - [ ] Obtain PRF inside native credential adapters on Android and iOS.
-- [ ] Match synthetic derivation/address vectors and independently verify signatures.
+- [x] Match synthetic derivation/address vectors and independently verify signatures.
 - [ ] Derive multiple indexed accounts; demonstrate 12+ signatures from one unlock
       in an isolated fixed-operation probe, without exporting root or child secrets.
 - [ ] Verify errors, callbacks, events and diagnostics contain no secret material.
-- [ ] Prove native EIP-1559 transfer encoding against independent vectors for
+- [x] Prove native EIP-1559 transfer encoding against independent vectors for
       Monad testnet. Live transfer signing waits for N2 native review enforcement.
 
 Exit: device-backed native boundary proof. Android can lead because a test phone
@@ -165,15 +167,20 @@ is available; iOS remains a separate gate, not covered by Android success.
 
 ### N2 — Implement native review and enforce the approved operation
 
-- [ ] Build accessible native confirmation from parsed canonical operation data.
-- [ ] Bind approval to immutable payloads and validate every signing step natively.
-- [ ] Reject payload substitution, blind signing, extra accounts/steps, changed
+Implementation: [N2 record](NATIVE_SIGNER_N2.md). Local builds and synthetic tests
+pass; physical native-review, hostile-bridge and live-transfer acceptance remain open.
+
+- [x] Build accessible native confirmation from parsed canonical operation data.
+- [x] Bind approval to immutable payloads and validate every signing step natively.
+- [x] Reject payload substitution, blind signing, extra accounts/steps, changed
       fee/amount bounds, approval escalation and expired or replayed requests.
-- [ ] Implement operation serialization, duplicate prevention and native cancellation.
-- [ ] Enable reviewed Monad testnet native transfers through native-owned RPC
+- [x] Implement operation serialization, duplicate prevention and native cancellation.
+- [x] Enable reviewed Monad testnet native transfers through native-owned RPC
       submission; return hashes/status to JS, not raw signed transactions.
 
-Exit: a hostile JS caller cannot bypass review or extend approved signing authority.
+Exit (not yet accepted): adversarial device evidence that a hostile JS caller cannot
+bypass review or extend approved signing authority. Completed implementation items
+above do not substitute for that evidence.
 
 ### N3 — Lifecycle and application integration
 
@@ -221,7 +228,7 @@ exactly what native code signs.
 For device acceptance, record build revision, OS, device and provider, approval
 and unlock counts, account derivation compatibility, 12+ verified signatures,
 rejected out-of-scope requests and cleanup behavior. Report passed, failed,
-blocked and not-run checks separately. No new commands or native tests exist yet. N0 scope and acceptance details
+blocked and not-run checks separately. Native commands and current evidence are in the N1 record. N0 scope and acceptance details
 are recorded in [the native signer decision](NATIVE_SIGNER_N0.md).
 
 ## Relationship to the previous P0–P5 plan
@@ -230,8 +237,7 @@ P0 identity remains in force. P1 remains compatibility evidence only. N0–N4 no
 precede production P2 access integration and replace P3's JavaScript signer
 boundary. Backend challenge authentication (previous P4) remains separate: never
 trust a client address or success flag as backend authentication. Recovery and
-release gates (previous P5) remain required before funding. This documentation
-update changes no dependencies, app behavior or release configuration.
+release gates (previous P5) remain required before funding. N1 adds a separate development probe; production access remains blocked.
 
 ## References
 

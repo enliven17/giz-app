@@ -27,7 +27,9 @@
     "precommit": "node scripts/precommit.cjs",
     "passkeys:check": "node scripts/passkeys.cjs check",
     "passkeys:templates": "node scripts/passkeys.cjs templates",
-    "passkeys:verify-domain": "node scripts/passkeys.cjs verify-domain"
+    "passkeys:verify-domain": "node scripts/passkeys.cjs verify-domain",
+    "signer:build": "bash modules/gizu-signer/scripts/build.sh",
+    "signer:test": "cargo test --locked --manifest-path modules/gizu-signer/core/Cargo.toml"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",

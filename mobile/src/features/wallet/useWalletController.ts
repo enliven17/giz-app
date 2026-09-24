@@ -44,12 +44,12 @@ export function useWalletController(
       request.current = null;
     };
   }, [load]);
-  async function refresh() {
+  const refresh = useCallback(async () => {
     if (request.current) return;
     setLoading(true);
     setError(false);
     await load();
-  }
+  }, [load]);
   async function copy() {
     if (copying.current) return;
     copying.current = true;

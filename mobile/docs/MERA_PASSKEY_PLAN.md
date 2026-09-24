@@ -189,13 +189,12 @@ above do not substitute for that evidence.
 First slice implemented: native address-only passkey access, local wallet view,
 public address/copy, live Monad testnet balance, reviewed transfers and
 account-scoped local outgoing history. See
-[N3 implementation](NATIVE_SIGNER_N3.md). This does not complete lifecycle or adversarial acceptance. Native mode still
-uses a standalone wallet screen rather than the main tabs; the next product work
-is specified in [M6.1 in the mobile implementation plan](../PLAN.md#m61--real-passkey-and-wallet-behavior-in-the-existing-gizu-app).
+[N3 implementation](NATIVE_SIGNER_N3.md). This does not complete lifecycle or adversarial acceptance. Native mode now uses existing main tabs for access, Home balance and Account.
+Existing Deposit/Withdraw and Activity are integrated with the native journal, as specified in [M6.1 in the mobile implementation plan](../PLAN.md#m61--real-passkey-and-wallet-behavior-in-the-existing-gizu-app).
 
 - [ ] Implement native lifecycle/expiry handling and terminal cleanup.
 - [x] Wire wallet controllers to public results and operation status only.
-- [ ] Migrate wallet behavior into the existing main tabs and product screens (M6.1); no new wallet UI.
+- [x] Migrate wallet behavior into the existing main tabs and product screens (M6.1); no new wallet UI. Device acceptance remains separate.
 - [ ] Keep the retired JS probe and raw PRF bridge absent; verify native module exports
       on each rebuilt platform and prevent any JS fallback.
 - [ ] Implement per-step progress, uncertain-outcome reconciliation and restart behavior.

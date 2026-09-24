@@ -50,12 +50,12 @@ export function useWalletTransfers(
       service.cancel();
     };
   }, [load, service]);
-  async function refresh() {
+  const refresh = useCallback(async () => {
     if (running.current) return;
     setBusy(true);
     await load();
     if (active.current) await onSettled();
-  }
+  }, [load, onSettled]);
   async function send() {
     if (running.current || !ready || history.blocked) return;
     try {

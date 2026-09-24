@@ -1,18 +1,11 @@
+import { WalletHistoryRows } from "@/features/wallet/WalletHistoryRows";
 import colors from "@/theme/colors.json";
 import { Keyboard, TextInput, View } from "react-native";
 import { Typography } from "@/components/atoms/Typography";
 import { Button } from "@/components/atoms/Button";
-import { Surface } from "@/components/molecules/Surface";
-import { formatMon } from "@/services/nativeWallet";
 import type { WalletTransferService } from "@/services/walletTransfers";
 import { useWalletTransfers } from "@/features/wallet/useWalletTransfers";
 
-const labels: Record<string, string> = {
-  pending: "Pending",
-  unknown: "Unknown — refresh status",
-  finalized: "Finalized",
-  reverted: "Failed on-chain",
-};
 export function WalletTransfers({
   address,
   service,
@@ -74,30 +67,7 @@ export function WalletTransfers({
       {c.ready && c.history.entries.length === 0 && (
         <Typography>No outgoing transfers recorded for this wallet.</Typography>
       )}
-      {c.history.entries.map((entry) => (
-        <Surface key={entry.transactionHash}>
-          <View className="gap-2 p-5">
-            <Typography>{labels[entry.status]}</Typography>
-            {entry.valueWei && entry.to ? (
-              <>
-                <Typography>{formatMon(entry.valueWei)} MON</Typography>
-                <Typography selectable>To: {entry.to}</Typography>
-              </>
-            ) : (
-              <Typography variant="caption">
-                Earlier transfer — amount and recipient details were not saved.
-              </Typography>
-            )}
-            <Typography variant="caption">Nonce {entry.nonce}</Typography>
-            <Typography
-              selectable
-              accessibilityLabel={`Transaction hash: ${entry.transactionHash}`}
-            >
-              {entry.transactionHash}
-            </Typography>
-          </View>
-        </Surface>
-      ))}
+      <WalletHistoryRows entries={c.history.entries} />
     </View>
   );
 }

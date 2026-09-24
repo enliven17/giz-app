@@ -1,21 +1,19 @@
 # Gizu mobile
 
-Initial-release update (2026-09-23): iOS only. Apple Team ID `588X2UZY3L` is
-configured; Android passkey prerequisites and device acceptance are deferred.
-Apple association hosting and signed physical-iPhone verification remain pending.
-Earlier cross-platform verification entries below are historical evidence.
+Expo SDK 57 development app for iOS and Android. Normal startup now uses native
+passkey access and the existing Gizu tabs. Home shows Account 0's Monad testnet MON
+balance; Account shows its address, copy, local preferences and disconnect.
+Wallet secrets remain in the native signer. This is local wallet access, not
+backend authentication; production and physical-iOS acceptance remain pending.
 
-Expo SDK 57 development app for iOS and Android. The current slice includes
-welcome, simulated passkey-only access, a protected four-tab shell,
-mock buy/sell and deposit/withdraw flows, and disconnect. Demo sessions live only in memory. No real funds, authentication,
-biometrics or wallet connection are performed.
+From welcome choose **Get started**, then **Continue with passkey** and create or
+open a passkey through the native prompt. Vault services, notifications, fiat
+valuations and performance history are unavailable. Deposit shows the receiving address, Withdraw uses native approval, and Activity
+reconciles outgoing transfers recorded on this device. Incoming and external
+activity are not indexed. Pending/unknown submissions must be reconciled before retry.
 
-From welcome, choose **Get started**, then **Continue with passkey**. Settings
-provides **Open UI preview** and **Disconnect**. Home shows fixture holdings,
-chart periods and available account USDC. Browse vaults, search by name/ticker/
-strategy/manager, filter risk, and open vault details or Activity. The
-Buy/Sell/Deposit/Withdraw controls open the M4 mock trading flows; Swap retains its
-animated coming-soon presentation.
+Run `npm run start:demo` for the historical M2–M5 fixture flows described below.
+Those simulated balances/orders are isolated from native wallets.
 
 ## Prerequisites
 
@@ -34,9 +32,9 @@ From the repository root:
 
 ```sh
 npm --prefix mobile ci
-npm --prefix mobile run android
+npm --prefix mobile run android -- --no-bundler
 # macOS only:
-npm --prefix mobile run ios
+npm --prefix mobile run ios -- --no-bundler
 ```
 
 These commands generate ignored native projects and build/install a development
@@ -60,9 +58,9 @@ Passkey P0 configuration and the pending real-device gate are documented in
 checks mock-mode configuration; `npm run passkeys:templates` prepares review files;
 `npm run passkeys:verify-domain` verifies hosted associations after real signing
 metadata is supplied. Nothing is published automatically.
-The [former P1 probe](docs/MERA_NATIVE_PROBE.md) has been removed. Use mock mode;
-probe/native modes are blocked until the native signer is implemented. Rebuild
-existing development clients to remove the old native passkey bridge.
+The [former P1 probe](docs/MERA_NATIVE_PROBE.md) has been removed. Native mode uses
+the native signer; raw PRF is never exposed to JavaScript. Rebuild older clients
+to remove the old bridge and install the current signer.
 
 Run inside `mobile/`, or use `npm --prefix mobile` from the root.
 
@@ -210,7 +208,7 @@ with `npm run ios` or `npm run android` from `mobile/` before testing this versi
 
 ## Developer diagnostics
 
-Normal startup uses the existing Gizu app and has no UI-preview route, wallet
+Normal startup uses real native passkey access in the existing Gizu app and has no UI-preview route, wallet
 harness or signer probe:
 
     npm start
@@ -239,9 +237,9 @@ code has been audited out of a release binary. Native authorization remains
 responsible for enforcing signing policy.
 
 Rebuild the native client after signer changes. Use Monad test tokens only.
-The normal app still uses the current mock services until M6.1 connects native
-infrastructure to its existing screens; hiding diagnostics does not complete that
-integration.
+The normal app uses native services for access, balance and account identity.
+Existing Deposit/Withdraw and Activity now use native wallet services. For fixture flows,
+launch `npm run start:demo` explicitly.
 
 See [native wallet access](docs/NATIVE_SIGNER_N3.md) for signer scope,
 [the implementation plan](PLAN.md#m61--real-passkey-and-wallet-behavior-in-the-existing-gizu-app)

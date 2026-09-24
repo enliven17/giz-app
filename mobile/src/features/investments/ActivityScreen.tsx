@@ -1,3 +1,5 @@
+import { useSession } from "@/application/SessionProvider";
+import { NativeActivity } from "./NativeActivity";
 import { useTransactions } from "@/features/transactions/TransactionProvider";
 import { OperationLink } from "@/features/transactions/OperationLink";
 import { operationLabels } from "@/domain/transactions";
@@ -8,6 +10,10 @@ import { Metric } from "@/components/molecules/Metric";
 import { useInvestments } from "./InvestmentProvider";
 import { DataStatus } from "./DataStatus";
 export function ActivityScreen() {
+  const { session } = useSession();
+  return session?.kind === "testnet" ? <NativeActivity /> : <DemoActivity />;
+}
+function DemoActivity() {
   const { data } = useInvestments();
   const { history } = useTransactions();
   return (

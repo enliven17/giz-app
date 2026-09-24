@@ -1,3 +1,4 @@
+import { UnavailableScreen } from "./UnavailableScreen";
 import { AccountPageScreen } from "@/features/account/AccountPageScreen";
 import { NotificationsScreen } from "@/features/notifications/NotificationsScreen";
 import { TransactionScreen } from "@/features/transactions/TransactionScreen";
@@ -13,15 +14,19 @@ import type { RootStackParamList } from "./types";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export function RootNavigator() {
   const { session } = useSession();
+  const native = session?.kind === "testnet";
   return (
     <Stack.Navigator
       initialRouteName={session ? "Main" : "Welcome"}
       screenOptions={{ headerShown: false }}
     >
       {session ? (
-        <Stack.Group navigationKey="demo">
+        <Stack.Group navigationKey={session.kind + ":" + session.accountId}>
           <Stack.Screen name="AccountPage" component={AccountPageScreen} />
-          <Stack.Screen name="Notifications" component={NotificationsScreen} />
+          <Stack.Screen
+            name="Notifications"
+            component={native ? UnavailableScreen : NotificationsScreen}
+          />
           <Stack.Screen
             name="Transaction"
             component={TransactionScreen}
@@ -29,7 +34,7 @@ export function RootNavigator() {
           />
           <Stack.Screen
             name="VaultDetail"
-            component={VaultDetailScreen}
+            component={native ? UnavailableScreen : VaultDetailScreen}
             options={{ title: "Vault details" }}
           />
           <Stack.Screen

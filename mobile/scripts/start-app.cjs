@@ -1,7 +1,7 @@
 const { spawn } = require("node:child_process");
 const screen = process.argv[2];
-if (!["app", "wallet", "signer", "ui"].includes(screen)) {
-  throw new Error("Expected app, wallet, signer or ui.");
+if (!["app", "demo", "wallet", "signer", "ui"].includes(screen)) {
+  throw new Error("Expected app, demo, wallet, signer or ui.");
 }
 const child = spawn(
   process.execPath,
@@ -10,9 +10,13 @@ const child = spawn(
     stdio: "inherit",
     env: {
       ...process.env,
-      EXPO_PUBLIC_DEBUG_SCREEN: screen === "app" ? "" : screen,
+      EXPO_PUBLIC_DEBUG_SCREEN: screen === "app" || screen === "demo" ? "" : screen,
       EXPO_PUBLIC_PASSKEY_MODE:
-        screen === "wallet" ? "native" : screen === "signer" ? "native-probe" : "mock",
+        screen === "wallet" || screen === "app"
+          ? "native"
+          : screen === "signer"
+            ? "native-probe"
+            : "mock",
     },
   },
 );

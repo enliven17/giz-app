@@ -1,3 +1,5 @@
+import { useSession } from "@/application/SessionProvider";
+import { useWallet } from "@/features/wallet/WalletProvider";
 import { useNotifications } from "@/features/notifications/NotificationProvider";
 import { useTransactions } from "@/features/transactions/TransactionProvider";
 import { OperationLink } from "@/features/transactions/OperationLink";
@@ -21,7 +23,15 @@ import { dollars, portfolioTotal } from "@/domain/investments";
 import { profileFixture as profile } from "@/services/fixtures/profile";
 import { useInvestments } from "./InvestmentProvider";
 import { DataStatus } from "./DataStatus";
-export function PortfolioScreen({ navigation }: BottomTabScreenProps<MainTabParamList, "Home">) {
+export function PortfolioScreen(props: BottomTabScreenProps<MainTabParamList, "Home">) {
+  const { session } = useSession();
+  return session?.kind === "testnet" ? (
+    <NativePortfolio {...props} />
+  ) : (
+    <DemoPortfolio {...props} />
+  );
+}
+function DemoPortfolio({ navigation }: BottomTabScreenProps<MainTabParamList, "Home">) {
   const { unread } = useNotifications();
   const { data } = useInvestments();
   const { account, error: balanceError } = useTransactions();
@@ -123,6 +133,81 @@ export function PortfolioScreen({ navigation }: BottomTabScreenProps<MainTabPara
           )}
         </>
       )}
+    </Screen>
+  );
+}
+
+function NativePortfolio({ navigation }: BottomTabScreenProps<MainTabParamList, "Home">) {
+  const wallet = useWallet();
+  const root = navigation.getParent<NativeStackNavigationProp<RootStackParamList>>();
+  return (
+    <Screen>
+      <View className="flex-row items-center gap-3">
+        <View className="rounded-2xl border border-border bg-surface p-3">
+          <Typography variant="label">G</Typography>
+        </View>
+        <View className="flex-1">
+          <Typography variant="caption">
+            Monad testnet · Account {wallet.session.accountIndex}
+          </Typography>
+          <Typography variant="row">Welcome back</Typography>
+        </View>
+        <IconButton icon={Bell} label="Notifications unavailable" disabled onPress={() => {}} />
+      </View>
+      <View className="mt-4 gap-2">
+        <Typography variant="heading">Your portfolio</Typography>
+        <Typography variant="caption">Available balance · Testnet MON</Typography>
+        {wallet.loading ? (
+          <Typography>Loading balance…</Typography>
+        ) : wallet.error ? (
+          <Typography accessibilityRole="alert">Balance unavailable. Please retry.</Typography>
+        ) : wallet.balance !== null ? (
+          <Balance value={wallet.balance + " MON"} />
+        ) : null}
+      </View>
+      <Button
+        label={wallet.error ? "Retry balance" : "Refresh balance"}
+        disabled={wallet.loading}
+        onPress={() => void wallet.refresh()}
+      />
+      <Typography variant="caption">
+        Testnet MON has no real monetary value. USD valuation and performance data are unavailable.
+      </Typography>
+      <View className="flex-row flex-wrap gap-3">
+        <View className="min-w-24 flex-1">
+          <Button
+            label="Deposit"
+            onPress={() => root.navigate("Transaction", { kind: "deposit" })}
+          />
+        </View>
+        <View className="min-w-24 flex-1">
+          <Button
+            label="Withdraw"
+            onPress={() => root.navigate("Transaction", { kind: "withdraw" })}
+          />
+        </View>
+        <IconButton
+          icon={MoreHorizontal}
+          label="View activity"
+          onPress={() => root.navigate("Activity")}
+        />
+      </View>
+      <Typography variant="caption">
+        Transfers use native approval. Activity lists outgoing transfers recorded on this device.
+      </Typography>
+      <View className="mt-3 flex-row flex-wrap items-center justify-between gap-2">
+        <Typography variant="heading">Confidential vaults</Typography>
+        <Button
+          label="See all vaults"
+          variant="quiet"
+          onPress={() => navigation.navigate("Vaults")}
+        />
+      </View>
+      <Surface>
+        <View className="p-5">
+          <Typography>Vault holdings and investment services are unavailable.</Typography>
+        </View>
+      </Surface>
     </Screen>
   );
 }

@@ -1,3 +1,6 @@
+import type { WalletTransferService } from "@/services/walletTransfers";
+import { WalletProvider } from "@/features/wallet/WalletProvider";
+import type { WalletBalanceService } from "@/services/nativeWallet";
 import type { ReactNode } from "react";
 import { AccountProvider, type AccountDependencies } from "@/features/account/AccountProvider";
 import { NotificationProvider } from "@/features/notifications/NotificationProvider";
@@ -34,25 +37,40 @@ function AppNavigation({
   accountDependencies,
   notificationService,
   renderNativeSession,
+  walletBalanceService,
+  walletTransferService,
 }: {
   investmentService?: InvestmentService;
   transactionService?: TransactionService;
   accountDependencies?: AccountDependencies;
   notificationService?: NotificationService;
   renderNativeSession?: (session: WalletSession) => ReactNode;
+  walletBalanceService?: WalletBalanceService;
+  walletTransferService?: WalletTransferService;
 }) {
   const { session } = useSession();
-  if (session?.kind === "testnet") {
-    if (!renderNativeSession) throw new Error("Native app integration is not configured.");
-    return renderNativeSession(session);
-  }
+  if (session?.kind === "testnet" && renderNativeSession) return renderNativeSession(session);
   return (
     <NavigationContainer
-      key={session ? `demo:${session.accountId ?? "default"}` : "guest"}
+      key={
+        session
+          ? `${session.kind}:${session.accountId ?? "default"}:${session.kind === "testnet" ? session.chainId : "demo"}`
+          : "guest"
+      }
       theme={theme}
       linking={createLinking(!!session)}
     >
-      {session ? (
+      {session?.kind === "testnet" ? (
+        <WalletProvider
+          session={session}
+          balance={walletBalanceService}
+          transfers={walletTransferService}
+        >
+          <AccountProvider {...accountDependencies}>
+            <RootNavigator />
+          </AccountProvider>
+        </WalletProvider>
+      ) : session ? (
         <InvestmentProvider service={investmentService}>
           <TransactionProvider service={transactionService}>
             <AccountProvider {...accountDependencies}>
@@ -76,6 +94,8 @@ export function AppRoot({
   accountDependencies,
   notificationService,
   renderNativeSession,
+  walletBalanceService,
+  walletTransferService,
 }: {
   accessService?: AccessService;
   earlyAccessService?: EarlyAccessService;
@@ -84,6 +104,8 @@ export function AppRoot({
   accountDependencies?: AccountDependencies;
   notificationService?: NotificationService;
   renderNativeSession?: (session: WalletSession) => ReactNode;
+  walletBalanceService?: WalletBalanceService;
+  walletTransferService?: WalletTransferService;
 }) {
   return (
     <SafeAreaProvider>
@@ -92,6 +114,8 @@ export function AppRoot({
           <EarlyAccessProvider service={earlyAccessService}>
             <StatusBar style="light" />
             <AppNavigation
+              walletTransferService={walletTransferService}
+              walletBalanceService={walletBalanceService}
               renderNativeSession={renderNativeSession}
               accountDependencies={accountDependencies}
               notificationService={notificationService}

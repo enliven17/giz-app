@@ -190,26 +190,3 @@ test.each([true, false])(
     expect(await screen.findByLabelText("Email address")).toBeVisible();
   },
 );
-
-test("an unconfigured native session cannot enter fixture finances or a debug wallet", async () => {
-  jest.spyOn(console, "error").mockImplementation(() => undefined);
-  renderApp({
-    method: "Passkey",
-    request: async () => ({
-      kind: "testnet",
-      method: "Passkey",
-      accountId: "native-test",
-      address: "0x" + "1".repeat(40),
-      accountIndex: 0,
-      chainId: 10143,
-    }),
-  });
-  await openAccess();
-  await userEvent.press(screen.getByRole("button", { name: "Continue with passkey" }));
-  expect(await screen.findByRole("alert")).toHaveTextContent(
-    "Something went wrong. Please try again.",
-  );
-  expect(screen.queryByRole("header", { name: "Your portfolio" })).toBeNull();
-  expect(screen.queryByRole("header", { name: "Your wallet" })).toBeNull();
-  expect(screen.queryByLabelText("Home tab")).toBeNull();
-});

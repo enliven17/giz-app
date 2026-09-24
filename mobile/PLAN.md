@@ -536,35 +536,35 @@ Necessary network/asset/status copy must be accurate, but this is not a redesign
 
 Preparatory separation (2026-09-24): diagnostic wallet, signer/transfer probe and
 UI playground now live under `src/development/`, launched only with explicit
-development commands. Normal navigation has no diagnostic routes. This does not
-complete M6.1a: native access still needs integration with the existing MainTabs.
+development commands. Normal navigation has no diagnostic routes. M6.1a–b now connect native access to
+the existing MainTabs.
 See [code cleanup plan](docs/CODE_CLEANUP_PLAN.md) for staged structural work.
 
 #### M6.1a — App composition and access
 
-- [ ] Integrate native sessions into the existing RootNavigator/MainTabs flow.
-      The standalone WalletScreen is now injected only by the developer harness;
-      the normal app fails closed for unconfigured native sessions.
-- [ ] Compose real wallet adapters explicitly; never let native sessions fall back
+- [x] Integrate native sessions into the existing RootNavigator/MainTabs flow.
+      The standalone WalletScreen is injected only by the developer harness;
+      real sessions enter the existing four tabs with native wallet/account providers.
+- [x] Compose real wallet adapters explicitly; never let native sessions fall back
       to mock investment/transaction/profile services.
-- [ ] Connect the existing access controller to native creation/opening, including
+- [x] Connect the existing access controller to native creation/opening, including
       cancellation, failure and existing-passkey recovery after partial creation.
-- [ ] Scope public state to account/network; clear navigation and stale results on
+- [x] Scope public state to account/network; clear navigation and stale results on
       disconnect or account change. Protect deep links and unsupported actions.
-- [ ] Keep local wallet access distinct from a future authenticated backend session.
+- [x] Keep local wallet access distinct from a future authenticated backend session.
 
 Exit: a real passkey opens the existing Gizu app, with no wallet-only detour.
 
 #### M6.1b — Existing Home and Account data
 
-- [ ] Feed public wallet state into existing Home and Account controllers/view models.
+- [x] Feed public wallet state into existing Home and Account controllers/view models.
       Reuse the current balance card, address rows, clipboard and disconnect actions.
-- [ ] Show actual MON units until a pricing source exists. Keep the current layout;
+- [x] Show actual MON units until a pricing source exists. Keep the current layout;
       use truthful unavailable states for valuations, charts and investment positions.
       Unavailable data must not appear as zero or a fictitious holding.
-- [ ] Replace fixture profile/member information; keep working local preferences
+- [x] Replace fixture profile/member information; keep working local preferences
       and explicitly unavailable server/recovery/document actions.
-- [ ] Keep all existing tab destinations, including Vaults and Swap, with capability
+- [x] Keep all existing tab destinations, including Vaults and Swap, with capability
       guards. Demo fixtures may remain in explicit demo mode, never presented as
       the native wallet's holdings or executable investment opportunities.
 
@@ -573,15 +573,15 @@ mock financial state or implying unsupported investment functionality.
 
 #### M6.1c — Existing Deposit/Withdraw and operation feedback
 
-- [ ] Integrate receiving-address/network/copy behavior into the current Deposit
+- [x] Integrate receiving-address/network/copy behavior into the current Deposit
       route/presentation. Do not require a signing prompt merely to show an address.
-- [ ] Integrate native MON withdrawal into the current TransactionScreen and
+- [x] Integrate native MON withdrawal into the current TransactionScreen and
       controller boundaries, without using mock quotes or timer-driven success.
-- [ ] Reuse existing validation, loading and result components. Keep Account 0,
+- [x] Reuse existing validation, loading and result components. Keep Account 0,
       Monad testnet, 0.1 MON policy and expected-sender binding.
-- [ ] Preserve one authoritative native approval; do not add a second wallet
+- [x] Preserve one authoritative native approval; do not add a second wallet
       confirmation UI or expose signing authority to JavaScript.
-- [ ] Treat cancelled/rejected, pending, unknown, finalized and reverted outcomes
+- [x] Treat cancelled/rejected, pending, unknown, finalized and reverted outcomes
       distinctly. Refresh balances and reconcile uncertain submissions before retry.
 
 Exit: Home's existing actions use real wallet behavior; no standalone transfer form
@@ -589,14 +589,14 @@ is necessary. Vault buy/sell remains unavailable until its own contracts exist.
 
 #### M6.1d — Existing Activity and account continuity
 
-- [ ] Replace fixture activity with account/chain-filtered local outgoing records in
+- [x] Replace fixture activity with account/chain-filtered local outgoing records in
       ActivityScreen. Retain the current visual components and navigation.
-- [ ] Show public status/hash and amount/recipient when stored. Do not fabricate
+- [x] Show public status/hash and amount/recipient when stored. Do not fabricate
       missing details for older entries.
-- [ ] Clarify that incoming deposits and external activity are not indexed yet.
-- [ ] Reconcile on explicit refresh and appropriate foreground/screen entry without
+- [x] Clarify that incoming deposits and external activity are not indexed yet.
+- [x] Reconcile on explicit refresh and appropriate foreground/screen entry without
       a passkey prompt; retain duplicate prevention and native unresolved-record gates.
-- [ ] Preserve restart history; prevent stale results appearing under another wallet.
+- [x] Preserve restart history; prevent stale results appearing under another wallet.
 
 Exit: the known recorded transactions appear in existing Activity, not a new page.
 
@@ -612,7 +612,8 @@ Exit: the known recorded transactions appear in existing Activity, not a new pag
       This plan does not resume the manual tests paused by the user.
 - [ ] Track unresolved acceptance and the Expo patch mismatch separately.
 
-Implement M6.1a + M6.1b first, then M6.1c + M6.1d, then M6.1e. Existing native
+M6.1a–d are implemented; automated checks are recorded below. Continue with
+M6.1e acceptance and verification. Existing native
 services are sufficient to start. Production, physical iOS, independent recovery,
 adversarial acceptance, real investments and backend APIs remain separate gates.
 
@@ -726,3 +727,38 @@ open; headerless verification is recorded in docs/FOUNDATION.md.
 - [x] During M4, use a dedicated sell tone and explicit Confirm buy / Confirm sell.
 - [x] During M5, add native notification read/unread and mark-all behavior.
 - [ ] Replace the request-access mock with an agreed real submission service before production.
+
+### M6.1a–b verification scope
+
+Native access now enters the existing Home/Vaults/Swap/Account tabs. Home displays
+Account 0 MON balance, loading/error/retry; Account uses its real address and
+local preferences. Native composition mounts no mock investment, transaction or
+notification providers. Unsupported routes are guarded, including runtime deep
+links. `npm start` selects native mode; `npm run start:demo` selects fixtures.
+Retained debug launchers remain separate.
+
+Automated functional coverage exercises main-app navigation, account copy and
+preferences, unavailable routes, balance failure/zero recovery, and account
+switching with late results. Physical-device acceptance of this main-app slice
+has not been run. Existing signer device evidence does not establish this UI's
+acceptance. M6.1c–d are now implemented as recorded below.
+
+### M6.1c–d verification scope
+
+Existing Deposit displays the address/network/copy without signing. Withdraw
+validates recipient/amount and delegates one exact Account 0 transfer to native
+review, with expected-sender binding and the unchanged 0.1 testnet MON limit.
+Existing Activity displays account-filtered journal status, hash and stored
+details, including honest missing-detail feedback for legacy records.
+
+A shared session-scoped controller prevents duplicate submits and retains an
+operation across page changes. Entry/foreground/manual refresh reconcile without
+resubmitting; unknown/pending records block new sends. Balance refresh follows
+operation completion/reconciliation. Disconnect cancels native work and ignores
+late public results. Incoming/external activity remains unindexed.
+
+Functional tests cover receive/copy without signing, validation, native submission,
+duplicate prevention, pending/unknown/finalized/reverted status, cancellation
+recovery, legacy history, history failure and leaving the page during a request.
+Native signer policy and binaries are unchanged. Physical-device acceptance and
+previously skipped adversarial/manual cases remain outstanding.

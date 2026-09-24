@@ -123,3 +123,18 @@ were not changed. No new live transfer was submitted during this implementation.
 The updated transfer/history APK was installed with app data preserved and opened
 on the connected Android phone. Native mode runs on Metro port 8086; live approval
 of a new transfer through this screen remains user-driven and unverified.
+
+## Main app integration — M6.1a–b
+
+`npm start` now opens the existing Gizu app with native access. Its Home and Account
+read public wallet data; the wallet-only screen above remains a debug harness.
+`npm run start:demo` explicitly opens fixture journeys. Main-app Deposit/Withdraw and Activity now use native transfers and journal reconciliation. Real sessions never mount mock financial providers.
+Main-app device acceptance remains outstanding.
+
+M6.1c–d use a session-scoped transfer controller shared by Withdraw and Activity.
+Native approval remains the sole signing authority. Closing a page preserves
+the operation; disconnect requests native cancellation, which cannot undo a
+broadcast. Screen entry, foreground and explicit refresh reconcile the journal
+without signing or automatically resending. Amount/recipient details absent in
+legacy records are not fabricated. Incoming and external transfers are not indexed.
+Automated tests mock the native adapter; this does not add physical-device evidence.

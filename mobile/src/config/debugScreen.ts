@@ -6,7 +6,9 @@ export function resolveDebugScreen(
   development: boolean,
 ): DebugScreen | undefined {
   if (!screen) {
-    if (passkeyMode !== "mock") {
+    if (passkeyMode === "native" && !development)
+      throw new Error("Native access is development-only.");
+    if (passkeyMode === "native-probe") {
       throw new Error(
         "Native harnesses require an explicit debug launch. Use npm run debug:wallet or debug:signer.",
       );

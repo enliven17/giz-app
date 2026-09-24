@@ -104,12 +104,12 @@ private final class NativeProbe: NSObject, ASAuthorizationControllerDelegate, AS
   }
   func present() {
     let alert = UIAlertController(title: walletOnly ? "Open Gizu testnet wallet" : "Native compatibility test", message: walletOnly ? "Create or open a passkey to view Account 0 on Monad testnet. No transaction or message will be signed. This opens a local wallet view, not a backend login. Creation may require two prompts." : "Approve 16 fixed test signatures across accounts 0–15 using an unfunded test passkey. No transactions, login or spending. Keys stay in native memory. Creation may show two prompts.", preferredStyle: .alert)
-    alert.addAction(UIAlertAction(title: "Open existing", style: .default) { _ in self.request(create: false) })
-    alert.addAction(UIAlertAction(title: walletOnly ? "Create passkey" : "Create test passkey", style: .default) { _ in self.request(create: true) })
-    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in self.cancel() })
+    alert.addAction(UIAlertAction(title: "Open existing", style: .default) { [weak self] _ in self?.request(create: false) })
+    alert.addAction(UIAlertAction(title: walletOnly ? "Create passkey" : "Create test passkey", style: .default) { [weak self] _ in self?.request(create: true) })
+    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { [weak self] _ in self?.cancel() })
     self.alert = alert
     presenter.present(alert, animated: true)
-    let work = DispatchWorkItem { self.cancel() }; timeout = work
+    let work = DispatchWorkItem { [weak self] in self?.cancel() }; timeout = work
     DispatchQueue.main.asyncAfter(deadline: .now() + 120, execute: work)
   }
   private func request(create: Bool) {
@@ -159,9 +159,10 @@ private final class NativeProbe: NSObject, ASAuthorizationControllerDelegate, AS
     } catch { cancel() }
   }
   func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) { cancel() }
-  func cancel() { let pending = controller; finish(.failure(Failure.failed)); pending?.cancel(); alert?.dismiss(animated: false); alert = nil }
+  func cancel() { let pending = controller; finish(.failure(Failure.failed)); pending?.cancel() }
   private func finish(_ result: Result<NativeAccessResult, Error>) {
     timeout?.cancel(); timeout = nil
+    alert?.dismiss(animated: false); alert = nil
     let callback = completion; completion = nil; controller = nil; callback?(result)
   }
 }

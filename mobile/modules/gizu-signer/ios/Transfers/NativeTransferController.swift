@@ -129,6 +129,7 @@ final class NativeTransferController: UIViewController, ASAuthorizationControlle
   func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) { cancel() }
   private func prepare() {
     clear(); label("Preparing exact transfers…")
+    button("Cancel", #selector(cancel))
     task = Task { @MainActor in
       do {
         guard let operation else { throw TransferFailure.stopped }

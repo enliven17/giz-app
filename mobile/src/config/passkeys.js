@@ -41,13 +41,14 @@ function validateAndroidIdentity(value = identity) {
 /** @param {string | undefined} mode */
 function validatePasskeyMode(mode) {
   if (mode === undefined || mode === "mock") return "mock";
-  // The isolated probe can display missing prerequisites without invoking native APIs.
-  if (mode === "probe") return "probe";
-  if (mode !== "native") throw new Error("PASSKEY_MODE must be mock, probe or native.");
-  validateNativeIdentity();
-  // P0 must not enable the existing demo adapter under a native label.
+  if (mode === "probe") {
+    throw new Error(
+      "The JavaScript passkey probe was removed. Use mock mode until the native signer is implemented.",
+    );
+  }
+  if (mode !== "native") throw new Error("PASSKEY_MODE must be mock or native.");
   throw new Error(
-    "Native passkey mode is not implemented. Complete the P1 compatibility gate first.",
+    "Native passkey mode is not implemented. Complete the native signer boundary first.",
   );
 }
 

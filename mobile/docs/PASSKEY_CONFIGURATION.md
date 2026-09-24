@@ -1,16 +1,15 @@
 # Passkey identity and configuration
 
-Current Android scope update: the isolated P1 probe now permits Android API 28+
-with valid package/certificate metadata and native passkey support. Real PRF,
-signing, lifecycle and recovery acceptance remain pending. Earlier iOS-only and
-Android-deferred statements below describe the previous baseline; Android
-production support is not established. See [Android setup](ANDROID_SIGNING.md).
+Architecture update (2026-09-24): the [current Mera plan](MERA_PASSKEY_PLAN.md)
+preserves the identity below while moving secret handling and authorization into
+a planned native signer. The JS probe has been removed; no real signing mode is available yet.
+Account 0 remains frozen; additional account indexes require a reviewed derivation
+contract before implementation.
 
-Initial release: **iOS only**, as requested on 2026-09-23. Android is deferred.
-Android local signing and the frontend association file have since been prepared
-at the user's request; see [Android signing](ANDROID_SIGNING.md). Android runtime
-support and device acceptance remain deferred. The iOS template/verifier commands
-below still handle Apple only and do not generate or validate the Android file.
+Android identity/signing metadata is retained for the planned native signer; see
+[Android signing](ANDROID_SIGNING.md) and [device evidence](MERA_NATIVE_PROBE.md).
+The iOS template/verifier commands below handle Apple only. Production platform
+acceptance and release identity remain separate from local probe success.
 Apple Team ID `588X2UZY3L` is user supplied and configured in both the shared
 identity file and Expo's iOS signing configuration. No credentials were created
 and nothing was published during this configuration change.
@@ -26,8 +25,8 @@ The source of truth is `src/config/passkey-identity.json`:
 - One EVM account, derivation `mera-evm-v1`: 32-byte PRF entropy → English BIP-39
   mnemonic → seed with empty passphrase → BIP-32 `m/44'/60'/0'/0/0`.
 - PRF salt: SHA-256 of UTF-8 `mera.prf.salt.v1`, matching Mera's fixed default.
-- Initial native eligibility: iOS 18+ and a PRF-capable provider. Android settings
-  retained in the source are deferred scaffolding, not active release requirements.
+- Initial native eligibility: iOS 18+ and a PRF-capable provider. Android probe eligibility is API 28+ with provider support; OS checks alone
+  do not establish PRF support or release acceptance.
 - Persist metadata only. No PRF, mnemonic, seed or private-key persistence.
 
 Same credential + RP + salt + derivation yields the same address. Development is
@@ -37,14 +36,14 @@ Changing the RP or derivation requires a reviewed recovery/migration strategy.
 ## Modes and native validation
 
 The default is `EXPO_PUBLIC_PASSKEY_MODE=mock` (the existing investment demo).
-`probe` opens the isolated [P1 compatibility screen](MERA_NATIVE_PROBE.md).
+`probe` is rejected because the [legacy probe was removed](MERA_NATIVE_PROBE.md).
 `native` integrated access remains unimplemented and fails closed. Unknown modes
 also fail at Expo config evaluation and app startup.
 
-The probe requires iOS, a valid Apple Team ID and bundle identifier; it does not
-require Android signing metadata. Local validation checks configuration syntax,
-not actual ownership, signing or hosting. The native platform enforces association
-when a ceremony is attempted. No failure silently becomes mock success.
+Platform identity validators remain available for the future native adapter:
+Apple Team ID and bundle on iOS, package and certificate fingerprints on Android.
+Local validation checks syntax, not ownership or installed signing. No real-passkey
+runtime is enabled after the legacy probe removal.
 
 ## Apple association file
 

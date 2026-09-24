@@ -31,7 +31,6 @@ const config: ExpoConfig = {
         android: { image: "./assets/splash-logo.png", imageWidth: 80 },
       },
     ],
-    "expo-secure-store",
     "./plugins/withAndroidDevelopmentSigning.cjs",
   ],
 };

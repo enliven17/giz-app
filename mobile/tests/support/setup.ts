@@ -6,19 +6,6 @@ jest.mock("@react-native-async-storage/async-storage", () =>
   require("@react-native-async-storage/async-storage/jest/async-storage-mock"),
 );
 jest.mock("expo-clipboard", () => ({ setStringAsync: jest.fn().mockResolvedValue(true) }));
-jest.mock("expo-secure-store", () => ({
-  getItemAsync: jest.fn().mockResolvedValue(null),
-  setItemAsync: jest.fn().mockResolvedValue(undefined),
-  deleteItemAsync: jest.fn().mockResolvedValue(undefined),
-  WHEN_UNLOCKED_THIS_DEVICE_ONLY: 6,
-}));
-jest.mock("react-native-passkey", () => ({
-  Passkey: {
-    isSupported: jest.fn(() => true),
-    createPlatformKey: jest.fn(),
-    getPlatformKey: jest.fn(),
-  },
-}));
 jest.mock("react-native-safe-area-context", () => mockSafeAreaContext);
 // Native animation runtime is unavailable in Jest.
 // eslint-disable-next-line @typescript-eslint/no-require-imports

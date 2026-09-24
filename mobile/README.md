@@ -60,8 +60,9 @@ Passkey P0 configuration and the pending real-device gate are documented in
 checks mock-mode configuration; `npm run passkeys:templates` prepares review files;
 `npm run passkeys:verify-domain` verifies hosted associations after real signing
 metadata is supplied. Nothing is published automatically.
-The isolated [P1 native probe](docs/MERA_NATIVE_PROBE.md) uses
-`EXPO_PUBLIC_PASSKEY_MODE=probe`; restart Metro and use a rebuilt development client.
+The [former P1 probe](docs/MERA_NATIVE_PROBE.md) has been removed. Use mock mode;
+probe/native modes are blocked until the native signer is implemented. Rebuild
+existing development clients to remove the old native passkey bridge.
 
 Run inside `mobile/`, or use `npm --prefix mobile` from the root.
 

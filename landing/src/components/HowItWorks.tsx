@@ -104,7 +104,7 @@ export default function HowItWorks() {
         <div className="shell relative pt-24 text-center md:pt-28">
           <p className="eyebrow">How it works</p>
           <h2 className="mx-auto mt-3 max-w-[22ch] text-[clamp(24px,3vw,38px)] font-semibold leading-[1.05] tracking-[-0.025em]">
-            From your wallet to an encrypted position
+            From your wallet to an anonym position
           </h2>
         </div>
 

@@ -1,6 +1,6 @@
 # Stored-wallet Android signer
 
-Phase 2 implements a separate local Expo module, `GizuStoredSigner`, under native
+Phases 2–3 implement a separate local Expo module, `GizuStoredSigner`, under native
 package `io.gizu.storedwallet`. The retained `gizu-signer` module is unchanged and
 excluded from app linking. This module is Android-only and development-only.
 
@@ -22,23 +22,27 @@ excluded from app linking. This module is Android-only and development-only.
   purpose. Decrypted entropy is cleared before waiting for credential UI. Opening
   does not establish reusable spending authority or backend authentication.
 - A process-wide mutex serializes ceremonies. Lock, teardown, cancellation and the
-  two-minute timeout invalidate work. Only the bounded credential-provider wait can
+  two-minute timeout invalidate work. Only bounded credential-provider and document-picker waits can
   survive an activity pause; foreground and unlocked state are required on return.
 - Native responses are explicit public maps. Errors are fixed messages without
   underlying provider, key, file or crypto details. A cancellation after an atomic
   write may leave a valid backup-required wallet; query state rather than recreate.
 
-## Deliberately unavailable
+## Verified backup and app access
 
-Every created wallet stays `backupRequired` and exposes no accounts through the
-bridge. `backupWallet` and `restoreWallet` reject as not implemented. There are no
-transaction exports yet. Native `getCapabilities` reports `available: false`,
-`walletStorage` eligibility, `backup: false` and `transfers: false`.
+`backupWallet` saves an encrypted file through Android's document picker, then
+requires reopening it and a fresh passkey PRF check. It compares wallet identity,
+entropy and all 16 accounts before marking `ready`. Cancellation keeps the same
+backup-required wallet; ready wallets remain ready when a later backup is cancelled.
+`restoreWallet` requires the file and original passkey and only accepts absent or
+unreadable local storage. It never overwrites a healthy wallet. No file paths or
+contents cross Expo. See [backup format and lifecycle](../../docs/NATIVE_SIGNER.md).
 
-The main app remains gated and does not call these ceremonies until verified
-backup onboarding is integrated. An explicit development-only
-`npm run debug:stored-wallet` harness can refresh state and exercise create/open;
-there is no product route or automatic legacy fallback. Phase 3 implements backup and restore; phase 4 integrates spending approval.
+Native capabilities report storage/access/backup eligibility in Android development
+builds, with `transfers: false`. There are no transaction exports yet. The existing
+app access flow gates entry on `ready`; Account offers backup management. An explicit
+`npm run debug:stored-wallet` harness remains available, with no legacy fallback.
+Phase 4 integrates spending approval and operation history.
 
 ## Ownership and verification
 

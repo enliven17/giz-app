@@ -1,4 +1,4 @@
-/** Frozen replacement contract. Android storage/access implemented; backup and transfers remain gated. */
+/** Frozen replacement contract. Android storage/access/backup implemented; transfers remain gated. */
 export const storedSignerIdentity = {
   moduleName: "GizuStoredSigner",
   storageNamespace: "io.gizu.storedwallet.v1",

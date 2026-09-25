@@ -17,6 +17,7 @@ class WalletStoreTest {
     var key: SecretKey? = null
     var created = 0
     override fun existing() = key
+    override fun reset(): SecretKey { key=null; return create() }
     override fun create(): SecretKey {
       created++
       return KeyGenerator.getInstance("AES").apply { init(256) }.generateKey().also { key = it }
@@ -59,5 +60,56 @@ class WalletStoreTest {
     val file=File().apply{fail=true};val store=WalletStore(file,Keys())
     assertThrows(IllegalStateException::class.java) { wallet().use { store.create(it) } }
     assertEquals("absent",store.state()["status"])
+  }
+  @Test fun verificationPersistsButMismatchCannotUnlockWallet() {
+    val file=File(); val store=WalletStore(file,Keys())
+    wallet().use { store.create(it) }
+    wallet().use { other ->
+      other.entropy[0]=99
+      assertThrows(IllegalStateException::class.java) { store.markVerified(other) }
+    }
+    assertEquals("backupRequired",store.state()["status"])
+    wallet().use { store.markVerified(it) }
+    assertEquals("ready",store.state()["status"])
+  }
+  @Test fun restoreRequiresAbsentOrUnreadableStorage() {
+    val file=File(); val keys=Keys(); val store=WalletStore(file,keys)
+    wallet().use { record ->
+      store.restore(record)
+      assertArrayEquals(ByteArray(32){it.toByte()},record.entropy)
+      assertEquals("ready",store.state()["status"])
+      assertThrows(IllegalStateException::class.java) { store.restore(record) }
+      keys.key=null
+      assertEquals("recoveryRequired",store.state()["status"])
+      store.restore(record)
+      store.load().use { assertArrayEquals(record.entropy,it.entropy) }
+    }
+  }
+  @Test fun failedVerificationWriteLeavesBackupRequired() {
+    val file=File(); val store=WalletStore(file,Keys())
+    wallet().use { store.create(it) }
+    file.fail=true
+    assertThrows(IllegalStateException::class.java) { wallet().use { store.markVerified(it) } }
+    assertEquals("backupRequired",store.state()["status"])
+  }
+  @Test fun phaseTwoRecordRemainsSameBackupRequiredWallet() {
+    val file=File(); val keys=Keys(); val store=WalletStore(file,keys)
+    wallet().use { original ->
+      val bytes=java.io.ByteArrayOutputStream().apply {
+        java.io.DataOutputStream(this).use { out ->
+          out.writeInt(1); out.writeUTF(original.id)
+          out.writeInt(original.credential.credentialId.size); out.write(original.credential.credentialId)
+          out.write(original.credential.publicKeyX); out.write(original.credential.publicKeyY)
+          out.write(original.entropy)
+        }
+      }.toByteArray()
+      file.write(CryptoEnvelope.encrypt(keys.create(),bytes,
+        "io.gizu.storedwallet.v1:wallet:gizu.io:gizu-stored-evm-v1".toByteArray()))
+      bytes.fill(0)
+      assertEquals("backupRequired",store.state()["status"])
+      store.load().use { assertArrayEquals(original.entropy,it.entropy) }
+      store.markVerified(original)
+      assertEquals("ready",store.state()["status"])
+    }
   }
 }

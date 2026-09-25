@@ -28,8 +28,10 @@ require verified onboarding backups and add explicitly authorized operation resu
 This migration targets Android only and fresh development wallets; iOS signing
 will be unavailable until its replacement is implemented. Phase 1 disconnects the
 old signer and declares the replacement contract. Phase 2 implements isolated
-Android encrypted storage and native passkey create/open, always backup-required; native
-wallet access is unavailable until the replacement is implemented. The table above
+Android encrypted storage and native passkey create/open. Phase 3 connects access
+to native save/reopen backup verification, recovery and Account backup management.
+Only verified wallets enter Home; withdrawals/history remain unavailable pending
+phase 4. Physical backup/restore acceptance remains pending. The table above
 summarizes the previous implementation, not current signer availability.
 Preserve the existing Gizu signer module for future reuse, but disconnect its app
 wiring and exclude it from app native builds. Only the replacement will be active.

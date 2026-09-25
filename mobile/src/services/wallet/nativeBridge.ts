@@ -1,3 +1,5 @@
+import { requireOptionalNativeModule } from "expo";
+import type { StoredWalletBridge } from "./storedAccess";
 import type { StoredSignerCapabilities } from "@/domain/wallet/storedSigner";
 import { Platform } from "react-native";
 
@@ -19,14 +21,18 @@ export function getNativeSigner(): NativeSignerBridge | null {
 }
 
 export function getSignerCapabilities(): StoredSignerCapabilities {
+  const available = getStoredSigner() !== null;
   return {
     contractVersion: 1,
-    available: false,
-    walletStorage: false,
-    backup: false,
+    available,
+    walletStorage: available,
+    backup: available,
     transfers: false,
-    reason:
-      Platform.OS === "android" ? ("notImplemented" as const) : ("unsupportedPlatform" as const),
+    reason: available
+      ? undefined
+      : Platform.OS === "android"
+        ? "notImplemented"
+        : "unsupportedPlatform",
   };
 }
 export class WalletUnavailableError extends Error {
@@ -37,4 +43,10 @@ export class WalletUnavailableError extends Error {
         : "Wallet access is temporarily unavailable while the new signer is being implemented.",
     );
   }
+}
+
+export function getStoredSigner(): StoredWalletBridge | null {
+  return Platform.OS === "android" && Number(Platform.Version) >= 28 && __DEV__
+    ? requireOptionalNativeModule<StoredWalletBridge>("GizuStoredSigner")
+    : null;
 }

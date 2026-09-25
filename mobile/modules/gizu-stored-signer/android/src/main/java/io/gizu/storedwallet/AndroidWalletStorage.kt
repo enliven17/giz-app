@@ -36,6 +36,10 @@ internal class AndroidWalletKeys : WalletKeys {
   private val alias = "io.gizu.storedwallet.v1.wallet-aes"
   private fun store() = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
   override fun existing(): SecretKey? = store().getKey(alias, null) as? SecretKey
+  override fun reset(): SecretKey {
+    store().deleteEntry(alias)
+    return create()
+  }
   override fun create(): SecretKey {
     check(!store().containsAlias(alias))
     return KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore").apply {

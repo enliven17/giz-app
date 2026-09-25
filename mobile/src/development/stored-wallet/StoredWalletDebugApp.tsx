@@ -56,7 +56,8 @@ export function StoredWalletDebugScreen({ service }: { service: Probe | null }) 
     <Screen>
       <Typography variant="title">Stored wallet — phase 2</Typography>
       <Typography>
-        Development test only. No funding or transfers. Backup and recovery are not implemented yet.
+        Development test only. No funding or transfers. Use normal app onboarding for verified
+        backup and recovery.
       </Typography>
       <Typography>
         {service ? message : "Android native module unavailable. Install the phase 2 build."}
@@ -75,13 +76,15 @@ export function StoredWalletDebugScreen({ service }: { service: Probe | null }) 
       />
       <Button
         label="Open existing wallet"
-        disabled={!service || busy || state?.status !== "backupRequired"}
+        disabled={
+          !service || busy || (state?.status !== "backupRequired" && state?.status !== "ready")
+        }
         onPress={() => void run("openWallet")}
       />
       {busy && <Button label="Cancel operation" onPress={() => service?.lock()} />}
       <Typography>
-        Expected after creation and reopening: backupRequired with the same wallet ID. This is not a
-        usable wallet session.
+        Creation leaves backupRequired with the same wallet ID. Normal onboarding verifies backup
+        before ready. This diagnostic does not open an app session.
       </Typography>
     </Screen>
   );

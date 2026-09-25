@@ -7,6 +7,7 @@ import javax.crypto.SecretKey
 /** Native-only model; deliberately not a data class (no secret-bearing toString/copy). */
 internal class WalletRecord(
   val id: String, val credential: StoredPasskey, val entropy: ByteArray,
+  val verified: Boolean = false,
 ) : AutoCloseable {
   init {
     UUID.fromString(id)
@@ -15,7 +16,7 @@ internal class WalletRecord(
     require(credential.publicKeyX.size == 32 && credential.publicKeyY.size == 32)
   }
   override fun close() { entropy.fill(0) }
-  fun publicState(): Map<String, Any> = mapOf("status" to "backupRequired", "walletId" to id)
+  fun publicState(): Map<String, Any> = mapOf("status" to if (verified) "ready" else "backupRequired", "walletId" to id)
 }
 internal interface WalletFile {
   fun exists(): Boolean
@@ -25,6 +26,7 @@ internal interface WalletFile {
 internal interface WalletKeys {
   fun existing(): SecretKey?
   fun create(): SecretKey
+  fun reset(): SecretKey
 }
 internal class WalletStore(private val file: WalletFile, private val keys: WalletKeys) {
   private val aad = "io.gizu.storedwallet.v1:wallet:gizu.io:gizu-stored-evm-v1".toByteArray()
@@ -42,7 +44,8 @@ internal class WalletStore(private val file: WalletFile, private val keys: Walle
     val clear = CryptoEnvelope.decrypt(key, encrypted, aad)
     try {
       DataInputStream(ByteArrayInputStream(clear)).use { input ->
-        require(input.readInt() == 1)
+        val version = input.readInt(); require(version in 1..2)
+        val verified = if (version == 2) input.readBoolean() else false
         val id = input.readUTF()
         val length = input.readInt(); require(length in 1..1024)
         val credential = StoredPasskey(ByteArray(length).also(input::readFully),
@@ -51,7 +54,7 @@ internal class WalletStore(private val file: WalletFile, private val keys: Walle
         try {
           input.readFully(entropy)
           require(input.available() == 0)
-          return WalletRecord(id, credential, entropy)
+          return WalletRecord(id, credential, entropy, verified)
         } catch (error: Exception) { entropy.fill(0); throw error }
       }
     } finally { clear.fill(0) }
@@ -59,10 +62,28 @@ internal class WalletStore(private val file: WalletFile, private val keys: Walle
 
   fun create(record: WalletRecord) {
     check(!exists()) { "Existing wallet must not be overwritten" }
+    save(record)
+  }
+
+  fun markVerified(expected: WalletRecord) {
+    load().use { current ->
+      check(current.id == expected.id && java.security.MessageDigest.isEqual(current.entropy, expected.entropy))
+      check(current.credential.credentialId.contentEquals(expected.credential.credentialId))
+      WalletRecord(current.id, current.credential, current.entropy, true).use { save(it) }
+    }
+  }
+
+  fun restore(record: WalletRecord) {
+    check(state()["status"] in listOf("absent", "recoveryRequired"))
+    val key = keys.reset()
+    WalletRecord(record.id, record.credential, record.entropy.copyOf(), true).use { save(it, key) }
+  }
+
+  private fun save(record: WalletRecord, key: SecretKey? = null) {
     // Exact allocation avoids an extra unerasable ByteArrayOutputStream secret copy.
     val metadata = ByteArrayOutputStream().apply {
       DataOutputStream(this).use { out ->
-        out.writeInt(1); out.writeUTF(record.id)
+        out.writeInt(2); out.writeBoolean(record.verified); out.writeUTF(record.id)
         out.writeInt(record.credential.credentialId.size)
         out.write(record.credential.credentialId)
         out.write(record.credential.publicKeyX); out.write(record.credential.publicKeyY)
@@ -70,7 +91,7 @@ internal class WalletStore(private val file: WalletFile, private val keys: Walle
     }.toByteArray()
     val clear = metadata + record.entropy
     val encrypted = try {
-      CryptoEnvelope.encrypt(keys.existing() ?: keys.create(), clear, aad)
+      CryptoEnvelope.encrypt(key ?: keys.existing() ?: keys.create(), clear, aad)
     } finally { clear.fill(0) }
     file.write(encrypted)
   }

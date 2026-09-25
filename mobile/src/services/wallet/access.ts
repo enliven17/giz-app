@@ -1,5 +1,6 @@
+import { createStoredWalletAccess } from "./storedAccess";
 import type { AccessService, WalletSession } from "../access";
-import { getNativeSigner, WalletUnavailableError, type NativeWalletBridge } from "./nativeBridge";
+import { getStoredSigner, WalletUnavailableError, type NativeWalletBridge } from "./nativeBridge";
 
 export function createNativeWalletAccess(
   getBridge: () => NativeWalletBridge | null,
@@ -34,4 +35,4 @@ export function createNativeWalletAccess(
     },
   };
 }
-export const nativeWalletAccess = createNativeWalletAccess(getNativeSigner);
+export const nativeWalletAccess = createStoredWalletAccess(getStoredSigner);

@@ -8,13 +8,22 @@ import { useWallet } from "@/features/wallet/WalletProvider";
 import { WalletHistoryRows } from "@/features/wallet/WalletHistoryRows";
 
 export function NativeActivity() {
-  const c = useWallet().transfers;
+  const wallet = useWallet();
+  const c = wallet.transfers;
   const { refresh } = c;
   useFocusEffect(
     useCallback(() => {
       void refresh();
     }, [refresh]),
   );
+  if (wallet.session.walletId)
+    return (
+      <Screen>
+        <BackAction fallback="Home" />
+        <Typography variant="heading">Activity</Typography>
+        <Typography>Transaction history is not available yet for this wallet.</Typography>
+      </Screen>
+    );
   return (
     <Screen>
       <BackAction fallback="Home" />

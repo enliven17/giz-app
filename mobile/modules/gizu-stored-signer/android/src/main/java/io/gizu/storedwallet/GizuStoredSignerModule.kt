@@ -17,7 +17,7 @@ import java.util.UUID
 import kotlin.coroutines.resume
 import uniffi.gizu_stored_signer_core.deriveAccountAddresses
 
-/** Phase 2: create/open only. Backup-required wallets never become app sessions. */
+/** Wallet access requires a verified native backup; transaction signing is not exposed. */
 class GizuStoredSignerModule : Module() {
   companion object { private val ceremony = Mutex() }
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -37,8 +37,8 @@ class GizuStoredSignerModule : Module() {
   private suspend fun confirm(activity: Activity, create: Boolean) = suspendCancellableCoroutine<Unit> { continuation ->
     val alert = AlertDialog.Builder(activity)
       .setTitle(if (create) "Create Gizu testnet wallet" else "Open Gizu testnet wallet")
-      .setMessage(if (create) "Create a passkey and a new wallet stored encrypted on this phone. A verified backup is required before this wallet can be used. Backup setup is not available in this build."
-        else "Confirm your passkey to check this wallet. This does not authorize transfers. Backup setup is not available in this build.")
+      .setMessage(if (create) "Create a passkey and a new wallet stored encrypted on this phone. A verified backup is required before this wallet can be used."
+        else "Confirm your passkey to check this wallet. This does not authorize transfers.")
       .setPositiveButton("Continue") { _, _ -> if (continuation.isActive) continuation.resume(Unit) }
       .setNegativeButton("Cancel") { _, _ -> continuation.cancel() }
       .setOnCancelListener { continuation.cancel() }.create()
@@ -88,12 +88,11 @@ class GizuStoredSignerModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("GizuStoredSigner")
     AsyncFunction("getCapabilities") { promise: Promise ->
-      promise.resolve(mapOf("contractVersion" to 1, "available" to false,
-        "reason" to "notImplemented", "walletStorage" to eligible(appContext.currentActivity),
-        "backup" to false, "transfers" to false))
+      promise.resolve(mapOf("contractVersion" to 1, "available" to eligible(appContext.currentActivity), "walletStorage" to eligible(appContext.currentActivity),
+        "backup" to eligible(appContext.currentActivity), "transfers" to false))
     }
     AsyncFunction("getWalletState") { promise: Promise -> run(promise) { _, store ->
-      withContext(Dispatchers.IO) { store.state() }
+      withContext(Dispatchers.IO) { publicState(store) }
     } }
     AsyncFunction("createWallet") { promise: Promise -> run(promise) { activity, store ->
       check(withContext(Dispatchers.IO) { !store.exists() })
@@ -124,13 +123,20 @@ class GizuStoredSignerModule : Module() {
         currentCoroutineContext().ensureActive()
         withContext(Dispatchers.IO) { store.load().use {
           check(it.id == identity.first)
-          it.publicState()
+          project(it)
         } }
       }
     } }
-    // Later phases supply these ceremonies. Never fake ready state or transaction success.
-    AsyncFunction("backupWallet") { promise: Promise -> unavailable(promise) }
-    AsyncFunction("restoreWallet") { promise: Promise -> unavailable(promise) }
+    AsyncFunction("backupWallet") { promise: Promise -> run(promise) { activity, store ->
+      check(withContext(Dispatchers.IO) { store.state()["status"] in listOf("backupRequired", "ready") })
+      provider(activity) { BackupHost.open(activity, false) }
+      withContext(Dispatchers.IO) { publicState(store) }
+    } }
+    AsyncFunction("restoreWallet") { promise: Promise -> run(promise) { activity, store ->
+      check(withContext(Dispatchers.IO) { store.state()["status"] in listOf("absent", "recoveryRequired") })
+      provider(activity) { BackupHost.open(activity, true) }
+      withContext(Dispatchers.IO) { publicState(store) }
+    } }
     Function("lock") { scope.launch { task?.cancel() } }
     OnActivityEntersForeground { foreground = true }
     OnActivityEntersBackground {
@@ -139,5 +145,12 @@ class GizuStoredSignerModule : Module() {
     }
     OnDestroy { task?.cancel(); dialog?.dismiss(); scope.cancel() }
   }
-  private fun unavailable(promise: Promise) = promise.reject("NOT_IMPLEMENTED", "Verified backup and recovery are not implemented yet.", null)
+  private fun publicState(store: WalletStore): Map<String, Any> {
+    val state = store.state()
+    return if (state["status"] == "ready") store.load().use { project(it) } else state
+  }
+  private fun project(record: WalletRecord): Map<String, Any> = if (!record.verified) record.publicState()
+    else record.publicState() + ("accounts" to deriveAccountAddresses(record.entropy).mapIndexed { index, address ->
+      mapOf("accountIndex" to index, "address" to address, "chainId" to 10143)
+    })
 }

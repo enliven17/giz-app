@@ -27,6 +27,14 @@ export function NativeTransaction({
       if (kind === "withdraw") void refresh();
     }, [kind, refresh]),
   );
+  if (wallet.session.walletId && kind !== "deposit")
+    return (
+      <Screen>
+        <BackAction fallback="Home" />
+        <Typography variant="title">Withdraw</Typography>
+        <Typography>Withdrawals are not available yet for this wallet.</Typography>
+      </Screen>
+    );
   return (
     <Screen>
       <BackAction fallback="Home" />

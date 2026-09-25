@@ -1,5 +1,25 @@
 # Native signer verification
 
+## 2026-09-25 — Migration phase 3 verified backup
+
+- Android arm64 debug build and 18 native JVM tests passed. Tests cover backup
+  roundtrip/tampering/wrong PRF, storage verification failures, healthy-wallet
+  overwrite rejection and compatibility with phase-2 storage records.
+- TypeScript, lint, formatting and diff checks passed. The full Jest coverage
+  run passed 193 tests across 28 suites, including coverage thresholds. An added
+  Account backup/retry scenario subsequently passed in the five-test focused
+  onboarding/backup suite.
+- APK inspection found the replacement backup activity/core and no retained
+  signer module/core. Retained module source remains unchanged.
+- Installed the phase-3 build on the connected Android phone and opened normal
+  onboarding. The user reported the guided backup/onboarding checks worked,
+  including the suggested Account backup and reconnect checks. This is
+  user-reported acceptance, not instrumented verification. Screen-lock behavior
+  and second-device restore remain unverified; no independent security review
+  is claimed.
+- Rust core was unchanged and not rerun; Expo Doctor and iOS checks were not run.
+  Transfers/resume remain unimplemented for the replacement signer.
+
 ## 2026-09-25 — Migration phase 2 storage and authorization
 
 - New Android module `GizuStoredSigner` and entropy-based Rust core built successfully.

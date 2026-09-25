@@ -6,11 +6,12 @@ balance; Account shows its address, copy, local preferences and disconnect.
 Wallet secrets remain in the native signer. This is local wallet access, not
 backend authentication; production and physical-iOS acceptance remain pending.
 
-From welcome choose **Get started**, then **Continue with passkey** and create or
-open a passkey through the native prompt. Vault services, notifications, fiat
-valuations and performance history are unavailable. Deposit shows the receiving address, Withdraw uses native approval, and Activity
-reconciles outgoing transfers recorded on this device. Incoming and external
-activity are not indexed. Pending/unknown submissions must be reconciled before retry.
+From welcome choose **Get started**, then **Continue with passkey**. New Android
+wallets must save and reopen an encrypted backup before Home opens. Recovery needs
+the file and original passkey. Vault services, notifications, fiat valuations and
+performance history remain unavailable. Deposit shows the receiving address;
+withdrawals and Activity integration await phase 4 of the stored-wallet migration.
+iOS wallet access is unavailable. Incoming/external activity is not indexed.
 
 Run `npm run start:demo` for the historical M2–M5 fixture flows described below.
 Those simulated balances/orders are isolated from native wallets.
@@ -207,9 +208,9 @@ with `npm run ios` or `npm run android` from `mobile/` before testing this versi
 ## Signer migration and developer diagnostics
 
 The old Gizu signer is preserved but disconnected from app access, diagnostics and
-native autolinking. `npm start` opens the existing app; wallet access currently
-reports unavailable until verified backup onboarding is implemented. Android
-storage/passkey create/open now exist natively but are not connected to app access. iOS signing is
+native autolinking. `npm start` opens the existing app. Android development wallets
+require native save-and-reopen backup verification before entering Home. Account
+includes backup management; withdrawals and history await phase 4. iOS signing is
 unsupported during this migration. No fallback creates a demo or legacy wallet.
 
 Use `npm run start:demo` explicitly for fixture flows. The UI playground remains:
@@ -236,9 +237,16 @@ not generated cryptographic bindings. The replacement contract is
 Replacement module verification uses `npm run stored-signer:test` and
 `npm run stored-signer:build`; see its [module guide](modules/gizu-stored-signer/README.md).
 
-For phase 2 Android device testing, run `npm run debug:stored-wallet -- --port 8088`.
-Refresh state, create only if absent, then open the same wallet. Expected state is
-`backupRequired` with the same wallet ID. Backup, funding and transfers remain
-unavailable; no real funds should be sent. Cancel a native prompt and refresh to
-verify state is preserved. Restart and refresh to check persistence. Legacy signer
-diagnostics remain disconnected.
+For phase 3 Android testing, rebuild with `npm run android`, then use the normal
+app (`npm start`). Continue with passkey, save the encrypted backup, reopen it and
+confirm the original passkey again. Only successful verification opens Home.
+Cancel before verification and retry: the same wallet must resume backup setup.
+Account offers **Save and verify wallet backup**. Recovery requires both the backup
+file and original passkey. Restore is shown only for absent/unreadable local storage;
+use another installation/device to test it without deleting this wallet.
+
+Transfers/history remain unavailable, and no real funds should be sent. Test
+second-device restore only where the original passkey is available; compare Account 0
+(and native derivation fixtures). Physical document-picker/provider and second-device
+acceptance remain pending. The explicit `npm run debug:stored-wallet` harness and
+retained legacy source remain separate from normal entry.

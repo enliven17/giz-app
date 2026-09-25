@@ -1,8 +1,9 @@
 # Android stored-wallet signer migration
 
 Agreed 2026-09-25; revised to preserve the existing signer module.
-Status: phases 1–2 implemented; backup and app/transfer integration (phases 3–5)
-remain planned. Phase 2 native creation/opening stays gated from main-app access.
+Status: phases 1–3 implemented. Android onboarding now requires a saved and
+reopened encrypted backup before app access. Exact transfers/resume and final
+acceptance (phases 4–5) remain planned. Backup device acceptance is still pending.
 Android APK exclusion is verified; iOS binary and physical-device acceptance
 remain unverified. Existing installed clients require rebuilding.
 This document details the migration tracked by the [mobile roadmap](../PLAN.md).

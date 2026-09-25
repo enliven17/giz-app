@@ -6,6 +6,7 @@ export function useWalletTransfers(
   address: string,
   service: WalletTransferService,
   onSettled: () => Promise<void>,
+  enabled = true,
 ) {
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("0.001");
@@ -16,7 +17,7 @@ export function useWalletTransfers(
   const active = useRef(true);
   const running = useRef(false);
   const load = useCallback(() => {
-    if (running.current) return Promise.resolve();
+    if (!enabled || running.current) return Promise.resolve();
     running.current = true;
     return Promise.resolve()
       .then(() => service.history(address))
@@ -41,7 +42,7 @@ export function useWalletTransfers(
         running.current = false;
         if (active.current) setBusy(false);
       });
-  }, [address, service]);
+  }, [address, service, enabled]);
   useEffect(() => {
     active.current = true;
     void load();
@@ -51,13 +52,13 @@ export function useWalletTransfers(
     };
   }, [load, service]);
   const refresh = useCallback(async () => {
-    if (running.current) return;
+    if (!enabled || running.current) return;
     setBusy(true);
     await load();
     if (active.current) await onSettled();
-  }, [load, onSettled]);
+  }, [load, onSettled, enabled]);
   async function send() {
-    if (running.current || !ready || history.blocked) return;
+    if (!enabled || running.current || !ready || history.blocked) return;
     try {
       transferProposal("0", recipient.trim(), amount.trim());
     } catch {

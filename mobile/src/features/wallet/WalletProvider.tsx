@@ -26,7 +26,12 @@ export function WalletProvider({
   transfers?: WalletTransferService;
 }>) {
   const state = useWalletController(session.address, balance, clipboardService);
-  const operations = useWalletTransfers(session.address, transfers, state.refresh);
+  const operations = useWalletTransfers(
+    session.address,
+    transfers,
+    state.refresh,
+    !session.walletId,
+  );
   const { refresh } = operations;
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (next) => {

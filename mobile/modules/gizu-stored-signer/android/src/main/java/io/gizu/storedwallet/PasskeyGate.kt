@@ -44,6 +44,22 @@ internal class PasskeyGate(private val activity: Activity) {
     PasskeyVerifier.verifyAssertion(result.authenticationResponseJson, credential, challenge, rp, origin())
   }
 
+  suspend fun recoveryPrf(credential: StoredPasskey): ByteArray {
+    val challenge = random()
+    val salt = MessageDigest.getInstance("SHA-256").digest("gizu.stored-wallet.recovery-prf.v1".toByteArray())
+    val request = JSONObject().put("challenge", encode(challenge)).put("rpId", rp)
+      .put("allowCredentials", JSONArray().put(JSONObject().put("type", "public-key").put("id", encode(credential.credentialId))))
+      .put("userVerification", "required").put("timeout", 120000)
+      .put("extensions", JSONObject().put("prf", JSONObject().put("eval", JSONObject().put("first", encode(salt)))))
+    val result = manager.getCredential(activity, GetCredentialRequest(listOf(GetPublicKeyCredentialOption(request.toString()))))
+      .credential as? PublicKeyCredential ?: error("Unsupported credential")
+    PasskeyVerifier.verifyAssertion(result.authenticationResponseJson, credential, challenge, rp, origin())
+    val bytes = Base64.getUrlDecoder().decode(JSONObject(result.authenticationResponseJson)
+      .getJSONObject("clientExtensionResults").getJSONObject("prf").getJSONObject("results").getString("first"))
+    if (bytes.size != 32) { bytes.fill(0); error("Invalid PRF") }
+    return bytes
+  }
+
   @Suppress("DEPRECATION")
   private fun origin(): String {
     val info = activity.packageManager.getPackageInfo(activity.packageName, PackageManager.GET_SIGNING_CERTIFICATES)

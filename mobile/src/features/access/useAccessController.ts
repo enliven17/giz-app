@@ -1,3 +1,4 @@
+import { WalletUnavailableError } from "@/services/wallet/nativeBridge";
 import { useEffect, useRef, useState } from "react";
 import { useSession } from "@/application/SessionProvider";
 import { AccessRejectedError } from "@/services/access";
@@ -40,11 +41,13 @@ export function useAccessController(): AccessViewModel {
     } catch (cause) {
       if (id === attempt.current)
         setError(
-          cause instanceof AccessRejectedError
-            ? "Access was rejected. You can try again."
-            : accessService.method === "Passkey"
-              ? "Wallet access cancelled or unavailable. Try opening your existing passkey; creation may already have completed."
-              : "Access failed. Please try again.",
+          cause instanceof WalletUnavailableError
+            ? cause.message
+            : cause instanceof AccessRejectedError
+              ? "Access was rejected. You can try again."
+              : accessService.method === "Passkey"
+                ? "Wallet access cancelled or unavailable. Try opening your existing passkey; creation may already have completed."
+                : "Access failed. Please try again.",
         );
     } finally {
       if (id === attempt.current) {

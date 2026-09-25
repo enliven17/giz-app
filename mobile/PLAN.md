@@ -26,8 +26,12 @@ Follow the agreed [signer migration plan](docs/SIGNER_MIGRATION.md): replace
 PRF-derived wallets with locally encrypted random entropy, reuse the Rust core,
 require verified onboarding backups and add explicitly authorized operation resume.
 This migration targets Android only and fresh development wallets; iOS signing
-will be unavailable until its replacement is implemented. Implementation has not
-started; the current-state table and native contract still describe existing code.
+will be unavailable until its replacement is implemented. Phase 1 disconnects the
+old signer and declares the replacement contract; native
+wallet access is unavailable until the replacement is implemented. The table above
+summarizes the previous implementation, not current signer availability.
+Preserve the existing Gizu signer module for future reuse, but disconnect its app
+wiring and exclude it from app native builds. Only the replacement will be active.
 
 ## Follow-up — M6.1e acceptance and integration quality
 

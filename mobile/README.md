@@ -204,49 +204,30 @@ See [docs/ACCOUNT.md](docs/ACCOUNT.md) for availability and persistence rules.
 M5 adds native storage/clipboard modules: rebuild an existing development client
 with `npm run ios` or `npm run android` from `mobile/` before testing this version.
 
-## Developer diagnostics
+## Signer migration and developer diagnostics
 
-Normal startup uses real native passkey access in the existing Gizu app and has no UI-preview route, wallet
-harness or signer probe:
+The old Gizu signer is preserved but disconnected from app access, diagnostics and
+native autolinking. `npm start` opens the existing app; wallet access currently
+reports unavailable while the Android replacement is implemented. iOS signing is
+unsupported during this migration. No fallback creates a demo or legacy wallet.
 
-    npm start
+Use `npm run start:demo` explicitly for fixture flows. The UI playground remains:
 
-The diagnostics remain in `src/development/`. Open one explicitly in a development
-build, from `mobile/`:
-
-    npm run debug:wallet -- --port 8086
-    npm run debug:signer -- --port 8085
     npm run debug:ui -- --port 8087
 
-Stop the previous Metro process or open the development-client URL for the selected
-port. Restart Metro when changing entry points. These Node-based commands work on
-Windows and macOS/Linux and set both debug selection and passkey mode. Normal
-`npm start` clears inherited debug settings. The old
-`EXPO_PUBLIC_PASSKEY_MODE=native npm start` command no longer opens the harness.
+Legacy wallet/signer harness source remains for reference, but its launch commands
+and native lookups are disconnected. Old debug selections fail explicitly.
 
-- **wallet:** existing native passkey create/open, Account 0 balance, transfer and
-  local outgoing-history harness.
-- **signer:** native signature probe and restricted batch-transfer diagnostics.
-- **ui:** standalone atomic-component and animation playground.
-
-Debug selection is rejected outside `__DEV__`; no product route or deep link opens
-these screens. This is an entry/navigation boundary, not a claim that diagnostic
-code has been audited out of a release binary. Native authorization remains
-responsible for enforcing signing policy.
-
-Rebuild the native client after signer changes. Use Monad test tokens only.
-The normal app uses native services for access, balance and account identity.
-Existing Deposit/Withdraw and Activity now use native wallet services. For fixture flows,
-launch `npm run start:demo` explicitly.
-
-See [native wallet access](docs/NATIVE_SIGNER.md) for signer scope,
-[the implementation plan](PLAN.md#current-implementation)
-for product integration, and [structural improvements](PLAN.md#structural-improvements).
+Rebuild installed clients with `npm run android` or `npm run ios` to remove the
+old native module; restarting Metro alone cannot remove native registrations.
+Independent retained-core build/test commands remain `npm run signer:build` and
+`npm run signer:test`; see the [retained module guide](modules/gizu-signer/README.md).
+Follow the [migration plan](docs/SIGNER_MIGRATION.md) for the replacement contract
+and remaining implementation.
 
 ## Wallet integration organization
 
 Wallet adapters are grouped in `src/services/wallet/`; pure amounts, proposals and
 public contracts live in `src/domain/wallet/`. Features depend on those interfaces,
-not generated cryptographic bindings. Native RPC, journal and transfer UI sources
-are separated by responsibility. See the [native signer module guide](modules/gizu-signer/README.md)
-for ownership, external dependencies, generated artifacts and rebuild instructions.
+not generated cryptographic bindings. The replacement contract is
+`src/domain/wallet/storedSigner.ts`; the legacy module stays independently retained.

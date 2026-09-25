@@ -27,8 +27,6 @@
     "precommit": "node scripts/precommit.cjs",
     "signer:build": "bash modules/gizu-signer/scripts/build.sh",
     "signer:test": "cargo test --locked --manifest-path modules/gizu-signer/core/Cargo.toml",
-    "debug:wallet": "node scripts/start-app.cjs wallet",
-    "debug:signer": "node scripts/start-app.cjs signer",
     "debug:ui": "node scripts/start-app.cjs ui",
     "start:demo": "node scripts/start-app.cjs demo"
   },
@@ -72,5 +70,12 @@
     "react-test-renderer": "19.2.3",
     "tailwindcss": "3.4.17",
     "typescript": "~6.0.3"
+  },
+  "expo": {
+    "autolinking": {
+      "exclude": [
+        "gizu-signer"
+      ]
+    }
   }
 }

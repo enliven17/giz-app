@@ -1,5 +1,20 @@
 # Native signer verification
 
+## 2026-09-25 — Migration phase 1 disconnection
+
+- TypeScript, formatting, lint and diff checks passed.
+- Full Jest coverage suite: 182 tests across 25 suites passed; coverage thresholds passed.
+- Expo autolinking resolution excludes `gizu-signer` on Android and Apple.
+- Offline Android arm64 debug build passed. APK inspection found neither retained
+  signer DEX classes nor its native library. No device installation performed.
+- Old signer native implementation/tests/build scripts unchanged; only its module
+  README changed. Standalone native tests were not rerun for this disconnection.
+- `npm run check` stopped at Expo Doctor: external Expo/React Native Directory
+  metadata checks failed (including exp.host DNS lookup). Coverage ran separately.
+- iOS rebuild, binary inspection and physical-device checks were not run.
+- Replacement contracts are declared only; no stored-wallet runtime, backup or
+  resume acceptance is claimed by these checks.
+
 Consolidated 2026-09-24. Historical evidence below is carried from the N1–N3 records;
 checks were not rerun for this documentation change. Counts describe those revisions,
 not a claim about current test totals. The [architecture](NATIVE_SIGNER.md) defines

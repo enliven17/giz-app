@@ -1,6 +1,9 @@
 # Android stored-wallet signer migration
 
-Agreed 2026-09-25. Status: planned; implementation has not started.
+Agreed 2026-09-25; revised to preserve the existing signer module.
+Status: phase 1 implemented; replacement runtime (phases 2–5) remains planned.
+Android APK exclusion is verified; iOS binary and physical-device acceptance
+remain unverified. Existing installed clients require rebuilding.
 This document details the migration tracked by the [mobile roadmap](../PLAN.md).
 
 ## Summary
@@ -11,7 +14,9 @@ adapt the research prototype's Android passkey authorization, encrypted storage
 and backup/restore approach.
 
 This is a development reset: no existing-user migration, address compatibility or
-permanent secondary signer. Keep existing Gizu screens. Android is the only
+permanent secondary signer option in the app. Preserve `mobile/modules/gizu-signer`
+as an inactive, independently buildable implementation for possible future reuse;
+do not delete it or rewrite it into the replacement. Keep existing Gizu screens. Android is the only
 supported signing platform for this phase; iOS must show explicit unavailability.
 
 During implementation, update [the native contract](NATIVE_SIGNER.md) to reflect
@@ -42,27 +47,35 @@ the new architecture. Preserve historical verification separately and leave
 
 ## Implementation phases
 
-### 1. Freeze contracts and retire the old access path
+### 1. Freeze contracts and disconnect the old signer from the app
 
 - Update architecture documentation, capability reporting and app-facing types
   for the stored-wallet model.
-- Keep the existing native module and service-adapter boundary. Add typed wallet
+- Keep the app's service-adapter boundary, but use a separately named replacement
+  native module with distinct native registration and storage identities. Add typed wallet
   lifecycle, backup/restore and operation-resume capabilities; return public metadata only.
 - Model wallet state as absent, backup required, ready or recovery required.
   Never regenerate a wallet automatically after storage failure.
 - Separate new storage from legacy metadata and journals. Do not delete provider
   passkeys or silently sweep development funds.
-- Disable iOS signer access without a fallback to the old model. Keep its
-  historical implementation in Git when obsolete code is removed.
+- Remove the old signer's app adapters, route/debug-harness wiring and automatic
+  build integration. Exclude it from app native linking and registration on both
+  platforms; removing JavaScript imports alone is not sufficient.
+- Preserve the existing module's Android/iOS source, Rust core, bindings, tests,
+  module-local build scripts and documentation. Keep standalone build/test commands
+  available and document deliberate reactivation; no runtime selector or fallback.
+- Disable iOS signer access without a fallback to the old model. The retained
+  iOS implementation remains inactive source, not an available app capability.
 
 ### 2. Implement native wallet storage and passkey authorization
 
-- Adapt prototype components into the maintained native module rather than
+- Adapt prototype components into the new native module rather than
   importing the research application.
 - Register a passkey, generate wallet entropy and atomically persist the encrypted
   wallet with credential verification data and derivation version.
-- Refactor Rust entrypoints to accept native-owned wallet entropy instead of
-  assuming PRF-derived entropy.
+- Reuse the existing Rust derivation and policy code in the replacement core,
+  adapting its entrypoints to native-owned wallet entropy. Preserve the original
+  module's behavior and independent build; avoid a shared-core refactor in this phase.
 - Decrypt secrets only for native operations that need them; clear owned buffers
   and close operations on every terminal path.
 - Serialize native wallet mutations and ceremonies. Normalize errors before
@@ -104,11 +117,12 @@ the new architecture. Preserve historical verification separately and leave
 - Restored wallets start with no local operation history and must not claim to
   recover an interrupted batch from the old device.
 
-### 5. Validate and remove superseded implementation
+### 5. Validate replacement and retained-module isolation
 
-- Remove the old PRF-to-wallet access path and unused bridge methods once the
-  replacement works.
-- Keep one maintained signer and hidden development diagnostics.
+- Remove obsolete app-facing access paths and bridge adapters once the replacement
+  works; retain the old module's own exports and implementation for future reuse.
+- Keep one active app signer and hidden diagnostics for the replacement. Verify
+  that app builds do not include or register the retained signer.
 - Update setup instructions, architecture and verification evidence. Clearly
   distinguish implemented behavior from device-tested acceptance.
 
@@ -130,6 +144,10 @@ the new architecture. Preserve historical verification separately and leave
   authorization; none silently resume.
 - **Application:** existing access, Home, Account, Deposit/Withdraw and Activity
   flows use the new adapter; unfinished backup blocks entry to the usable wallet.
+- **Isolation:** app source and diagnostics cannot call the retained signer;
+  native linking/registration inspection confirms its absence from rebuilt app
+  binaries. Its module-local build/tests remain usable separately. Rebuild installed
+  clients; a JavaScript reload cannot remove a previously linked native module.
 - **Physical Android acceptance:** verify one approval/unlock for a multi-transfer
   batch within two minutes, explicit resume after interruption, and backup
   restoration on another device. If the second device is unavailable, record

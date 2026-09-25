@@ -3,6 +3,12 @@
 Consolidated 2026-09-24. Existing frontend-inspired mobile design is retained;
 service availability differs by mode. Future work belongs in [PLAN](../PLAN.md).
 
+Migration status (2026-09-25): native wallet access is temporarily unavailable on
+Android and unsupported on iOS while the stored-wallet replacement is built.
+The table below records the pre-migration native integration to reconnect later;
+its native features are not currently reachable through app access. Explicit demo
+mode remains available. See [the migration plan](SIGNER_MIGRATION.md).
+
 | Journey                         | Normal native mode                                              | Explicit demo mode                           |
 | ------------------------------- | --------------------------------------------------------------- | -------------------------------------------- |
 | Welcome/access                  | Native passkey create/open; Account 0 viewing session           | Simulated passkey access                     |

@@ -1,5 +1,5 @@
 import type { AccessService, WalletSession } from "../access";
-import { getNativeSigner, type NativeWalletBridge } from "./nativeBridge";
+import { getNativeSigner, WalletUnavailableError, type NativeWalletBridge } from "./nativeBridge";
 
 export function createNativeWalletAccess(
   getBridge: () => NativeWalletBridge | null,
@@ -8,7 +8,7 @@ export function createNativeWalletAccess(
     method: "Passkey",
     async request() {
       const bridge = getBridge();
-      if (!bridge?.openWallet) throw new Error("Native wallet unavailable");
+      if (!bridge?.openWallet) throw new WalletUnavailableError();
       const result = await bridge.openWallet();
       if (!result || typeof result !== "object") throw new Error("Invalid native wallet");
       const wallet = result as Record<string, unknown>;

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { requireOptionalNativeModule } from "expo";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Screen } from "@/components/templates/Screen";
 import { Typography } from "@/components/atoms/Typography";
@@ -85,8 +84,9 @@ export function NativeProbeScreen({
     </Screen>
   );
 }
-const nativeProbe = __DEV__ ? requireOptionalNativeModule<NativeProbe>("GizuSigner") : null;
-const transfers = __DEV__ ? requireOptionalNativeModule<NativeTransfers>("GizuSigner") : null;
+// Retained harness: disconnected from native lookup and application entry points.
+const nativeProbe: NativeProbe | null = null;
+const transfers: NativeTransfers | null = null;
 export function NativeProbeApp() {
   const [showTransfers, setShowTransfers] = useState(false);
   return (

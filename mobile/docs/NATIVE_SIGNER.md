@@ -1,5 +1,46 @@
 # Native signer architecture and contract
 
+## Phase 1: stored-wallet replacement boundary
+
+The retained `modules/gizu-signer` implementation is disconnected from the app
+and excluded from Android/iOS autolinking. No legacy lookup or fallback remains
+in application access or diagnostic entry points. Existing installed binaries
+require rebuilding to remove the old native registration.
+
+The replacement is named `GizuStoredSigner`; its versioned public contract is
+`src/domain/wallet/storedSigner.ts`. It has no native implementation yet. Capability
+reporting currently returns unavailable: Android is not implemented, and other
+platforms are unsupported. Normal access fails explicitly; demo mode stays opt-in.
+
+The contract provides wallet states (absent, backupRequired, ready, recoveryRequired),
+native create/open/backup/restore ceremonies and operation execute/status/resume/
+cancel methods. Only ready wallets expose account metadata for app sessions;
+backup-required wallets cannot fund or transact. Native code owns file selection,
+backup plaintext, secret material and approval. Resume checks the operation
+revision, reconciles first and obtains fresh native authorization. `lock` ends
+authority without deleting wallet storage or broadcast evidence. Native failures
+will use sanitized errors; no key material, raw signed bytes or file contents cross
+the app bridge.
+
+The replacement storage namespace is `io.gizu.storedwallet.v1`; backup format
+`gizu-stored-wallet` version 1; derivation `gizu-stored-evm-v1`; recovery PRF salt
+is SHA-256 of UTF-8 `gizu.stored-wallet.recovery-prf.v1`. These identities are distinct
+from the preserved signer. RP remains gizu.io. Random 32-byte wallet entropy uses
+English BIP-39, empty passphrase and m/44'/60'/0'/0/i for indices 0–15. Account 0
+remains the app account. The registered passkey authorizes locally stored-wallet
+use; PRF encrypts backups rather than determining wallet addresses.
+
+Storage implementation, verified onboarding backup and transfer resume belong to
+subsequent phases in [the migration plan](SIGNER_MIGRATION.md). Do not treat
+contract declarations as implemented capabilities. No old state or provider passkeys
+are deleted or migrated. Web wallet sharing and iOS signing are deferred.
+
+## Retained signer reference (inactive)
+
+The remaining sections document the preserved implementation, not current app
+capabilities. Its no-secret-persistence/no-rebroadcast rules apply to that module;
+the replacement intentionally changes those rules under the migration plan.
+
 Updated 2026-09-24 against current source. Development implementation exists on
 Android and iOS; full security/device acceptance is open. Work is tracked only in
 [the roadmap](../PLAN.md); dated results and acceptance gaps live in

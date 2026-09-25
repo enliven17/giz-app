@@ -1,13 +1,15 @@
 # Passkey identity and configuration
 
-Native credential handling and authorization are implemented in the
-[native signer](NATIVE_SIGNER.md). Account 0 remains compatible with the frozen
-identity below; diagnostic indexed derivation is bounded to indices 0–15.
+The previous native signer is retained but disconnected. The Android stored-wallet
+replacement contract is in [native signer architecture](NATIVE_SIGNER.md); its
+runtime is not implemented yet. Wallet access currently reports unavailable.
+The frozen derivation below documents the retained module only, not the new wallet
+model. App identifiers/domain associations remain valid configuration inputs.
 See [Android signing](ANDROID_SIGNING.md) for development association setup and
 [verification](NATIVE_SIGNER_VERIFICATION.md) for device evidence and limitations.
 Apple Team ID `588X2UZY3L` is configured; production release acceptance remains open.
 
-## Frozen contract
+## Retained signer identity
 
 The source of truth is `src/config/passkey-identity.json`:
 
@@ -29,10 +31,10 @@ Changing the RP or derivation requires a reviewed recovery/migration strategy.
 
 ## Modes and native validation
 
-The default is `native`: normal app routes use passkey-backed access in a compatible
-development client. `npm run start:demo` explicitly selects mock mode. The retired
-`probe` mode and unknown values are rejected. Developer diagnostics use explicit
-commands in [README](../README.md) and are hidden from normal navigation.
+The default is `native`, which fails explicitly while the replacement is unavailable.
+`npm run start:demo` explicitly selects mock mode. Both `probe` and `native-probe`
+and the former wallet/signer debug selections are rejected. Only the UI playground
+remains launchable through [README](../README.md).
 
 Configuration alone does not prove domain ownership, installed signing or provider
 capability. Rebuild native clients after changing

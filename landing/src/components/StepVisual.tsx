@@ -562,9 +562,11 @@ const outPath = (y: number) => `M 284 120 C 336 120 344 ${y} 388 ${y}`
 function Batch({ on }: { on: boolean }) {
   return (
     <Stage>
-      <div className="absolute inset-0 flex items-center justify-center">
-        {/* fixed box, so the drawing and the html sit in one coordinate space */}
-        <div className="relative h-[240px] w-[520px] scale-[0.55] sm:scale-[0.9] lg:scale-[1.28]">
+      <div className="absolute inset-0">
+        {/* fixed box, so the drawing and the html sit in one coordinate space.
+            it is centred by transform, not by flow, so it can be wider than
+            the stage without pushing the layout around */}
+        <div className="absolute left-1/2 top-1/2 h-[240px] w-[520px] -translate-x-1/2 -translate-y-1/2 scale-[0.6] sm:scale-[0.9] lg:scale-[1.28]">
           <svg
             className="absolute inset-0 h-full w-full"
             viewBox="0 0 520 240"

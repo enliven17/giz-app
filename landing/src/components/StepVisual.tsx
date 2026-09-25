@@ -698,7 +698,7 @@ function Shield({ on }: { on: boolean }) {
                 <span className="shrink-0 text-[9px] leading-none text-white/35">now</span>
               </span>
               <span className="mt-2 block truncate text-[11px] leading-none text-white/50">
-                Balance •••••• encrypted
+                Balance •••••• anonym
               </span>
             </span>
           </motion.div>

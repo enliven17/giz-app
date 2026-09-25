@@ -1,5 +1,23 @@
 # Native signer verification
 
+## 2026-09-25 — Migration phase 2 storage and authorization
+
+- New Android module `GizuStoredSigner` and entropy-based Rust core built successfully.
+- 11 Rust tests and Clippy passed; 12 Android JVM tests passed (credential
+  verification, encryption integrity and wallet storage failure/restart behavior).
+- TypeScript, formatting, lint and 21 focused app/access tests passed. Main-app
+  access remains unavailable; no backup-required wallet can become an app session.
+- Android arm64 APK built. APK inspection found replacement classes/core and no
+  retained signer classes/core. Android autolinking includes only the replacement;
+  Apple includes neither signer. Retained signer source is unchanged.
+- Installed the phase 2 build and development harness on the connected Android
+  phone. The user reported the guided create/open/cancel/restart checks worked.
+  This is user-reported device evidence, not Keystore instrumentation or an
+  independent security review. Backup PRF evaluation, recovery and transaction
+  ceremonies remain unimplemented and unverified.
+- Full app coverage/Expo Doctor were not rerun for this native-only increment;
+  the prior phase's check results and network limitations are recorded below.
+
 ## 2026-09-25 — Migration phase 1 disconnection
 
 - TypeScript, formatting, lint and diff checks passed.

@@ -11,7 +11,9 @@ function NativeApp() {
   return <AppRoot accessService={nativeWalletAccess} />;
 }
 let Entry = mode === "native" ? NativeApp : AppRoot;
-if (__DEV__ && debugScreen === "ui") {
+if (__DEV__ && debugScreen === "stored-wallet") {
+  Entry = require("./src/development/stored-wallet/StoredWalletDebugApp").StoredWalletDebugApp;
+} else if (__DEV__ && debugScreen === "ui") {
   Entry = require("./src/development/PreviewDebugApp").PreviewDebugApp;
 }
 export default Entry;

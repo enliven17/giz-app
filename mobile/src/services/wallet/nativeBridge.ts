@@ -22,6 +22,9 @@ export function getSignerCapabilities(): StoredSignerCapabilities {
   return {
     contractVersion: 1,
     available: false,
+    walletStorage: false,
+    backup: false,
+    transfers: false,
     reason:
       Platform.OS === "android" ? ("notImplemented" as const) : ("unsupportedPlatform" as const),
   };

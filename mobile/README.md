@@ -208,7 +208,8 @@ with `npm run ios` or `npm run android` from `mobile/` before testing this versi
 
 The old Gizu signer is preserved but disconnected from app access, diagnostics and
 native autolinking. `npm start` opens the existing app; wallet access currently
-reports unavailable while the Android replacement is implemented. iOS signing is
+reports unavailable until verified backup onboarding is implemented. Android
+storage/passkey create/open now exist natively but are not connected to app access. iOS signing is
 unsupported during this migration. No fallback creates a demo or legacy wallet.
 
 Use `npm run start:demo` explicitly for fixture flows. The UI playground remains:
@@ -231,3 +232,13 @@ Wallet adapters are grouped in `src/services/wallet/`; pure amounts, proposals a
 public contracts live in `src/domain/wallet/`. Features depend on those interfaces,
 not generated cryptographic bindings. The replacement contract is
 `src/domain/wallet/storedSigner.ts`; the legacy module stays independently retained.
+
+Replacement module verification uses `npm run stored-signer:test` and
+`npm run stored-signer:build`; see its [module guide](modules/gizu-stored-signer/README.md).
+
+For phase 2 Android device testing, run `npm run debug:stored-wallet -- --port 8088`.
+Refresh state, create only if absent, then open the same wallet. Expected state is
+`backupRequired` with the same wallet ID. Backup, funding and transfers remain
+unavailable; no real funds should be sent. Cancel a native prompt and refresh to
+verify state is preserved. Restart and refresh to check persistence. Legacy signer
+diagnostics remain disconnected.

@@ -1,4 +1,4 @@
-/** Frozen replacement contract. Phase 1 declares types only; no native implementation. */
+/** Frozen replacement contract. Android storage/access implemented; backup and transfers remain gated. */
 export const storedSignerIdentity = {
   moduleName: "GizuStoredSigner",
   storageNamespace: "io.gizu.storedwallet.v1",
@@ -19,6 +19,9 @@ export type StoredWalletState =
 export type StoredSignerCapabilities = {
   contractVersion: 1;
   available: boolean;
+  walletStorage: boolean;
+  backup: boolean;
+  transfers: boolean;
   reason?: "notImplemented" | "unsupportedPlatform" | "unsupportedProvider";
 };
 export type StoredTransferProposal = {

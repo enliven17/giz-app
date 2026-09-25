@@ -8,8 +8,9 @@ in application access or diagnostic entry points. Existing installed binaries
 require rebuilding to remove the old native registration.
 
 The replacement is named `GizuStoredSigner`; its versioned public contract is
-`src/domain/wallet/storedSigner.ts`. It has no native implementation yet. Capability
-reporting currently returns unavailable: Android is not implemented, and other
+`src/domain/wallet/storedSigner.ts`. Android native storage and passkey create/open are implemented in
+`modules/gizu-stored-signer`; all wallets remain backupRequired. Capability
+reporting currently returns unavailable: Android app access awaits verified backup onboarding, and other
 platforms are unsupported. Normal access fails explicitly; demo mode stays opt-in.
 
 The contract provides wallet states (absent, backupRequired, ready, recoveryRequired),
@@ -30,9 +31,9 @@ English BIP-39, empty passphrase and m/44'/60'/0'/0/i for indices 0–15. Accoun
 remains the app account. The registered passkey authorizes locally stored-wallet
 use; PRF encrypts backups rather than determining wallet addresses.
 
-Storage implementation, verified onboarding backup and transfer resume belong to
-subsequent phases in [the migration plan](SIGNER_MIGRATION.md). Do not treat
-contract declarations as implemented capabilities. No old state or provider passkeys
+Storage and passkey authorization are implemented; verified onboarding backup
+and transfer resume belong to subsequent phases in [the migration plan](SIGNER_MIGRATION.md). Do not treat
+backup/transfer contract declarations as implemented capabilities. No old state or provider passkeys
 are deleted or migrated. Web wallet sharing and iOS signing are deferred.
 
 ## Retained signer reference (inactive)

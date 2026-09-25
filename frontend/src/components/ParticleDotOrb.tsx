@@ -81,7 +81,7 @@ void main() {
   gl_Position = projectionMatrix * mvPosition;
 
   gl_PointSize = aSize * uDotScale * (13.5 / -mvPosition.z) * (1.0 + uBurst * 0.6);
-  vAlpha = (smoothstep(-1.1, 1.0, norm.z) * 0.72 + 0.28) * (1.0 - smoothstep(0.6, 1.0, uBurst));
+  vAlpha = (smoothstep(-1.1, 1.0, norm.z) * 0.72 + 0.28) * (1.0 - smoothstep(0.35, 1.0, uBurst));
 }
 `;
 
@@ -115,6 +115,7 @@ export default function ParticleDotOrb({
   const prevPointerRef = useRef({ x: 0, y: 0 });
   const rotationVelocityRef = useRef({ x: 0, y: 0.0035 });
   const burstRef = useRef(false);
+  const burstTRef = useRef(0);
   burstRef.current = burst;
 
   useEffect(() => {
@@ -199,16 +200,29 @@ export default function ParticleDotOrb({
     let animationFrameId: number;
     const clock = new THREE.Clock();
 
+    // the burst runs on time, not on frames, so it lands the same on a 60hz
+    // panel, a 120hz one and a frame that took too long
+    let lastT = performance.now();
+
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime() * speed;
 
-      material.uniforms.uTime.value = elapsedTime * 1.4;
-      material.uniforms.uBurst.value = THREE.MathUtils.lerp(
-        material.uniforms.uBurst.value,
-        burstRef.current ? 1 : 0,
-        burstRef.current ? 0.045 : 0.15,
+      const now = performance.now();
+      const dt = Math.min((now - lastT) / 1000, 0.05);
+      lastT = now;
+
+      const duration = burstRef.current ? 1.5 : 0.55;
+      burstTRef.current = Math.min(
+        1,
+        Math.max(0, burstTRef.current + (burstRef.current ? dt : -dt) / duration),
       );
+      const p = burstTRef.current;
+      material.uniforms.uTime.value = elapsedTime * 1.4;
+      // ease out on the way apart, ease in and out on the way back
+      material.uniforms.uBurst.value = burstRef.current
+        ? 1 - Math.pow(1 - p, 3)
+        : p * p * (3 - 2 * p);
 
       if (!isDraggingRef.current) {
         group.rotation.y += rotationVelocityRef.current.y;

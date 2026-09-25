@@ -2,7 +2,7 @@ import type { WalletHistory } from "@/domain/wallet/types";
 import { act, fireEvent, render, screen, userEvent } from "@testing-library/react-native";
 import { Linking } from "react-native";
 import { AppRoot } from "@/application/AppRoot";
-import { createNativeWalletAccess } from "@/services/wallet/access";
+import { createNativeWalletAccess } from "@/development/legacySigner/access";
 import { defaultPreferences } from "@/domain/preferences";
 import { deferred } from "../../support/renderApp";
 

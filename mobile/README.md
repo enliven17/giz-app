@@ -80,6 +80,12 @@ Run inside `mobile/`, or use `npm --prefix mobile` from the root.
 | `npm run hooks:install`                                                                          | Opt-in repository hook setup; refuses to replace other hooks   |
 | `npm run precommit`                                                                              | Check changed mobile files without rewriting them              |
 
+`npm run format:kotlin` formats maintained stored-signer Kotlin (including tests).
+`npm run format:kotlin:check` checks it without rewriting and runs in Android CI.
+Both require JDK 17 (`JAVA_HOME` or Java on PATH); the first run downloads the
+checksum-pinned ktfmt 0.54 JAR into the OS temporary cache. Generated bindings and
+the disconnected legacy signer are excluded. Kotlin uses ktfmt's Google style.
+
 `just mobile-check` delegates to `npm run check`. CI runs it on Linux and Windows,
 then separately compiles Android Debug and an unsigned iOS simulator build.
 Configure these jobs as required branch checks in repository settings to enforce

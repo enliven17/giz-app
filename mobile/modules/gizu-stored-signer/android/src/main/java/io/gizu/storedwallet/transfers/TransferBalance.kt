@@ -2,7 +2,9 @@ package io.gizu.storedwallet
 
 import java.math.BigInteger
 
-/** Early funding guidance only; the Rust core still validates the complete quote before approval. */
+/**
+ * Early funding guidance only; the Rust core still validates the complete quote before approval.
+ */
 internal fun requireTransferBalance(balance: String, values: List<String>, maxFee: String) {
   fun quantity(value: String): BigInteger {
     require(Regex("0x(?:0|[1-9a-fA-F][0-9a-fA-F]{0,63})").matches(value))

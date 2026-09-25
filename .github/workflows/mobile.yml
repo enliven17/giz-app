@@ -63,6 +63,8 @@ jobs:
       - run: rustup toolchain install 1.94.1 --profile minimal
       - run: rustup target add --toolchain 1.94.1 aarch64-linux-android
       - run: sdkmanager "ndk;27.1.12297006"
+      - run: npm run format:kotlin:check
+        working-directory: mobile
       - run: npm run stored-signer:build
         working-directory: mobile
       # Ephemeral CI-only key. Never add its fingerprint to the gizu.io association.

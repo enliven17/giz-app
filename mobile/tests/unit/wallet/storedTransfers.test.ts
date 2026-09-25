@@ -43,3 +43,37 @@ test.each([
 });
 test("duplicate operation identifiers are rejected", () =>
   expect(() => storedHistory([op, op], walletId, address)).toThrow());
+
+test.each([
+  null,
+  { ...op, steps: [null] },
+  { ...op, status: "invented" },
+  { ...op, steps: [{ ...op.steps[0], accountIndex: 16 }] },
+  { ...op, steps: [{ ...op.steps[0], status: "invented" }] },
+  { ...op, steps: [] },
+  { ...op, steps: Array.from({ length: 33 }, (_, index) => ({ ...op.steps[0], index })) },
+])("rejects invalid response shapes and policy limits", (value) => {
+  expect(() => storedHistory([value], walletId, address)).toThrow();
+});
+
+test("history keeps newest-first order, filters other senders, and drops planned private fields", () => {
+  const planned = {
+    ...op,
+    operationId: "7aafcc2e-0891-4e31-a7d4-03780d7b4f13",
+    steps: [{ ...op.steps[0], status: "planned" }],
+  };
+  const otherSender = {
+    ...op,
+    operationId: "7aafcc2e-0891-4e31-a7d4-03780d7b4f14",
+    steps: [{ ...op.steps[0], from: "0x" + "3".repeat(40) }],
+  };
+  const history = storedHistory([op, planned, otherSender], walletId, address);
+  expect(history.operations?.map((item) => item.operationId)).toEqual([
+    otherSender.operationId,
+    planned.operationId,
+    op.operationId,
+  ]);
+  expect(history.entries).toHaveLength(1);
+  expect(history.operations?.[1]?.steps[0]).not.toHaveProperty("transactionHash");
+  expect(JSON.stringify(history)).not.toContain("secret");
+});

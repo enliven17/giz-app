@@ -1,5 +1,6 @@
 import { requireOptionalNativeModule } from "expo";
-import { getNativeSigner, getSignerCapabilities } from "@/services/wallet/nativeBridge";
+import { getSignerCapabilities } from "@/services/wallet/nativeBridge";
+import { getNativeSigner } from "@/development/legacySigner/nativeBridge";
 
 jest.mock("expo", () => ({ requireOptionalNativeModule: jest.fn() }));
 test("does not look up a legacy signer even when an old client could provide one", () => {

@@ -10,16 +10,25 @@ import java.security.KeyFactory
 import java.security.MessageDigest
 import java.security.Signature
 import java.security.spec.ECGenParameterSpec
+import java.security.spec.ECParameterSpec
 import java.security.spec.ECPoint
 import java.security.spec.ECPublicKeySpec
-import java.security.spec.ECParameterSpec
 import java.util.Base64
 import org.json.JSONObject
 
-class StoredPasskey(val credentialId: ByteArray, val publicKeyX: ByteArray, val publicKeyY: ByteArray)
+class StoredPasskey(
+  val credentialId: ByteArray,
+  val publicKeyX: ByteArray,
+  val publicKeyY: ByteArray,
+)
 
 object PasskeyVerifier {
-  fun verifyRegistration(json: String, challenge: ByteArray, rpId: String, origin: String): StoredPasskey {
+  fun verifyRegistration(
+    json: String,
+    challenge: ByteArray,
+    rpId: String,
+    origin: String,
+  ): StoredPasskey {
     require(json.length <= 65536)
     val credential = JSONObject(json)
     require(credential.getString("type") == "public-key")
@@ -41,7 +50,9 @@ object PasskeyVerifier {
     val cose = CBORObject.Read(remaining)
     require(cose.type == CBORType.Map)
     if (authData[32].toInt() and 0x80 != 0) {
-      require(CBORObject.Read(remaining).type == CBORType.Map) { "Invalid authenticator extensions" }
+      require(CBORObject.Read(remaining).type == CBORType.Map) {
+        "Invalid authenticator extensions"
+      }
     }
     require(remaining.available() == 0) { "Unexpected authenticator data" }
     require(cose[CBORObject.FromObject(1)].AsInt32() == 2)
@@ -66,29 +77,39 @@ object PasskeyVerifier {
     require(MessageDigest.isEqual(credential.credentialId, decode(parsed.getString("rawId"))))
     require(MessageDigest.isEqual(credential.credentialId, decode(parsed.getString("id"))))
     val response = parsed.getJSONObject("response")
-    val clientData = checkClientData(response.getString("clientDataJSON"), "webauthn.get", challenge, origin)
+    val clientData =
+      checkClientData(response.getString("clientDataJSON"), "webauthn.get", challenge, origin)
     val authData = decode(response.getString("authenticatorData"))
     checkAuthenticatorData(authData, rpId, requireAttestedKey = false)
 
-    val params = AlgorithmParameters.getInstance("EC").apply {
-      init(ECGenParameterSpec("secp256r1"))
-    }.getParameterSpec(ECParameterSpec::class.java)
-    val key = KeyFactory.getInstance("EC").generatePublic(
-      ECPublicKeySpec(
-        ECPoint(BigInteger(1, credential.publicKeyX), BigInteger(1, credential.publicKeyY)),
-        params,
-      ),
-    )
-    val verified = Signature.getInstance("SHA256withECDSA").apply {
-      initVerify(key)
-      update(authData)
-      update(sha256(clientData))
-    }.verify(decode(response.getString("signature")))
+    val params =
+      AlgorithmParameters.getInstance("EC")
+        .apply { init(ECGenParameterSpec("secp256r1")) }
+        .getParameterSpec(ECParameterSpec::class.java)
+    val key =
+      KeyFactory.getInstance("EC")
+        .generatePublic(
+          ECPublicKeySpec(
+            ECPoint(BigInteger(1, credential.publicKeyX), BigInteger(1, credential.publicKeyY)),
+            params,
+          )
+        )
+    val verified =
+      Signature.getInstance("SHA256withECDSA")
+        .apply {
+          initVerify(key)
+          update(authData)
+          update(sha256(clientData))
+        }
+        .verify(decode(response.getString("signature")))
     require(verified) { "Invalid passkey assertion signature" }
   }
 
   private fun checkClientData(
-    encoded: String, type: String, challenge: ByteArray, origin: String,
+    encoded: String,
+    type: String,
+    challenge: ByteArray,
+    origin: String,
   ): ByteArray {
     val bytes = decode(encoded)
     val data = JSONObject(String(bytes, Charsets.UTF_8))
@@ -101,7 +122,9 @@ object PasskeyVerifier {
 
   private fun checkAuthenticatorData(data: ByteArray, rpId: String, requireAttestedKey: Boolean) {
     require(data.size >= 37)
-    require(MessageDigest.isEqual(data.copyOfRange(0, 32), sha256(rpId.toByteArray(Charsets.UTF_8))))
+    require(
+      MessageDigest.isEqual(data.copyOfRange(0, 32), sha256(rpId.toByteArray(Charsets.UTF_8)))
+    )
     val flags = data[32].toInt() and 0xff
     require(flags and 0x01 != 0) { "User presence required" }
     require(flags and 0x04 != 0) { "User verification required" }
@@ -109,5 +132,7 @@ object PasskeyVerifier {
   }
 
   private fun decode(value: String): ByteArray = Base64.getUrlDecoder().decode(value)
-  private fun sha256(bytes: ByteArray): ByteArray = MessageDigest.getInstance("SHA-256").digest(bytes)
+
+  private fun sha256(bytes: ByteArray): ByteArray =
+    MessageDigest.getInstance("SHA-256").digest(bytes)
 }

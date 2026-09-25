@@ -11,7 +11,8 @@ class CryptoEnvelopeTest {
   private val key = KeyGenerator.getInstance("AES").apply { init(256) }.generateKey()
   private val aad = "wallet-state-v1".toByteArray()
 
-  @Test fun decryptsOnlyMatchingRecord() {
+  @Test
+  fun decryptsOnlyMatchingRecord() {
     val plaintext = "test-only-secret".toByteArray()
     val encrypted = CryptoEnvelope.encrypt(key, plaintext, aad)
     assertArrayEquals(plaintext, CryptoEnvelope.decrypt(key, encrypted, aad))
@@ -20,7 +21,8 @@ class CryptoEnvelopeTest {
     }
   }
 
-  @Test fun usesFreshNonceEveryWrite() {
+  @Test
+  fun usesFreshNonceEveryWrite() {
     val plaintext = "same-data".toByteArray()
     val first = CryptoEnvelope.encrypt(key, plaintext, aad)
     val second = CryptoEnvelope.encrypt(key, plaintext, aad)

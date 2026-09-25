@@ -1,8 +1,8 @@
 import { act, render, screen, userEvent } from "@testing-library/react-native";
 import { Linking } from "react-native";
 import { WalletDebugApp } from "@/development/WalletDebugApp";
-import { createNativeWalletAccess } from "@/services/wallet/access";
-import { type NativeWalletBridge } from "@/services/wallet/nativeBridge";
+import { createNativeWalletAccess } from "@/development/legacySigner/access";
+import { type NativeWalletBridge } from "@/development/legacySigner/nativeBridge";
 import { deferred } from "../../support/renderApp";
 
 const address = "0x" + "1".repeat(40);

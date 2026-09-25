@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, userEvent } from "@testing-library/react-native";
 import { Linking } from "react-native";
 import { AppRoot } from "@/application/AppRoot";
+import * as nativeBridge from "@/services/wallet/nativeBridge";
 import { createStoredTransfers } from "@/services/wallet/storedTransfers";
 import { createStoredWalletAccess } from "@/services/wallet/storedAccess";
 import type { StoredOperation } from "@/domain/wallet/storedSigner";
@@ -35,7 +36,7 @@ function operation(
     ],
   };
 }
-function setup(initial: StoredOperation[] = []) {
+function setup(initial: StoredOperation[] = [], useDefaultSigner = false) {
   let records = initial;
   const native = {
     listOperations: jest.fn(async () => records),
@@ -74,11 +75,14 @@ function setup(initial: StoredOperation[] = []) {
     restoreWallet: jest.fn(),
     lock: jest.fn(),
   }));
+  if (useDefaultSigner) jest.spyOn(nativeBridge, "getStoredTransferSigner").mockReturnValue(native);
   const element = (
     <AppRoot
       accessService={access}
       walletBalanceService={{ getBalance: async () => "1000000000000000000" }}
-      walletTransferService={createStoredTransfers(walletId, () => native)}
+      walletTransferService={
+        useDefaultSigner ? undefined : createStoredTransfers(walletId, () => native)
+      }
     />
   );
   return {
@@ -165,4 +169,32 @@ test("unknown nonce conflicts remain visible and cannot be resumed", async () =>
   expect(await screen.findByText(/Account nonce changed/)).toBeVisible();
   expect(screen.queryByRole("button", { name: "Review and resume" })).toBeNull();
   expect(native.resumeOperation).not.toHaveBeenCalled();
+});
+
+test("cancellation failure requires refresh and prevents another operation", async () => {
+  const { native } = setup([operation("planned")]);
+  await open();
+  await activity();
+  const pending = deferred<StoredOperation>();
+  native.cancelOperation.mockReturnValueOnce(pending.promise);
+  await userEvent.press(await screen.findByRole("button", { name: "Cancel remaining transfers" }));
+  expect(screen.getByRole("button", { name: "Review and resume" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Cancel remaining transfers" })).toBeDisabled();
+  await act(async () => pending.reject(new Error("cancel failed")));
+  expect(await screen.findByText(/Operation paused or changed/)).toBeVisible();
+  expect(screen.getByRole("button", { name: "Cancel remaining transfers" })).toBeDisabled();
+  await userEvent.press(screen.getByRole("button", { name: "Refresh activity" }));
+  expect(screen.getByRole("button", { name: "Cancel remaining transfers" })).toBeEnabled();
+  expect(native.cancelOperation).toHaveBeenCalledTimes(1);
+  expect(native.executeOperation).not.toHaveBeenCalled();
+});
+
+test("normal wallet composition uses the stored signer without a transfer-service override", async () => {
+  const { native } = setup([], true);
+  await open();
+  await userEvent.press(screen.getByRole("button", { name: "Withdraw" }));
+  fireEvent.changeText(await screen.findByLabelText("Recipient address"), to);
+  await userEvent.press(screen.getByRole("button", { name: "Review withdrawal" }));
+  expect(await screen.findByText("Finalized")).toBeVisible();
+  expect(native.executeOperation).toHaveBeenCalledWith(expect.objectContaining({ walletId }));
 });

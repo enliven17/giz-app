@@ -5,7 +5,9 @@
 The retained `modules/gizu-signer` implementation is disconnected from the app
 and excluded from Android/iOS autolinking. No legacy lookup or fallback remains
 in application access or diagnostic entry points. Existing installed binaries
-require rebuilding to remove the old native registration.
+require rebuilding to remove the old native registration. Legacy JavaScript adapters
+are retained under `src/development/legacySigner`; normal wallet composition requires
+a stored-wallet identity and never selects these adapters.
 
 The replacement is named `GizuStoredSigner`; its versioned public contract is
 `src/domain/wallet/storedSigner.ts`. Android development builds implement native

@@ -343,7 +343,7 @@ function Route({ on }: { on: boolean }) {
 
           <Wire on={on} delay={0.55} />
 
-          {/* and where it lands, with nothing of the first left on it */}
+          {/* the same address, only nobody can read it any more */}
           <div className="relative w-[92px] shrink-0 text-center">
             <motion.div
               initial={false}
@@ -354,10 +354,10 @@ function Route({ on }: { on: boolean }) {
               transition={{ duration: 0.4, delay: on ? 1 : 0 }}
               className="rounded-lg border bg-[#0a0e0c] py-2 font-mono text-[11px]"
             >
-              0xd93b
+              0x7a4f
             </motion.div>
             <div className="absolute inset-x-0 top-full mt-2 text-[9px] uppercase tracking-[0.16em] text-white/30">
-              unlinked
+              confidential
             </div>
           </div>
         </div>
@@ -547,19 +547,18 @@ function Encrypt({ on }: { on: boolean }) {
   )
 }
 
-const FEEDS = [
-  { y: 36, label: 'yours', mine: true },
-  { y: 92, label: '\u2022\u2022\u2022\u2022\u2022', mine: false },
-  { y: 148, label: '\u2022\u2022\u2022\u2022\u2022', mine: false },
-  { y: 204, label: '\u2022\u2022\u2022\u2022\u2022', mine: false },
+const ACCOUNTS = [
+  { y: 36, label: 'P1' },
+  { y: 92, label: 'P2' },
+  { y: 148, label: 'P3' },
+  { y: 204, label: 'P4' },
 ]
 
-const feedPath = (y: number) => `M 112 ${y} C 176 ${y} 196 120 264 120`
-const OUT_PATH = 'M 336 120 H 386'
+const IN_PATH = 'M 132 120 H 196'
+const outPath = (y: number) => `M 284 120 C 336 120 344 ${y} 388 ${y}`
 
-/** Deposits stream into one core and leave as a single batch, so nothing that
- *  comes out points back at anything that went in. The core is the same object
- *  the next step opens as a vault. */
+/** One deposit goes in, and comes out spread across the anonym accounts, so
+ *  nothing leaving the core points back at what entered it. */
 function Batch({ on }: { on: boolean }) {
   return (
     <Stage>
@@ -572,78 +571,73 @@ function Batch({ on }: { on: boolean }) {
             fill="none"
             preserveAspectRatio="none"
           >
-            {FEEDS.map((f, i) => (
-              <path key={i} d={feedPath(f.y)} stroke="rgba(255,255,255,0.1)" strokeWidth="1.2" />
+            <path d={IN_PATH} stroke="rgba(255,255,255,0.1)" strokeWidth="1.2" />
+            {ACCOUNTS.map((a, i) => (
+              <path key={i} d={outPath(a.y)} stroke="rgba(255,255,255,0.1)" strokeWidth="1.2" />
             ))}
-            <path d={OUT_PATH} stroke="rgba(255,255,255,0.1)" strokeWidth="1.2" />
 
             {on && (
               <g stroke="#31c47e" strokeWidth="1.6" strokeLinecap="round" fill="none">
-                {FEEDS.map((f, i) => (
+                <path className="reactor-flow reactor-flow-in" d={IN_PATH} pathLength={1} />
+                {ACCOUNTS.map((a, i) => (
                   <path
                     key={i}
                     className={`reactor-flow reactor-flow-${i}`}
-                    d={feedPath(f.y)}
+                    d={outPath(a.y)}
                     pathLength={1}
                   />
                 ))}
-                <path className="reactor-flow reactor-flow-out" d={OUT_PATH} pathLength={1} />
               </g>
             )}
           </svg>
 
-          {FEEDS.map((f, i) => (
-            <span
-              key={i}
-              className={`absolute flex h-7 w-[92px] items-center justify-center rounded-lg border font-mono text-[11px] ${
-                f.mine
-                  ? 'border-neon/30 bg-neon/10 text-neon'
-                  : 'border-white/[0.08] bg-white/[0.03] text-white/40'
-              }`}
-              style={{ left: 20, top: f.y - 14 }}
-            >
-              {f.label}
-            </span>
-          ))}
+          {/* what goes in */}
+          <span
+            className="absolute flex h-8 w-[112px] items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] font-mono text-[12px] text-white/55"
+            style={{ left: 20, top: 104 }}
+          >
+            0x7a4f
+          </span>
 
           {/* the core, which the vault grows out of */}
           <div
-            className="absolute flex h-[68px] w-[68px] items-center justify-center rounded-full border border-neon/25 bg-[#0c1712]"
-            style={{ left: 266, top: 86 }}
+            className="absolute flex h-[88px] w-[88px] items-center justify-center rounded-full border border-neon/25 bg-[#0c1712]"
+            style={{ left: 196, top: 76 }}
           >
             <motion.img
               src="/gizulogo.svg"
               alt=""
-              className="h-7 w-auto"
+              className="h-8 w-auto"
               initial={false}
               animate={{ opacity: on ? [0.7, 1, 0.7] : 0.5 }}
               transition={{ duration: 1.8, repeat: on ? Infinity : 0, ease: 'easeInOut' }}
             />
           </div>
 
-          <motion.span
-            layoutId="carrier"
-      data-carrier
-            transition={{ layout: LAYOUT }}
-            className="absolute flex h-9 w-[104px] items-center justify-center rounded-xl border border-neon/30 bg-neon/10 font-mono text-[12px] text-neon"
-            style={{ left: 386, top: 102 }}
-          >
-            batch
-          </motion.span>
+          {/* and what comes out */}
+          {ACCOUNTS.map((a, i) => (
+            <motion.span
+              key={a.label}
+              {...(i === 0 ? { layoutId: 'carrier', 'data-carrier': true, transition: { layout: LAYOUT } } : {})}
+              className="absolute flex h-8 w-[104px] items-center justify-center rounded-lg border border-neon/30 bg-neon/10 font-mono text-[12px] font-semibold text-neon"
+              style={{ left: 388, top: a.y - 16 }}
+            >
+              {a.label}
+            </motion.span>
+          ))}
         </div>
       </div>
 
       <style>{`
-        /* a dash running along the path, which the compositor keeps up with */
         /* the staged reveal sets an animation on every child, so this one
            has to state that it keeps its own */
         .reactor-flow {
           stroke-dasharray: 0.14 1;
           animation: reactor-flow 2.6s linear infinite !important;
         }
-        ${FEEDS.map((_, i) => `
-        .reactor-flow-${i} { animation-delay: ${(i * 0.32).toFixed(2)}s !important; }`).join('')}
-        .reactor-flow-out { animation-delay: 1.3s !important; }
+        .reactor-flow-in { animation-delay: 0s !important; }
+        ${ACCOUNTS.map((_, i) => `
+        .reactor-flow-${i} { animation-delay: ${(0.8 + i * 0.18).toFixed(2)}s !important; }`).join('')}
         @keyframes reactor-flow {
           from { stroke-dashoffset: 1.14; }
           to { stroke-dashoffset: 0; }

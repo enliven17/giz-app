@@ -183,7 +183,6 @@ function NativePortfolio({ navigation }: BottomTabScreenProps<MainTabParamList, 
         <View className="min-w-24 flex-1">
           <Button
             label="Withdraw"
-            disabled={!!wallet.session.walletId}
             onPress={() => root.navigate("Transaction", { kind: "withdraw" })}
           />
         </View>
@@ -194,9 +193,7 @@ function NativePortfolio({ navigation }: BottomTabScreenProps<MainTabParamList, 
         />
       </View>
       <Typography variant="caption">
-        {wallet.session.walletId
-          ? "Withdrawals and transaction history are not available yet for this wallet."
-          : "Transfers use native approval. Activity lists outgoing transfers recorded on this device."}
+        Transfers use native approval. Activity lists outgoing transfers recorded on this device.
       </Typography>
       <View className="mt-3 flex-row flex-wrap items-center justify-between gap-2">
         <Typography variant="heading">Confidential vaults</Typography>

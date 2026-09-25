@@ -10,7 +10,7 @@ From welcome choose **Get started**, then **Continue with passkey**. New Android
 wallets must save and reopen an encrypted backup before Home opens. Recovery needs
 the file and original passkey. Vault services, notifications, fiat valuations and
 performance history remain unavailable. Deposit shows the receiving address;
-withdrawals and Activity integration await phase 4 of the stored-wallet migration.
+Withdraw uses native approval; Activity shows local outgoing history and explicit resume.
 iOS wallet access is unavailable. Incoming/external activity is not indexed.
 
 Run `npm run start:demo` for the historical M2–M5 fixture flows described below.
@@ -210,7 +210,7 @@ with `npm run ios` or `npm run android` from `mobile/` before testing this versi
 The old Gizu signer is preserved but disconnected from app access, diagnostics and
 native autolinking. `npm start` opens the existing app. Android development wallets
 require native save-and-reopen backup verification before entering Home. Account
-includes backup management; withdrawals and history await phase 4. iOS signing is
+includes backup management; Withdraw and Activity use native approval and history. iOS signing is
 unsupported during this migration. No fallback creates a demo or legacy wallet.
 
 Use `npm run start:demo` explicitly for fixture flows. The UI playground remains:
@@ -237,7 +237,7 @@ not generated cryptographic bindings. The replacement contract is
 Replacement module verification uses `npm run stored-signer:test` and
 `npm run stored-signer:build`; see its [module guide](modules/gizu-stored-signer/README.md).
 
-For phase 3 Android testing, rebuild with `npm run android`, then use the normal
+For Android testing, rebuild with `npm run android`, then use the normal
 app (`npm start`). Continue with passkey, save the encrypted backup, reopen it and
 confirm the original passkey again. Only successful verification opens Home.
 Cancel before verification and retry: the same wallet must resume backup setup.
@@ -245,8 +245,14 @@ Account offers **Save and verify wallet backup**. Recovery requires both the bac
 file and original passkey. Restore is shown only for absent/unreadable local storage;
 use another installation/device to test it without deleting this wallet.
 
-Transfers/history remain unavailable, and no real funds should be sent. Test
-second-device restore only where the original passkey is available; compare Account 0
-(and native derivation fixtures). Physical document-picker/provider and second-device
-acceptance remain pending. The explicit `npm run debug:stored-wallet` harness and
-retained legacy source remain separate from normal entry.
+After rebuilding, fund the new Account 0 with testnet MON only. Use the existing
+Withdraw screen for a small transfer. Read the native review, approve and unlock
+with the wallet's passkey. Activity **Refresh** only reconciles; **Review and resume**
+requires a new native review/passkey prompt. Cancel stops unsigned remaining steps;
+it cannot undo signed/submitted transfers. Pending or nonce-conflicting operations
+block new transfers. Restoring a backup does not restore local transaction history.
+
+Phase-3 guided checks were user-reported successful. Guided phase-4 cancellation, withdrawal, restart and resume checks were also
+user-reported successful. Extended failure paths and second-device restore remain pending. Test restore only where the original
+passkey is available and compare Account 0. The explicit `npm run debug:stored-wallet`
+harness and retained legacy source remain separate from normal entry.

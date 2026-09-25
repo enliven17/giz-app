@@ -78,6 +78,7 @@ class WalletStoreTest {
       store.restore(record)
       assertArrayEquals(ByteArray(32){it.toByte()},record.entropy)
       assertEquals("ready",store.state()["status"])
+      store.load().use { assertNotEquals(record.journalId,it.journalId) }
       assertThrows(IllegalStateException::class.java) { store.restore(record) }
       keys.key=null
       assertEquals("recoveryRequired",store.state()["status"])

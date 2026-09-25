@@ -1,3 +1,4 @@
+import { WalletOperations } from "@/features/wallet/WalletOperations";
 import { useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { BackAction } from "@/navigation/BackAction";
@@ -16,14 +17,6 @@ export function NativeActivity() {
       void refresh();
     }, [refresh]),
   );
-  if (wallet.session.walletId)
-    return (
-      <Screen>
-        <BackAction fallback="Home" />
-        <Typography variant="heading">Activity</Typography>
-        <Typography>Transaction history is not available yet for this wallet.</Typography>
-      </Screen>
-    );
   return (
     <Screen>
       <BackAction fallback="Home" />
@@ -37,6 +30,7 @@ export function NativeActivity() {
       {c.ready && c.history.entries.length === 0 && (
         <Typography>No outgoing transfers recorded for this wallet.</Typography>
       )}
+      <WalletOperations />
       <WalletHistoryRows entries={c.history.entries} />
     </Screen>
   );

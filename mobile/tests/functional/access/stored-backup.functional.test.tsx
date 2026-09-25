@@ -44,7 +44,7 @@ async function proceed() {
   await userEvent.press(screen.getByRole("button", { name: "Continue with passkey" }));
 }
 
-test("onboarding waits for verified backup then opens existing Home with transfers disabled", async () => {
+test("onboarding waits for verified backup then opens existing Home", async () => {
   const native = setup();
   const backup = deferred<StoredWalletState>();
   native.backupWallet.mockReturnValue(backup.promise);
@@ -54,7 +54,7 @@ test("onboarding waits for verified backup then opens existing Home with transfe
   expect(screen.queryByRole("header", { name: "Your portfolio" })).toBeNull();
   await act(async () => backup.resolve(ready));
   expect(await screen.findByRole("header", { name: "Your portfolio" })).toBeVisible();
-  expect(screen.getByRole("button", { name: "Withdraw" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Withdraw" })).toBeEnabled();
   await userEvent.press(screen.getByLabelText("Settings tab"));
   expect(
     await screen.findByRole("button", { name: "Save and verify wallet backup" }),

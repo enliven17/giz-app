@@ -17,7 +17,7 @@ import java.util.UUID
 import kotlin.coroutines.resume
 import uniffi.gizu_stored_signer_core.deriveAccountAddresses
 
-/** Wallet access requires a verified native backup; transaction signing is not exposed. */
+/** Wallet access requires a verified native backup; exact transfer signing stays native. */
 class GizuStoredSignerModule : Module() {
   companion object { private val ceremony = Mutex() }
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -50,11 +50,12 @@ class GizuStoredSignerModule : Module() {
     continuation.invokeOnCancellation { scope.launch { alert.dismiss() } }
   }
 
-  private fun run(promise: Promise, block: suspend (Activity, WalletStore) -> Map<String, Any>) {
+  private fun run(promise: Promise, wait: Boolean = false, block: suspend (Activity, WalletStore) -> Any) {
     scope.launch {
       val activity = appContext.currentActivity
       if (!eligible(activity)) { promise.reject("UNAVAILABLE", "Android development wallet unavailable.", null); return@launch }
-      if (!ceremony.tryLock()) { promise.reject("BUSY", "A native wallet operation is already in progress.", null); return@launch }
+      if (wait) ceremony.lock()
+      if (!wait && !ceremony.tryLock()) { promise.reject("BUSY", "A native wallet operation is already in progress.", null); return@launch }
       task = coroutineContext[Job]
       try {
         foreground(activity!!)
@@ -89,7 +90,7 @@ class GizuStoredSignerModule : Module() {
     Name("GizuStoredSigner")
     AsyncFunction("getCapabilities") { promise: Promise ->
       promise.resolve(mapOf("contractVersion" to 1, "available" to eligible(appContext.currentActivity), "walletStorage" to eligible(appContext.currentActivity),
-        "backup" to eligible(appContext.currentActivity), "transfers" to false))
+        "backup" to eligible(appContext.currentActivity), "transfers" to eligible(appContext.currentActivity)))
     }
     AsyncFunction("getWalletState") { promise: Promise -> run(promise) { _, store ->
       withContext(Dispatchers.IO) { publicState(store) }
@@ -137,6 +138,37 @@ class GizuStoredSignerModule : Module() {
       provider(activity) { BackupHost.open(activity, true) }
       withContext(Dispatchers.IO) { publicState(store) }
     } }
+    AsyncFunction("executeOperation") { proposal: Map<String, Any?>, promise: Promise -> run(promise) { activity,store ->
+      val journal=store.load().use { operationJournal(activity,it) }
+      reconcileOperations(journal,MonadRpc())
+      val operation=store.load().use { createOperation(journal,it,proposal) }
+      provider(activity) { TransferHost.open(activity,operation.getString("operationId"),operation.getInt("revision")) }
+      journal.public(journal.get(operation.getString("operationId")))
+    } }
+    AsyncFunction("listOperations") { promise: Promise -> run(promise) { activity,store ->
+      val journal=store.load().use { operationJournal(activity,it) }
+      reconcileOperations(journal,MonadRpc())
+      journal.all().map { journal.public(it) }
+    } }
+    AsyncFunction("getOperationStatus") { id: String, promise: Promise -> run(promise) { activity,store ->
+      val journal=store.load().use { operationJournal(activity,it) }
+      reconcileOperations(journal,MonadRpc()); journal.public(journal.get(id))
+    } }
+    AsyncFunction("resumeOperation") { id: String, revision: Int, promise: Promise -> run(promise) { activity,store ->
+      val journal=store.load().use { operationJournal(activity,it) }
+      check(journal.get(id).getInt("revision") == revision)
+      provider(activity) { TransferHost.open(activity,id,revision) }
+      journal.public(journal.get(id))
+    } }
+    AsyncFunction("cancelOperation") { id: String, promise: Promise ->
+      scope.launch {
+        if (TransferHost.id == id) task?.cancel()
+        run(promise,wait=true) { activity,store ->
+          val journal=store.load().use { operationJournal(activity,it) }
+          journal.public(journal.cancel(id))
+        }
+      }
+    }
     Function("lock") { scope.launch { task?.cancel() } }
     OnActivityEntersForeground { foreground = true }
     OnActivityEntersBackground {

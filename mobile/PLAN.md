@@ -30,8 +30,11 @@ will be unavailable until its replacement is implemented. Phase 1 disconnects th
 old signer and declares the replacement contract. Phase 2 implements isolated
 Android encrypted storage and native passkey create/open. Phase 3 connects access
 to native save/reopen backup verification, recovery and Account backup management.
-Only verified wallets enter Home; withdrawals/history remain unavailable pending
-phase 4. Physical backup/restore acceptance remains pending. The table above
+Only verified wallets enter Home. Phase 4 connects Withdraw and Activity to native
+exact-transfer approval, encrypted operation history and explicit resume. Next is
+phase 5: device acceptance and retained-module isolation checks. Phase-3 guided
+checks were user-reported successful; second-device restore and extended phase-4 failure-path
+acceptance remain pending. Guided phase-4 phone checks were user-reported successful. The table above
 summarizes the previous implementation, not current signer availability.
 Preserve the existing Gizu signer module for future reuse, but disconnect its app
 wiring and exclude it from app native builds. Only the replacement will be active.

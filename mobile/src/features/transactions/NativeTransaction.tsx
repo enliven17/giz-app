@@ -1,3 +1,4 @@
+import { WalletOperations } from "@/features/wallet/WalletOperations";
 import { ArrowUpRight, ShieldCheck } from "lucide-react-native";
 import { GroupedRow } from "@/components/molecules/GroupedRow";
 import { useCallback } from "react";
@@ -27,14 +28,6 @@ export function NativeTransaction({
       if (kind === "withdraw") void refresh();
     }, [kind, refresh]),
   );
-  if (wallet.session.walletId && kind !== "deposit")
-    return (
-      <Screen>
-        <BackAction fallback="Home" />
-        <Typography variant="title">Withdraw</Typography>
-        <Typography>Withdrawals are not available yet for this wallet.</Typography>
-      </Screen>
-    );
   return (
     <Screen>
       <BackAction fallback="Home" />
@@ -144,8 +137,8 @@ export function NativeTransaction({
             <View className="min-w-0 flex-1 gap-1">
               <Typography variant="row">Review before you approve</Typography>
               <Typography variant="caption">
-                Unlock this wallet’s passkey to review the exact recipient, amount and fees. Nothing
-                is signed until you approve in the native screen.
+                Review the exact recipient, amount and fees, then approve with this wallet’s
+                passkey. Nothing is signed before native approval.
               </Typography>
             </View>
           </View>
@@ -173,6 +166,7 @@ export function NativeTransaction({
           {c.history.entries.length > 0 && (
             <Typography variant="heading">Recent withdrawals</Typography>
           )}
+          <WalletOperations />
           <WalletHistoryRows entries={c.history.entries} />
         </>
       ) : (

@@ -1,4 +1,4 @@
-/** Frozen replacement contract. Android storage/access/backup implemented; transfers remain gated. */
+/** Frozen replacement contract. Android storage/access/backup implemented; exact transfers and explicit resume supported. */
 export const storedSignerIdentity = {
   moduleName: "GizuStoredSigner",
   storageNamespace: "io.gizu.storedwallet.v1",
@@ -38,6 +38,8 @@ export type StoredOperation = {
   operationId: string;
   revision: number;
   walletId: string;
+  canResume: boolean;
+  blocked: boolean;
   status: "running" | "needsAuthorization" | "needsReview" | "completed" | "cancelled";
   steps: {
     index: number;
@@ -47,6 +49,8 @@ export type StoredOperation = {
     valueWei: string;
     status: "planned" | "signed" | "pending" | "unknown" | "finalized" | "reverted";
     transactionHash?: string;
+    nonce?: string;
+    nonceConflict?: boolean;
   }[];
 };
 

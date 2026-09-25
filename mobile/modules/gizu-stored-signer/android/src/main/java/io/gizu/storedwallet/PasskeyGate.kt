@@ -33,9 +33,9 @@ internal class PasskeyGate(private val activity: Activity) {
     return PasskeyVerifier.verifyRegistration(response.registrationResponseJson, challenge, rp, origin())
   }
 
-  suspend fun authorize(credential: StoredPasskey, walletId: String) {
+  suspend fun authorize(credential: StoredPasskey, walletId: String, purpose: String = "open:v1") {
     val challenge = MessageDigest.getInstance("SHA-256")
-      .digest("gizu-stored-wallet:open:v1:$walletId:".toByteArray() + random())
+      .digest("gizu-stored-wallet:$purpose:$walletId:".toByteArray() + random())
     val request = JSONObject().put("challenge", encode(challenge)).put("rpId", rp)
       .put("allowCredentials", JSONArray().put(JSONObject().put("type", "public-key").put("id", encode(credential.credentialId))))
       .put("userVerification", "required").put("timeout", 120000)

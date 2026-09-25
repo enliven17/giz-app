@@ -1,6 +1,6 @@
 import { requireOptionalNativeModule } from "expo";
 import type { StoredWalletBridge } from "./storedAccess";
-import type { StoredSignerCapabilities } from "@/domain/wallet/storedSigner";
+import type { StoredSignerContract, StoredSignerCapabilities } from "@/domain/wallet/storedSigner";
 import { Platform } from "react-native";
 
 export interface NativeWalletBridge {
@@ -27,7 +27,7 @@ export function getSignerCapabilities(): StoredSignerCapabilities {
     available,
     walletStorage: available,
     backup: available,
-    transfers: false,
+    transfers: available,
     reason: available
       ? undefined
       : Platform.OS === "android"
@@ -48,5 +48,20 @@ export class WalletUnavailableError extends Error {
 export function getStoredSigner(): StoredWalletBridge | null {
   return Platform.OS === "android" && Number(Platform.Version) >= 28 && __DEV__
     ? requireOptionalNativeModule<StoredWalletBridge>("GizuStoredSigner")
+    : null;
+}
+
+export type StoredTransferBridge = Pick<
+  StoredSignerContract,
+  | "executeOperation"
+  | "listOperations"
+  | "getOperationStatus"
+  | "resumeOperation"
+  | "cancelOperation"
+  | "lock"
+>;
+export function getStoredTransferSigner(): StoredTransferBridge | null {
+  return Platform.OS === "android" && Number(Platform.Version) >= 28 && __DEV__
+    ? requireOptionalNativeModule<StoredTransferBridge>("GizuStoredSigner")
     : null;
 }

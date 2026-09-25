@@ -10,23 +10,24 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 
 internal fun walletStore(context: Context) = WalletStore(AndroidWalletFile(context), AndroidWalletKeys())
-internal class AndroidWalletFile(context: Context) : WalletFile {
-  private val base = File(context.noBackupFilesDir, "gizu-stored-wallet-v1.enc")
+internal class AndroidWalletFile(context: Context, name: String = "gizu-stored-wallet-v1.enc", private val limit: Int = 8192) : WalletFile {
+  private val base = File(context.noBackupFilesDir, name)
   private val file = AtomicFile(base)
   override fun exists() = base.exists() || File(base.path + ".bak").exists()
   override fun read(): ByteArray = file.openRead().use { input ->
     // Bounded before allocation even if local data is corrupt.
-    val buffer = ByteArray(8193)
+    val buffer = ByteArray(limit + 1)
     var used = 0
     while (used < buffer.size) {
       val n = input.read(buffer, used, buffer.size - used)
       if (n < 0) break
       used += n
     }
-    require(used <= 8192)
+    require(used <= limit)
     buffer.copyOf(used)
   }
   override fun write(bytes: ByteArray) {
+    require(bytes.size <= limit)
     val stream = file.startWrite()
     try { stream.write(bytes); file.finishWrite(stream) }
     catch (error: Exception) { file.failWrite(stream); throw error }

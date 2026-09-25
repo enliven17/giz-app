@@ -9,9 +9,10 @@ require rebuilding to remove the old native registration.
 
 The replacement is named `GizuStoredSigner`; its versioned public contract is
 `src/domain/wallet/storedSigner.ts`. Android development builds implement native
-storage, passkey create/open and verified backup/restore in `modules/gizu-stored-signer`.
+storage, passkey create/open, verified backup/restore and exact transfers in
+`modules/gizu-stored-signer`.
 Only backup-verified wallets enter app sessions. Other platforms are unsupported;
-demo mode stays opt-in. Transfers remain unavailable.
+demo mode stays opt-in. Withdraw and Activity use the replacement operation journal.
 
 The contract provides wallet states (absent, backupRequired, ready, recoveryRequired),
 native create/open/backup/restore ceremonies and operation execute/status/resume/
@@ -31,8 +32,8 @@ English BIP-39, empty passphrase and m/44'/60'/0'/0/i for indices 0–15. Accoun
 remains the app account. The registered passkey authorizes locally stored-wallet
 use; PRF encrypts backups rather than determining wallet addresses.
 
-Storage, passkey authorization and verified onboarding backup are implemented.
-Transfer/resume declarations remain unimplemented; see [the migration plan](SIGNER_MIGRATION.md). No old state or provider passkeys
+Storage, passkey authorization, verified onboarding backup and transfer/resume are
+implemented; see [the migration plan](SIGNER_MIGRATION.md). No old state or provider passkeys
 are deleted or migrated. Web wallet sharing and iOS signing are deferred.
 
 ## Verified backup and recovery
@@ -53,7 +54,8 @@ PRF never cross Expo; owned buffers are cleared before document selection. Provi
 and managed-runtime copies cannot be guaranteed to be erased. Two fresh passkey
 checks are expected for save and reopen verification.
 
-Local binary storage version 2 adds the verified flag; phase-2 version-1 records
+Local binary storage version 3 adds a journal-generation UUID. Version-2 records
+retain readiness and use their wallet UUID as journal generation; version-1 records
 load as backup-required without changing entropy. Restore requires the encrypted
 file and its original passkey, validates authenticated metadata and derivation,
 and re-encrypts under a local Keystore key. Only absent/unreadable storage can be
@@ -64,6 +66,45 @@ The two-minute ceremony deadline includes document selection. Backgrounding outs
 native credential/document UI cancels; foreground/unlocked checks apply on return.
 Automated tests cover codec/storage and mocked app flows, not device/provider/file
 picker acceptance or independent security review.
+
+## Exact transfers and operation recovery
+
+The non-exported `TransferActivity` owns preparation, complete native review and a
+fresh verified passkey assertion. Its challenge binds wallet, operation ID, revision
+and review digest. JavaScript supplies proposals and receives public status only.
+Approval requires scrolling through the review. Cancellation, screen lock,
+unexpected backgrounding and the two-minute ceremony deadline end authority.
+
+The adapted Rust policy permits Monad testnet (10143) EIP-1559 native MON transfers
+only: account indices 0–15, up to 32 steps, at most 0.1 MON per step, 1 MON total and
+0.1 MON maximum total fees. Only 21,000-gas EOA transfers are allowed; calldata,
+contract recipients/senders and mainnet are rejected. Account 0 remains the app account.
+
+`OperationJournal` encrypts JSON using AES-GCM and the local Keystore key, with AAD
+binding format, wallet and journal generation. Atomic writes in `noBackupFilesDir`
+persist signed bytes, hash, nonce, quote and step state **before any broadcast**.
+Raw signed bytes and preparation quotes never cross Expo. Reads are bounded to
+4 MiB and 256 operations; exhaustion fails rather than pruning unresolved evidence.
+
+Refresh and reopening only reconcile receipts, canonical finalized blocks and
+sender nonces. They never sign, rebroadcast or continue a batch. A missing transaction
+with an unchanged nonce can be explicitly retried after fresh native review and
+passkey authorization, using identical saved bytes and fees. Pending or conflicting
+nonces block further execution. There is no automatic fee replacement or conflict
+resolution. RPC failures preserve evidence and require another successful refresh.
+
+Unsigned remainder is newly prepared and reviewed on every resume. Revision checks
+reject stale requests. Execution waits for each step to finalize before proceeding;
+a pending result stops the batch. Cancellation prevents unsigned remaining steps but
+cannot revoke a signed transaction; its status and explicit retry remain available.
+Restore creates a fresh journal generation and cannot resume another installation's
+operations. Activity shows local outgoing records only, not indexed incoming history.
+
+Android RPC uses OkHttp 4.9.2, matching the existing React Native dependency. The
+fixed Monad endpoint and bounded, cancellable transport live in `rpc/`; orchestration,
+reconciliation, journal and native approval live in `transfers/`. The inactive module
+is not a runtime dependency. Guided phone checks were user-reported successful; extended failure-path
+acceptance remains pending. See [verification evidence](NATIVE_SIGNER_VERIFICATION.md).
 
 ## Retained signer reference (inactive)
 

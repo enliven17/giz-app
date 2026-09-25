@@ -1,5 +1,28 @@
 # Native signer verification
 
+## 2026-09-25 — Migration phase 4 exact transfers and resume
+
+- Android arm64 debug build and all 27 native JVM tests passed. New coverage
+  includes encrypted journal restart, write failure before broadcast, cancellation
+  after persistence, lost responses, identical-byte retry, pending/finalized
+  reconciliation, nonce conflicts, stale revisions and numeric bridge normalization.
+- All 206 Jest tests in 30 suites passed with coverage thresholds; 11 Rust tests
+  passed. App functional tests exercise Withdraw, explicit resume, cancellation,
+  stale revision recovery and nonce conflicts using mocked native responses.
+- TypeScript, lint, formatting, local documentation links and diff checks passed.
+  A final focused run passed all 12 transfer tests. Network-enabled Expo Doctor
+  passed 20/21 checks; the remaining failure is an existing Expo patch mismatch
+  (`57.0.24` installed, `~57.0.25` expected). No dependency upgrade was included.
+- APK inspection found the replacement transfer activity/module/core and no
+  retained signer module/core. Retained module source is unchanged.
+- Installed the updated APK on the connected Android phone, preserving wallet
+  data, and verified normal Home loaded through Metro. The user reported that
+  the guided cancellation, withdrawal, restart/history and background/resume
+  checks all worked. These are user-reported results, not instrumented assertions.
+  Multi-step batches, lost-response identical-byte retries, device-lock/expiry
+  and second-device recovery remain unverified on hardware. No security audit
+  is claimed.
+
 ## 2026-09-25 — Migration phase 3 verified backup
 
 - Android arm64 debug build and 18 native JVM tests passed. Tests cover backup

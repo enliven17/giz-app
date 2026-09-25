@@ -1,6 +1,6 @@
 # Stored-wallet Android signer
 
-Phases 2–3 implement a separate local Expo module, `GizuStoredSigner`, under native
+Phases 2–4 implement a separate local Expo module, `GizuStoredSigner`, under native
 package `io.gizu.storedwallet`. The retained `gizu-signer` module is unchanged and
 excluded from app linking. This module is Android-only and development-only.
 
@@ -38,11 +38,15 @@ backup-required wallet; ready wallets remain ready when a later backup is cancel
 unreadable local storage. It never overwrites a healthy wallet. No file paths or
 contents cross Expo. See [backup format and lifecycle](../../docs/NATIVE_SIGNER.md).
 
-Native capabilities report storage/access/backup eligibility in Android development
-builds, with `transfers: false`. There are no transaction exports yet. The existing
-app access flow gates entry on `ready`; Account offers backup management. An explicit
+Native capabilities report storage/access/backup/transfers eligibility in Android
+development builds. The app gates entry on `ready`; Account offers backup management.
+Withdraw and Activity use native exact-transfer review, passkey authorization and
+an encrypted operation journal. Signed bytes are saved before broadcast; refresh
+only reconciles. Explicit resume requires fresh authorization and retries saved
+transactions byte-for-byte. Restore starts a new journal generation. The explicit
 `npm run debug:stored-wallet` harness remains available, with no legacy fallback.
-Phase 4 integrates spending approval and operation history.
+Guided phase-4 phone checks were user-reported successful; extended failure-path
+acceptance remains pending.
 
 ## Ownership and verification
 
@@ -50,6 +54,8 @@ Phase 4 integrates spending approval and operation history.
   now consuming random wallet entropy. No fixed-message probe exports. Native-only
   UniFFI bindings are not a JavaScript signing API.
 - `android/`: Expo lifecycle, native prompts, credential verification and storage.
+  `rpc/` owns bounded Monad transport; `transfers/` owns operation persistence,
+  reconciliation, exact-transfer orchestration and native review.
 - `scripts/build.sh`: generates Kotlin bindings and the arm64 Android library.
 - Generated bindings, targets and binaries are ignored; never edit them manually.
 
@@ -69,4 +75,5 @@ Android Keystore behavior or physical-device/provider support.
 
 The prototype supplied the starting credential verifier/envelope and their tests.
 The crypto core retains the original pinned Rust dependencies. Android adds CBOR
-4.5.6 for parsing authenticator registration data; no wallet secrets go through JS.
+4.5.6 for parsing authenticator registration data and uses existing OkHttp 4.9.2
+for Monad RPC; no wallet secrets go through JS.

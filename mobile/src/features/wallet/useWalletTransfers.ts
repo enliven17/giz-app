@@ -27,7 +27,7 @@ export function useWalletTransfers(
         setReady(true);
         setMessage(
           value.blocked
-            ? "A transfer is pending or unknown. Refresh status before sending again."
+            ? "An operation needs attention. Refresh status, then resume or cancel its remaining steps."
             : "",
         );
       })
@@ -67,7 +67,7 @@ export function useWalletTransfers(
     }
     running.current = true;
     setBusy(true);
-    setMessage("Unlock the same passkey and review the exact transfer in the native screen.");
+    setMessage("Review the exact transfer in the native screen, then approve with your passkey.");
     try {
       const value = await service.send(address, recipient.trim(), amount.trim());
       if (!active.current) return;
@@ -93,7 +93,44 @@ export function useWalletTransfers(
       }
     }
   }
+  async function updateOperation(id: string, revision?: number) {
+    if (running.current || !ready) return;
+    const action = revision === undefined ? service.cancelOperation : service.resume;
+    if (!action) return;
+    running.current = true;
+    setBusy(true);
+    setMessage("Opening native operation…");
+    try {
+      const value =
+        revision === undefined
+          ? await service.cancelOperation!(address, id)
+          : await service.resume!(address, id, revision);
+      if (active.current) {
+        setHistory(value);
+        setMessage(
+          value.blocked
+            ? "Operation needs attention. Refresh status before continuing."
+            : "Operation updated.",
+        );
+      }
+    } catch {
+      if (active.current) {
+        setReady(false);
+        setMessage(
+          "Operation paused or changed. Refresh status before retrying. Submitted transfers cannot be undone.",
+        );
+      }
+    } finally {
+      running.current = false;
+      if (active.current) {
+        setBusy(false);
+        await onSettled();
+      }
+    }
+  }
   return {
+    resume: (id: string, revision: number) => updateOperation(id, revision),
+    cancelOperation: (id: string) => updateOperation(id),
     recipient,
     setRecipient,
     amount,

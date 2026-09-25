@@ -1,3 +1,7 @@
+import type { WalletTransferService } from "@/domain/wallet/types";
+import { WalletProvider } from "@/features/wallet/WalletProvider";
+import type { WalletBalanceService } from "@/services/wallet/balance";
+import type { ReactNode } from "react";
 import { AccountProvider, type AccountDependencies } from "@/features/account/AccountProvider";
 import { NotificationProvider } from "@/features/notifications/NotificationProvider";
 import type { NotificationService } from "@/services/notifications";
@@ -13,7 +17,7 @@ import { StatusBar } from "expo-status-bar";
 import { RootNavigator } from "@/navigation/RootNavigator";
 import colors from "@/theme/colors.json";
 import { SessionProvider, useSession } from "./SessionProvider";
-import type { AccessService } from "@/services/access";
+import type { AccessService, WalletSession } from "@/services/access";
 import { createLinking } from "@/navigation/linking";
 import { ErrorBoundary } from "./ErrorBoundary";
 const theme = {
@@ -32,20 +36,41 @@ function AppNavigation({
   transactionService,
   accountDependencies,
   notificationService,
+  renderNativeSession,
+  walletBalanceService,
+  walletTransferService,
 }: {
   investmentService?: InvestmentService;
   transactionService?: TransactionService;
   accountDependencies?: AccountDependencies;
   notificationService?: NotificationService;
+  renderNativeSession?: (session: WalletSession) => ReactNode;
+  walletBalanceService?: WalletBalanceService;
+  walletTransferService?: WalletTransferService;
 }) {
   const { session } = useSession();
+  if (session?.kind === "testnet" && renderNativeSession) return renderNativeSession(session);
   return (
     <NavigationContainer
-      key={session ? `demo:${session.accountId ?? "default"}` : "guest"}
+      key={
+        session
+          ? `${session.kind}:${session.accountId ?? "default"}:${session.kind === "testnet" ? session.chainId : "demo"}`
+          : "guest"
+      }
       theme={theme}
       linking={createLinking(!!session)}
     >
-      {session ? (
+      {session?.kind === "testnet" ? (
+        <WalletProvider
+          session={session}
+          balance={walletBalanceService}
+          transfers={walletTransferService}
+        >
+          <AccountProvider {...accountDependencies}>
+            <RootNavigator />
+          </AccountProvider>
+        </WalletProvider>
+      ) : session ? (
         <InvestmentProvider service={investmentService}>
           <TransactionProvider service={transactionService}>
             <AccountProvider {...accountDependencies}>
@@ -68,6 +93,9 @@ export function AppRoot({
   transactionService,
   accountDependencies,
   notificationService,
+  renderNativeSession,
+  walletBalanceService,
+  walletTransferService,
 }: {
   accessService?: AccessService;
   earlyAccessService?: EarlyAccessService;
@@ -75,6 +103,9 @@ export function AppRoot({
   transactionService?: TransactionService;
   accountDependencies?: AccountDependencies;
   notificationService?: NotificationService;
+  renderNativeSession?: (session: WalletSession) => ReactNode;
+  walletBalanceService?: WalletBalanceService;
+  walletTransferService?: WalletTransferService;
 }) {
   return (
     <SafeAreaProvider>
@@ -83,6 +114,9 @@ export function AppRoot({
           <EarlyAccessProvider service={earlyAccessService}>
             <StatusBar style="light" />
             <AppNavigation
+              walletTransferService={walletTransferService}
+              walletBalanceService={walletBalanceService}
+              renderNativeSession={renderNativeSession}
               accountDependencies={accountDependencies}
               notificationService={notificationService}
               investmentService={investmentService}

@@ -1,4 +1,7 @@
 import type { ExpoConfig } from "expo/config";
+import { identity, validatePasskeyMode } from "./src/config/passkeys";
+
+validatePasskeyMode(process.env.EXPO_PUBLIC_PASSKEY_MODE);
 
 // Release identity and real services must be selected before shipping this demo.
 if (process.env.EAS_BUILD_PROFILE === "production") {
@@ -13,8 +16,22 @@ const config: ExpoConfig = {
   version: "0.1.0",
   scheme: "gizu-dev",
   userInterfaceStyle: "dark",
-  ios: { bundleIdentifier: "com.example.gizu.dev", supportsTablet: false },
-  android: { package: "com.example.gizu.dev" },
-  plugins: [["expo-splash-screen", { backgroundColor: "#050706" }]],
+  ios: {
+    bundleIdentifier: identity.iosBundleIdentifier,
+    appleTeamId: identity.appleTeamId,
+    supportsTablet: false,
+    associatedDomains: [`webcredentials:${identity.rpId}`],
+  },
+  android: { package: identity.androidPackage },
+  plugins: [
+    [
+      "expo-splash-screen",
+      {
+        backgroundColor: "#050706",
+        android: { image: "./assets/splash-logo.png", imageWidth: 80 },
+      },
+    ],
+    "./plugins/withAndroidDevelopmentSigning.cjs",
+  ],
 };
 export default config;

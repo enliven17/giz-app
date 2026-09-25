@@ -17,10 +17,12 @@ export function useAccessController(): AccessViewModel {
   useEffect(
     () => () => {
       attempt.current += 1;
+      accessService.cancel?.();
     },
-    [],
+    [accessService],
   );
   function cancel() {
+    accessService.cancel?.();
     attempt.current += 1;
     inFlight.current = false;
     setPending(false);
@@ -33,14 +35,16 @@ export function useAccessController(): AccessViewModel {
     setPending(true);
     setError(null);
     try {
-      const session = await accessService.request("Demo passkey");
+      const session = await accessService.request(accessService.method ?? "Demo passkey");
       if (id === attempt.current) signIn(session);
     } catch (cause) {
       if (id === attempt.current)
         setError(
           cause instanceof AccessRejectedError
             ? "Access was rejected. You can try again."
-            : "Access failed. Please try again.",
+            : accessService.method === "Passkey"
+              ? "Wallet access cancelled or unavailable. Try opening your existing passkey; creation may already have completed."
+              : "Access failed. Please try again.",
         );
     } finally {
       if (id === attempt.current) {

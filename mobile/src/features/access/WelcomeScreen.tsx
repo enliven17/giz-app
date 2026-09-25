@@ -1,3 +1,4 @@
+import { useSession } from "@/application/SessionProvider";
 import { GizuLogo } from "@/components/atoms/GizuLogo";
 import { WelcomeHeading } from "./components/WelcomeHeading";
 import { useWelcomeMotion } from "./useWelcomeMotion";
@@ -11,6 +12,7 @@ import type { RootStackParamList } from "@/navigation/types";
 export function WelcomeScreen({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, "Welcome">) {
+  const native = useSession().accessService.method === "Passkey";
   const animate = useWelcomeMotion();
   const { height, fontScale } = useWindowDimensions();
   return (
@@ -25,16 +27,22 @@ export function WelcomeScreen({
         )}
         <View className="gap-4">
           <WelcomeHeading animate={animate} />
-          <Typography>Explore curated confidential vaults and investment strategies.</Typography>
+          <Typography>
+            {native
+              ? "Your passkey wallet on Monad testnet. Test tokens only."
+              : "Explore curated confidential vaults and investment strategies."}
+          </Typography>
         </View>
       </View>
       <View className="gap-3">
         <Button label="Get started" onPress={() => navigation.navigate("Access")} />
-        <Button
-          label="Request access"
-          variant="quiet"
-          onPress={() => navigation.navigate("RequestAccess")}
-        />
+        {!native && (
+          <Button
+            label="Request access"
+            variant="quiet"
+            onPress={() => navigation.navigate("RequestAccess")}
+          />
+        )}
       </View>
     </Screen>
   );

@@ -1,3 +1,4 @@
+import { useSession } from "@/application/SessionProvider";
 import { Switch, View } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/navigation/types";
@@ -13,14 +14,16 @@ import colors from "@/theme/colors.json";
 import { useAccount } from "./AccountProvider";
 import { AccountAddress } from "./AccountAddress";
 import { PreferenceFeedback } from "./PreferenceFeedback";
-import { informationPages } from "./pages";
+import { informationPages, nativeInformationPages } from "./pages";
 const frequencies: StatementFrequency[] = ["Monthly", "Quarterly", "On request"];
 export function AccountPageScreen({
   route,
 }: NativeStackScreenProps<RootStackParamList, "AccountPage">) {
   const { preferences, loading, busy, save } = useAccount();
   const page = route.params.page;
-  const info = informationPages[page];
+  const { session } = useSession();
+  const native = session?.kind === "testnet";
+  const info = (native ? nativeInformationPages[page] : undefined) ?? informationPages[page];
   const unavailable = loading || busy || !preferences;
   return (
     <Screen>
@@ -70,23 +73,26 @@ export function AccountPageScreen({
             </View>
           </Surface>
           <Typography variant="caption">
-            The in-app inbox remains available regardless of this preference.
+            {native
+              ? "The inbox is not connected yet."
+              : "The in-app inbox remains available regardless of this preference."}
           </Typography>
         </>
       ) : page === "currency" ? (
         <>
           <Typography variant="title">Currency</Typography>
           <Typography>
-            USD is the supported display currency. EUR, GBP and TRY will become available when
-            exchange-rate data is connected. Orders and transfers retain their stated asset units.
+            {native
+              ? "Balances are shown in MON. Fiat valuation is unavailable until a pricing service is connected."
+              : "USD is the supported display currency. EUR, GBP and TRY will become available when exchange-rate data is connected. Orders and transfers retain their stated asset units."}
           </Typography>
           <PreferenceFeedback />
           <Surface>
-            {["USD", "EUR", "GBP", "TRY"].map((currency) => (
+            {(native ? ["MON"] : ["USD", "EUR", "GBP", "TRY"]).map((currency) => (
               <PreferenceOption
                 key={currency}
                 label={currency}
-                selected={currency === "USD"}
+                selected={currency === (native ? "MON" : "USD")}
                 disabled
                 onSelect={() => {}}
               />

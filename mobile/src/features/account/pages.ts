@@ -53,3 +53,26 @@ export const informationPages: Partial<Record<AccountPage, InformationPage>> = {
     actions: ["Member agreement", "Risk disclosure", "Privacy policy", "Fee schedule"],
   },
 };
+
+export const nativeInformationPages: Partial<Record<AccountPage, InformationPage>> = {
+  "passkey-wallet": {
+    title: "Passkey wallet",
+    body: "Your passkey opens Account 0 on Monad testnet. Wallet keys stay in the native signer. Local wallet access is not backend authentication.",
+    rows: [
+      { label: "Network", value: "Monad testnet · 10143" },
+      { label: "Account", value: "0" },
+      { label: "Recovery setup", value: "Unavailable" },
+    ],
+    actions: ["Add backup passkey"],
+  },
+  "transaction-signing": {
+    title: "Transaction signing",
+    body: "Signing requires a separate passkey unlock and native review of the approved operation. Withdrawals send testnet MON; a submitted transfer cannot be undone.",
+    rows: [
+      { label: "Supported network", value: "Monad testnet" },
+      { label: "Native transfer limit", value: "0.1 testnet MON per transfer" },
+      { label: "Investment signing", value: "Unavailable" },
+    ],
+    actions: ["Change signing policy"],
+  },
+};

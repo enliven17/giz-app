@@ -1,3 +1,5 @@
+import { useSession } from "@/application/SessionProvider";
+import { NativeTransaction } from "./NativeTransaction";
 import { useState } from "react";
 import { TextInput, View } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -15,9 +17,17 @@ import { useOrderController } from "./useOrderController";
 import { OperationFeedback } from "./OperationFeedback";
 import colors from "@/theme/colors.json";
 
-export function TransactionScreen({
-  route,
-}: NativeStackScreenProps<RootStackParamList, "Transaction">) {
+export function TransactionScreen(
+  props: NativeStackScreenProps<RootStackParamList, "Transaction">,
+) {
+  const { session } = useSession();
+  return session?.kind === "testnet" ? (
+    <NativeTransaction {...props} />
+  ) : (
+    <DemoTransaction {...props} />
+  );
+}
+function DemoTransaction({ route }: NativeStackScreenProps<RootStackParamList, "Transaction">) {
   const { kind = "buy", vaultId, resume = false } = route.params;
   const context = useTransactions();
   const c = useOrderController(kind, vaultId);

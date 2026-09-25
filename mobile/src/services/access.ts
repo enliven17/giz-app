@@ -1,7 +1,18 @@
-export type AccessMethod = "Demo passkey";
+export type AccessMethod = "Demo passkey" | "Passkey";
 export type DemoSession = { kind: "demo"; method: AccessMethod; accountId?: string };
+export type WalletSession = {
+  kind: "testnet";
+  method: "Passkey";
+  accountId: string;
+  address: string;
+  accountIndex: 0;
+  chainId: 10143;
+};
+export type AppSession = DemoSession | WalletSession;
 export interface AccessService {
-  request(method: AccessMethod): Promise<DemoSession>;
+  method?: AccessMethod;
+  cancel?(): void;
+  request(method: AccessMethod): Promise<AppSession>;
 }
 export class AccessRejectedError extends Error {}
 // No device credentials, network calls or signing. Session lasts only in memory.

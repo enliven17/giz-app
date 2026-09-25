@@ -3,7 +3,6 @@ import { IconButton } from "@/components/atoms/IconButton";
 import { GroupedRow } from "@/components/molecules/GroupedRow";
 import { Surface } from "@/components/molecules/Surface";
 import { Info } from "lucide-react-native";
-import { BackAction } from "@/navigation/BackAction";
 import { useState } from "react";
 import { View } from "react-native";
 import { Screen } from "@/components/templates/Screen";
@@ -28,7 +27,6 @@ export function PreviewScreen() {
   const { data } = useInvestments();
   return (
     <Screen>
-      <BackAction fallback="Settings" />
       <Typography variant="heading">UI preview</Typography>
       <Typography variant="label">Pixel glitch</Typography>
       <GlitchText />

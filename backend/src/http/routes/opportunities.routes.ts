@@ -12,9 +12,13 @@ export const ListOpportunitiesQuerySchema = z.object({
 
 export type ListOpportunitiesQuery = z.infer<typeof ListOpportunitiesQuerySchema>;
 
-export const TvlRecordsParamsSchema = z.object({
+export const OpportunityParamsSchema = z.object({
   id: z.string().min(1),
 });
+
+export type OpportunityParams = z.infer<typeof OpportunityParamsSchema>;
+
+export const TvlRecordsParamsSchema = OpportunityParamsSchema;
 
 export const TvlRecordsQuerySchema = z.object({
   items: z.coerce.number().int().positive(),
@@ -42,5 +46,10 @@ export function registerOpportunityRoutes(
       },
     },
     controller.tvlRecords,
+  );
+  server.get(
+    "/v1/opportunities/:id",
+    { schema: { params: OpportunityParamsSchema } },
+    controller.getById,
   );
 }

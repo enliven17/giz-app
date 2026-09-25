@@ -1,17 +1,22 @@
 import { InfrastructureError } from "../../domain/errors/infrastructure-error.ts";
+import { NotFoundError } from "../../domain/errors/not-found-error.ts";
 import type {
   ListOpportunitiesQuery,
   Opportunities,
+  OpportunityDetail,
   OpportunityPage,
   TvlRecordsQuery,
 } from "../../ports/opportunities.port.ts";
 import {
   opportunityCountSchema,
+  opportunityDetailSchema,
   opportunityListSchema,
   tvlRecordListSchema,
   type Opportunity,
   type TvlRecord,
 } from "./merkl-opportunity.schema.ts";
+
+const MAIN_PROTOCOL_IDS = "aave,morpho,curvance";
 
 export class HttpMerklOpportunities implements Opportunities {
   constructor(
@@ -25,8 +30,10 @@ export class HttpMerklOpportunities implements Opportunities {
     listUrl.searchParams.set("page", String(query.page));
     listUrl.searchParams.set("items", String(query.items));
     listUrl.searchParams.set("chainId", String(query.chainId));
+    listUrl.searchParams.set("mainProtocolId", MAIN_PROTOCOL_IDS);
     const countUrl = new URL("/v4/opportunities/count", this.apiUrl);
     countUrl.searchParams.set("chainId", String(query.chainId));
+    countUrl.searchParams.set("mainProtocolId", MAIN_PROTOCOL_IDS);
     if (query.search.length > 0) {
       listUrl.searchParams.set("search", query.search);
       countUrl.searchParams.set("search", query.search);
@@ -66,6 +73,37 @@ export class HttpMerklOpportunities implements Opportunities {
 
     const list: Opportunity[] = listParsed.data;
     return { list, total: countParsed.data };
+  }
+
+  async getById(id: string): Promise<OpportunityDetail> {
+    const url = new URL(`/v4/opportunities/${id}`, this.apiUrl);
+    url.searchParams.set("campaigns", "true");
+
+    let response: Response;
+    try {
+      response = await fetch(url, { headers: { "X-API-Key": this.apiKey } });
+    } catch (err) {
+      throw new InfrastructureError(503, "MERKL_UNAVAILABLE", "merkl unavailable", {
+        cause: err,
+      });
+    }
+    if (response.status === 404) {
+      throw new NotFoundError({ name: "opportunity" }, id);
+    }
+    if (!response.ok) {
+      throw new InfrastructureError(503, "MERKL_UNAVAILABLE", "merkl unavailable", {
+        cause: new Error(`merkl status ${response.status}`),
+      });
+    }
+
+    const body: unknown = await response.json();
+    const parsed = opportunityDetailSchema.safeParse(body);
+    if (!parsed.success) {
+      throw new InfrastructureError(503, "MERKL_UNAVAILABLE", "merkl unavailable", {
+        cause: parsed,
+      });
+    }
+    return parsed.data;
   }
 
   async tvlRecords(query: TvlRecordsQuery): Promise<TvlRecord[]> {

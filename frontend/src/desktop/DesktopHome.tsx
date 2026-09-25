@@ -4,16 +4,17 @@ import Chart from '../components/Chart'
 import OpportunityCard from '../components/OpportunityCard'
 import SpotlightCard from '../components/SpotlightCard'
 import useSize from '../useSize'
-import { holdings, portfolioSeries, type Vault } from '../data'
+import { holdings, portfolioSeries } from '../data'
 import { MONAD_MAINNET_CHAIN_ID } from '../opportunities'
 import { useOpportunities } from '../useOpportunities'
 
 export default function DesktopHome({
+  onOpenOpportunity,
   onTransfer,
   onActivity,
   onSeeAllVaults,
 }: {
-  onOpenVault: (v: Vault) => void
+  onOpenOpportunity: (id: string) => void
   onTransfer: (mode: 'deposit' | 'withdraw') => void
   onActivity: () => void
   onSeeAllVaults: () => void
@@ -196,6 +197,7 @@ export default function DesktopHome({
                 delay={0.05 * i}
                 className="h-[196px]"
                 chartHeight={60}
+                onOpen={onOpenOpportunity}
               />
             ))}
           </div>

@@ -1,16 +1,19 @@
 # Gizu mobile
 
-Expo SDK 57 development app for iOS and Android. The current slice includes
-welcome, simulated passkey-only access, a protected four-tab shell,
-mock buy/sell and deposit/withdraw flows, and disconnect. Demo sessions live only in memory. No real funds, authentication,
-biometrics or wallet connection are performed.
+Expo SDK 57 development app for iOS and Android. Normal startup now uses native
+passkey access and the existing Gizu tabs. Home shows Account 0's Monad testnet MON
+balance; Account shows its address, copy, local preferences and disconnect.
+Wallet secrets remain in the native signer. This is local wallet access, not
+backend authentication; production and physical-iOS acceptance remain pending.
 
-From welcome, choose **Get started**, then **Continue with passkey**. Settings
-provides **Open UI preview** and **Disconnect**. Home shows fixture holdings,
-chart periods and available account USDC. Browse vaults, search by name/ticker/
-strategy/manager, filter risk, and open vault details or Activity. The
-Buy/Sell/Deposit/Withdraw controls open the M4 mock trading flows; Swap retains its
-animated coming-soon presentation.
+From welcome choose **Get started**, then **Continue with passkey** and create or
+open a passkey through the native prompt. Vault services, notifications, fiat
+valuations and performance history are unavailable. Deposit shows the receiving address, Withdraw uses native approval, and Activity
+reconciles outgoing transfers recorded on this device. Incoming and external
+activity are not indexed. Pending/unknown submissions must be reconciled before retry.
+
+Run `npm run start:demo` for the historical M2–M5 fixture flows described below.
+Those simulated balances/orders are isolated from native wallets.
 
 ## Prerequisites
 
@@ -29,9 +32,9 @@ From the repository root:
 
 ```sh
 npm --prefix mobile ci
-npm --prefix mobile run android
+npm --prefix mobile run android -- --no-bundler
 # macOS only:
-npm --prefix mobile run ios
+npm --prefix mobile run ios -- --no-bundler
 ```
 
 These commands generate ignored native projects and build/install a development
@@ -49,6 +52,13 @@ System fonts and a solid-color splash avoid unlicensed frontend font assets.
 Custom icons, fonts and launch artwork remain future product work.
 
 ## Commands
+
+Passkey identity and manual domain checks are documented in
+[PASSKEY_CONFIGURATION.md](docs/PASSKEY_CONFIGURATION.md). The frontend owns the
+hosted association files; deployment does not happen from mobile scripts.
+The [former P1 probe](docs/NATIVE_SIGNER.md#retired-javascript-probe) has been removed. Native mode uses
+the native signer; raw PRF is never exposed to JavaScript. Rebuild older clients
+to remove the old bridge and install the current signer.
 
 Run inside `mobile/`, or use `npm --prefix mobile` from the root.
 
@@ -193,3 +203,50 @@ explicitly unavailable pending their integrations. Real passkeys are next.
 See [docs/ACCOUNT.md](docs/ACCOUNT.md) for availability and persistence rules.
 M5 adds native storage/clipboard modules: rebuild an existing development client
 with `npm run ios` or `npm run android` from `mobile/` before testing this version.
+
+## Developer diagnostics
+
+Normal startup uses real native passkey access in the existing Gizu app and has no UI-preview route, wallet
+harness or signer probe:
+
+    npm start
+
+The diagnostics remain in `src/development/`. Open one explicitly in a development
+build, from `mobile/`:
+
+    npm run debug:wallet -- --port 8086
+    npm run debug:signer -- --port 8085
+    npm run debug:ui -- --port 8087
+
+Stop the previous Metro process or open the development-client URL for the selected
+port. Restart Metro when changing entry points. These Node-based commands work on
+Windows and macOS/Linux and set both debug selection and passkey mode. Normal
+`npm start` clears inherited debug settings. The old
+`EXPO_PUBLIC_PASSKEY_MODE=native npm start` command no longer opens the harness.
+
+- **wallet:** existing native passkey create/open, Account 0 balance, transfer and
+  local outgoing-history harness.
+- **signer:** native signature probe and restricted batch-transfer diagnostics.
+- **ui:** standalone atomic-component and animation playground.
+
+Debug selection is rejected outside `__DEV__`; no product route or deep link opens
+these screens. This is an entry/navigation boundary, not a claim that diagnostic
+code has been audited out of a release binary. Native authorization remains
+responsible for enforcing signing policy.
+
+Rebuild the native client after signer changes. Use Monad test tokens only.
+The normal app uses native services for access, balance and account identity.
+Existing Deposit/Withdraw and Activity now use native wallet services. For fixture flows,
+launch `npm run start:demo` explicitly.
+
+See [native wallet access](docs/NATIVE_SIGNER.md) for signer scope,
+[the implementation plan](PLAN.md#current-implementation)
+for product integration, and [structural improvements](PLAN.md#structural-improvements).
+
+## Wallet integration organization
+
+Wallet adapters are grouped in `src/services/wallet/`; pure amounts, proposals and
+public contracts live in `src/domain/wallet/`. Features depend on those interfaces,
+not generated cryptographic bindings. Native RPC, journal and transfer UI sources
+are separated by responsibility. See the [native signer module guide](modules/gizu-signer/README.md)
+for ownership, external dependencies, generated artifacts and rebuild instructions.

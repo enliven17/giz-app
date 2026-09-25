@@ -1,0 +1,42 @@
+buildscript {
+    ext {
+        buildToolsVersion = "37.0.0"
+        minSdkVersion = 24
+        compileSdkVersion = 37
+        targetSdkVersion = 36
+        ndkVersion = "27.1.12297006"
+        kotlinVersion = "2.2.0"
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+    }
+}
+
+apply plugin: "com.facebook.react.rootproject"
+
+def walletCoreProperties = new Properties()
+def walletCoreLocalProperties = file("local.properties")
+if (walletCoreLocalProperties.exists()) {
+    walletCoreLocalProperties.withInputStream { walletCoreProperties.load(it) }
+}
+def githubUser = walletCoreProperties.getProperty("gpr.user") ?: System.getenv("GITHUB_USER")
+def githubToken = walletCoreProperties.getProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+if (githubUser && githubToken) {
+    allprojects {
+        repositories {
+            maven {
+                url = uri("https://maven.pkg.github.com/trustwallet/wallet-core")
+                credentials {
+                    username = githubUser
+                    password = githubToken
+                }
+            }
+        }
+    }
+}

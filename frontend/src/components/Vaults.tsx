@@ -2,11 +2,10 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Search } from 'lucide-react'
 import OpportunityCard from './OpportunityCard'
-import type { Vault } from '../data'
 import { MONAD_MAINNET_CHAIN_ID } from '../opportunities'
 import { useOpportunities } from '../useOpportunities'
 
-export default function Vaults(_props: { onOpenVault: (v: Vault) => void }) {
+export default function Vaults({ onOpenOpportunity }: { onOpenOpportunity: (id: string) => void }) {
   const [query, setQuery] = useState('')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(0)
@@ -77,7 +76,12 @@ export default function Vaults(_props: { onOpenVault: (v: Vault) => void }) {
       {load.kind === 'ready' && (
         <div className="mt-5 grid grid-cols-2 gap-3">
           {load.page.list.map((opportunity, i) => (
-            <OpportunityCard key={opportunity.id} opportunity={opportunity} delay={0.05 * i} />
+            <OpportunityCard
+              key={opportunity.id}
+              opportunity={opportunity}
+              delay={0.05 * i}
+              onOpen={onOpenOpportunity}
+            />
           ))}
         </div>
       )}

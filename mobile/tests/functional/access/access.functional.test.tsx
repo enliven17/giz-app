@@ -13,17 +13,14 @@ async function signIn() {
   await userEvent.press(screen.getByRole("button", { name: "Continue with passkey" }));
   expect(await screen.findByRole("header", { name: "Your portfolio" })).toBeVisible();
 }
-test("welcome, access, all tabs, UI preview and disconnect form a complete demo journey", async () => {
+test("welcome, access, all tabs and disconnect form a complete demo journey", async () => {
   renderApp();
   await signIn();
   for (const name of ["Vaults", "Swap", "Settings"]) {
     await userEvent.press(screen.getByLabelText(`${name} tab`));
   }
   expect(screen.getByText("Access method: Passkey")).toBeVisible();
-  await userEvent.press(screen.getByRole("button", { name: "Open UI preview" }));
-  expect(await screen.findByRole("header", { name: "UI preview" })).toBeVisible();
-  expect(screen.getByRole("button", { name: "Loading action" })).toBeDisabled();
-  await userEvent.press(screen.getByRole("button", { name: "Back" }));
+  expect(screen.queryByRole("button", { name: "Open UI preview" })).toBeNull();
   await userEvent.press(await screen.findByRole("button", { name: "Disconnect" }));
   expect(await screen.findByRole("button", { name: "Get started" })).toBeVisible();
   expect(screen.queryByLabelText("Settings tab")).toBeNull();
@@ -128,34 +125,6 @@ test("runtime links are gated before access and work only inside a demo session"
   await screen.findByRole("button", { name: "Get started" });
   await send("gizu-dev://exchange");
   expect(screen.queryByLabelText("Swap tab")).toBeNull();
-});
-
-test("UI preview demonstrates action, filter and feedback states without changing the account", async () => {
-  renderApp();
-  await signIn();
-  await userEvent.press(screen.getByLabelText("Settings tab"));
-  await userEvent.press(screen.getByRole("button", { name: "Open UI preview" }));
-  expect(await screen.findByLabelText("Animated Gizu glitch wordmark")).toBeVisible();
-  expect(screen.getByLabelText("Animated smooth Gizu glitch wordmark")).toBeVisible();
-  for (const name of [
-    "Primary example",
-    "Secondary example",
-    "Quiet example",
-    "Destructive example",
-  ]) {
-    await userEvent.press(await screen.findByRole("button", { name }));
-  }
-  expect(screen.getByText("Destructive style previewed. Nothing was deleted.")).toBeVisible();
-  await userEvent.press(screen.getByRole("radio", { name: "Example risk filter" }));
-  expect(screen.getByRole("radio", { name: "Example risk filter" })).toBeChecked();
-  await userEvent.press(screen.getByRole("button", { name: "Refresh data" }));
-  expect(screen.getByText("Refresh previewed.")).toBeVisible();
-  await userEvent.press(screen.getByRole("button", { name: "Retry data" }));
-  expect(screen.getByText("Retry previewed.")).toBeVisible();
-  await userEvent.press(screen.getByRole("button", { name: "View Helix Alpha" }));
-  expect(screen.getByText("Vault card previewed.")).toBeVisible();
-  await userEvent.press(screen.getByRole("button", { name: "Back" }));
-  expect(await screen.findByRole("button", { name: "Disconnect" })).toBeVisible();
 });
 
 test("account actions open secondary pages and the selected capsule tab is accessible", async () => {

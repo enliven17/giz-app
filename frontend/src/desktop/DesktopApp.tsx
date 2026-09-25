@@ -6,13 +6,14 @@ import DesktopHome from './DesktopHome'
 import DesktopVaults from './DesktopVaults'
 import ComingSoon from '../components/ComingSoon'
 import DesktopSettings from './DesktopSettings'
-import DesktopVaultDetail from './DesktopVaultDetail'
+import OpportunityDetail from '../components/OpportunityDetail'
+import SwapSheet from '../components/SwapSheet'
 import SubPage from '../components/SubPage'
 import TransferSheet from '../components/TransferSheet'
-import type { Vault } from '../data'
 
 type Screen = 'entry' | 'app' | 'vault' | 'sub'
 type Tab = 'home' | 'vaults' | 'swap' | 'settings'
+type Trade = { side: 'buy' | 'sell'; name: string; ticker: string; price: number }
 
 const fade = {
   initial: { opacity: 0, y: 12 },
@@ -22,12 +23,13 @@ const fade = {
 export default function DesktopApp() {
   const [screen, setScreen] = useState<Screen>('entry')
   const [tab, setTab] = useState<Tab>('home')
-  const [vault, setVault] = useState<Vault | null>(null)
+  const [opportunityId, setOpportunityId] = useState('')
+  const [trade, setTrade] = useState<Trade | null>(null)
   const [transfer, setTransfer] = useState<'deposit' | 'withdraw' | null>(null)
   const [sub, setSub] = useState('')
 
-  const openVault = (v: Vault) => {
-    setVault(v)
+  const openOpportunity = (id: string) => {
+    setOpportunityId(id)
     setScreen('vault')
   }
 
@@ -58,17 +60,27 @@ export default function DesktopApp() {
         >
           {screen === 'app' && tab === 'home' && (
             <DesktopHome
-              onOpenVault={openVault}
+              onOpenOpportunity={openOpportunity}
               onTransfer={setTransfer}
               onActivity={() => openSub('activity')}
               onSeeAllVaults={() => setTab('vaults')}
             />
           )}
-          {screen === 'app' && tab === 'vaults' && <DesktopVaults onOpenVault={openVault} />}
+          {screen === 'app' && tab === 'vaults' && (
+            <DesktopVaults onOpenOpportunity={openOpportunity} />
+          )}
           {screen === 'app' && tab === 'swap' && <ComingSoon />}
           {screen === 'app' && tab === 'settings' && <DesktopSettings onOpen={openSub} />}
-          {screen === 'vault' && vault && (
-            <DesktopVaultDetail vault={vault} onBack={() => setScreen('app')} />
+          {screen === 'vault' && opportunityId.length > 0 && (
+            <div className="mx-auto flex min-h-0 w-full max-w-[920px] flex-1 flex-col">
+              <OpportunityDetail
+                id={opportunityId}
+                onBack={() => setScreen('app')}
+                onTrade={(side, asset) =>
+                  setTrade({ side, name: asset.name, ticker: asset.ticker, price: asset.price })
+                }
+              />
+            </div>
           )}
           {screen === 'sub' && (
             <div className="mx-auto flex min-h-0 w-full max-w-[760px] flex-1 flex-col px-12">
@@ -78,6 +90,15 @@ export default function DesktopApp() {
         </motion.div>
 
       <AnimatePresence>
+        {trade && (
+          <SwapSheet
+            name={trade.name}
+            ticker={trade.ticker}
+            price={trade.price}
+            side={trade.side}
+            onClose={() => setTrade(null)}
+          />
+        )}
         {transfer && (
           <TransferSheet mode={transfer} variant="modal" onClose={() => setTransfer(null)} />
         )}

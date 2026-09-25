@@ -44,6 +44,7 @@ const groups = [
 ];
 export function AccountScreen({ navigation }: BottomTabScreenProps<MainTabParamList, "Settings">) {
   const { session } = useSession();
+  const native = session?.kind === "testnet";
   const { preferences, busy, disconnectAccount } = useAccount();
   const root = navigation.getParent<NativeStackNavigationProp<RootStackParamList>>();
   return (
@@ -52,11 +53,11 @@ export function AccountScreen({ navigation }: BottomTabScreenProps<MainTabParamL
       <Surface>
         <View className="flex-row items-center gap-4 p-5">
           <View className="rounded-2xl bg-accent/10 p-4">
-            <Typography variant="label">{profile.initials}</Typography>
+            <Typography variant="label">{native ? "G" : profile.initials}</Typography>
           </View>
           <View className="flex-1 gap-1">
-            <Typography variant="row">{profile.name}</Typography>
-            <Typography variant="caption">{profile.member}</Typography>
+            <Typography variant="row">{native ? "Account 0" : profile.name}</Typography>
+            <Typography variant="caption">{native ? "Monad testnet" : profile.member}</Typography>
           </View>
         </View>
         <AccountAddress />
@@ -75,7 +76,9 @@ export function AccountScreen({ navigation }: BottomTabScreenProps<MainTabParamL
                 {...row}
                 value={
                   row.page === "currency"
-                    ? "USD"
+                    ? native
+                      ? "MON"
+                      : "USD"
                     : row.page === "statements"
                       ? preferences?.statements
                       : undefined
@@ -86,13 +89,7 @@ export function AccountScreen({ navigation }: BottomTabScreenProps<MainTabParamL
           </Surface>
         </View>
       ))}
-      <Button
-        label="Open UI preview"
-        variant="quiet"
-        onPress={() =>
-          navigation.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate("Preview")
-        }
-      />
+
       <Button
         variant="destructive"
         label="Disconnect"

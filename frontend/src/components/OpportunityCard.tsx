@@ -18,11 +18,13 @@ export default function OpportunityCard({
   delay = 0,
   className = 'aspect-square',
   chartHeight = 40,
+  onOpen,
 }: {
   opportunity: Opportunity
   delay?: number
   className?: string
   chartHeight?: number
+  onOpen: (id: string) => void
 }) {
   const [series, setSeries] = useState<number[]>([])
 
@@ -77,7 +79,9 @@ export default function OpportunityCard({
   }
 
   return (
-    <motion.article
+    <motion.button
+      type="button"
+      onClick={() => onOpen(opportunity.id)}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.45 }}
@@ -115,6 +119,6 @@ export default function OpportunityCard({
           </span>
         </div>
       </div>
-    </motion.article>
+    </motion.button>
   )
 }

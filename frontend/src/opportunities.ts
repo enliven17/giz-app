@@ -18,6 +18,43 @@ export type OpportunityPage = {
   total: number
 }
 
+export type OpportunityToken = {
+  id: string
+  name: string
+  symbol: string
+  address: string
+  decimals: number
+  price: number
+}
+
+export type OpportunityCampaign = {
+  id: string
+  campaignId: string
+  type: string
+  apr: number
+  dailyRewards: number
+  startTimestamp: number
+  endTimestamp: number
+  creatorAddress: string
+}
+
+export type OpportunityDetail = Opportunity & {
+  description: string
+  action: string
+  type: string
+  status: string
+  dailyRewards: number
+  liveCampaigns: number
+  nativeApr: number
+  explorerAddress: string
+  howToSteps: string[]
+  depositUrl: string
+  identifier: string
+  tags: string[]
+  tokens: OpportunityToken[]
+  campaigns: OpportunityCampaign[]
+}
+
 export async function listOpportunities(query: {
   search: string
   page: number
@@ -35,4 +72,13 @@ export async function listOpportunities(query: {
     throw new Error('opportunities unavailable')
   }
   return response.json() as Promise<OpportunityPage>
+}
+
+export async function getOpportunity(id: string): Promise<OpportunityDetail> {
+  const response = await fetch(`/v1/opportunities/${id}`)
+  if (!response.ok) {
+    throw new Error('opportunity unavailable')
+  }
+  const body = (await response.json()) as { opportunity: OpportunityDetail }
+  return body.opportunity
 }

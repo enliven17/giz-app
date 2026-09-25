@@ -2,11 +2,14 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Search } from 'lucide-react'
 import OpportunityCard from '../components/OpportunityCard'
-import type { Vault } from '../data'
 import { MONAD_MAINNET_CHAIN_ID } from '../opportunities'
 import { useOpportunities } from '../useOpportunities'
 
-export default function DesktopVaults(_props: { onOpenVault: (v: Vault) => void }) {
+export default function DesktopVaults({
+  onOpenOpportunity,
+}: {
+  onOpenOpportunity: (id: string) => void
+}) {
   const [query, setQuery] = useState('')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(0)
@@ -84,6 +87,7 @@ export default function DesktopVaults(_props: { onOpenVault: (v: Vault) => void 
               delay={0.04 * i}
               className="h-full"
               chartHeight={96}
+              onOpen={onOpenOpportunity}
             />
           ))}
         </div>

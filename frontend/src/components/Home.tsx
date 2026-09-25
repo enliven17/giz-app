@@ -3,7 +3,7 @@ import { ArrowDownLeft, ArrowUpRight, MoreHorizontal, Bell } from 'lucide-react'
 import Chart from './Chart'
 import OpportunityCard from './OpportunityCard'
 import Scramble from './Scramble'
-import { holdings, portfolioSeries, type Vault } from '../data'
+import { holdings, portfolioSeries } from '../data'
 import { MONAD_MAINNET_CHAIN_ID } from '../opportunities'
 import { useOpportunities } from '../useOpportunities'
 
@@ -13,12 +13,13 @@ const fade = {
 }
 
 export default function Home({
+  onOpenOpportunity,
   onNotifications,
   onSeeAllVaults,
   onTransfer,
   onActivity,
 }: {
-  onOpenVault: (v: Vault) => void
+  onOpenOpportunity: (id: string) => void
   onNotifications: () => void
   onSeeAllVaults: () => void
   onTransfer: (mode: 'deposit' | 'withdraw') => void
@@ -117,7 +118,12 @@ export default function Home({
         {vaults.kind === 'ready' && (
           <div className="mt-4 grid grid-cols-2 gap-3">
             {vaults.page.list.map((opportunity, i) => (
-              <OpportunityCard key={opportunity.id} opportunity={opportunity} delay={0.3 + 0.05 * i} />
+              <OpportunityCard
+                key={opportunity.id}
+                opportunity={opportunity}
+                delay={0.3 + 0.05 * i}
+                onOpen={onOpenOpportunity}
+              />
             ))}
           </div>
         )}

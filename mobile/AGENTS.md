@@ -23,6 +23,9 @@ Paths below are relative to `mobile/` unless stated otherwise.
 - Keep business rules in `src/domain/`, typed service adapters in `src/services/`,
   persistence adapters in `src/storage/`, and app/provider composition in
   `src/application/`. Navigation belongs in `src/navigation/`.
+- Keep native platform/cryptographic integration in `modules/`, app-facing adapters
+  in `src/services/`, and pure wallet rules/contracts in `src/domain/`. Keep
+  generated bindings separate from maintained source; regenerate rather than edit them.
 - Shared UI receives data and callbacks; it does not fetch data, sign transactions
   or own feature rules. Imports flow toward reusable UI and domain/services, never
   from primitives back into features. Avoid cycles and pass-through abstractions.
@@ -36,6 +39,8 @@ Paths below are relative to `mobile/` unless stated otherwise.
 - Isolate external APIs, wallet/signing providers and persistence behind typed,
   replaceable adapters. Keep mocks out of production paths; do not invent contracts
   or represent fixture behavior as live integration.
+- Keep wallet secrets and signing approval inside the native boundary. JavaScript
+  handles proposals and public results only; it must not bypass native authorization.
 - Model loading, validation, rejection, failure and recovery explicitly. Prevent
   duplicate submissions and ignore stale results after cancellation or unmount.
   Closing UI does not imply cancellation of an external operation.
@@ -98,7 +103,7 @@ Paths below are relative to `mobile/` unless stated otherwise.
 Read only what the task needs:
 
 - [README.md](README.md): local setup and available development commands.
-- [docs/FOUNDATION.md](docs/FOUNDATION.md): compatibility, app identity, release
-  blockers and actual verification history; check before dependency/build changes.
 - [docs/PARITY.md](docs/PARITY.md): current product decisions, frontend baseline,
   feature behavior and availability; consult when changing a user journey or design.
+- [docs/NATIVE_SIGNER.md](docs/NATIVE_SIGNER.md): native trust boundary, policy and
+  derivation contract; consult before changing wallet/signing behavior.

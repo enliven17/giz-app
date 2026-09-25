@@ -78,7 +78,7 @@ test("native errors are sanitized and existing-passkey retry is available", asyn
   };
   setup(bridge);
   await open();
-  expect(await screen.findByText(/Try opening your existing passkey/)).toBeVisible();
+  expect(await screen.findByText(/Continue to retry the same wallet/)).toBeVisible();
   expect(screen.queryByText(/private provider diagnostics/)).toBeNull();
   await userEvent.press(screen.getByRole("button", { name: "Continue with passkey" }));
   expect(await screen.findByText("0.001000000000000001 MON")).toBeVisible();

@@ -6,6 +6,7 @@ export function useWalletTransfers(
   address: string,
   service: WalletTransferService,
   onSettled: () => Promise<void>,
+  enabled = true,
 ) {
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("0.001");
@@ -16,7 +17,7 @@ export function useWalletTransfers(
   const active = useRef(true);
   const running = useRef(false);
   const load = useCallback(() => {
-    if (running.current) return Promise.resolve();
+    if (!enabled || running.current) return Promise.resolve();
     running.current = true;
     return Promise.resolve()
       .then(() => service.history(address))
@@ -26,7 +27,7 @@ export function useWalletTransfers(
         setReady(true);
         setMessage(
           value.blocked
-            ? "A transfer is pending or unknown. Refresh status before sending again."
+            ? "An operation needs attention. Refresh status, then resume or cancel its remaining steps."
             : "",
         );
       })
@@ -41,7 +42,7 @@ export function useWalletTransfers(
         running.current = false;
         if (active.current) setBusy(false);
       });
-  }, [address, service]);
+  }, [address, service, enabled]);
   useEffect(() => {
     active.current = true;
     void load();
@@ -51,13 +52,13 @@ export function useWalletTransfers(
     };
   }, [load, service]);
   const refresh = useCallback(async () => {
-    if (running.current) return;
+    if (!enabled || running.current) return;
     setBusy(true);
     await load();
     if (active.current) await onSettled();
-  }, [load, onSettled]);
+  }, [load, onSettled, enabled]);
   async function send() {
-    if (running.current || !ready || history.blocked) return;
+    if (!enabled || running.current || !ready || history.blocked) return;
     try {
       transferProposal("0", recipient.trim(), amount.trim());
     } catch {
@@ -66,7 +67,7 @@ export function useWalletTransfers(
     }
     running.current = true;
     setBusy(true);
-    setMessage("Unlock the same passkey and review the exact transfer in the native screen.");
+    setMessage("Review the exact transfer in the native screen, then approve with your passkey.");
     try {
       const value = await service.send(address, recipient.trim(), amount.trim());
       if (!active.current) return;
@@ -92,7 +93,44 @@ export function useWalletTransfers(
       }
     }
   }
+  async function updateOperation(id: string, revision?: number) {
+    if (running.current || !ready) return;
+    const action = revision === undefined ? service.cancelOperation : service.resume;
+    if (!action) return;
+    running.current = true;
+    setBusy(true);
+    setMessage("Opening native operation…");
+    try {
+      const value =
+        revision === undefined
+          ? await service.cancelOperation!(address, id)
+          : await service.resume!(address, id, revision);
+      if (active.current) {
+        setHistory(value);
+        setMessage(
+          value.blocked
+            ? "Operation needs attention. Refresh status before continuing."
+            : "Operation updated.",
+        );
+      }
+    } catch {
+      if (active.current) {
+        setReady(false);
+        setMessage(
+          "Operation paused or changed. Refresh status before retrying. Submitted transfers cannot be undone.",
+        );
+      }
+    } finally {
+      running.current = false;
+      if (active.current) {
+        setBusy(false);
+        await onSettled();
+      }
+    }
+  }
   return {
+    resume: (id: string, revision: number) => updateOperation(id, revision),
+    cancelOperation: (id: string) => updateOperation(id),
     recipient,
     setRecipient,
     amount,

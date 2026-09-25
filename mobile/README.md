@@ -6,11 +6,12 @@ balance; Account shows its address, copy, local preferences and disconnect.
 Wallet secrets remain in the native signer. This is local wallet access, not
 backend authentication; production and physical-iOS acceptance remain pending.
 
-From welcome choose **Get started**, then **Continue with passkey** and create or
-open a passkey through the native prompt. Vault services, notifications, fiat
-valuations and performance history are unavailable. Deposit shows the receiving address, Withdraw uses native approval, and Activity
-reconciles outgoing transfers recorded on this device. Incoming and external
-activity are not indexed. Pending/unknown submissions must be reconciled before retry.
+From welcome choose **Get started**, then **Continue with passkey**. New Android
+wallets must save and reopen an encrypted backup before Home opens. Recovery needs
+the file and original passkey. Vault services, notifications, fiat valuations and
+performance history remain unavailable. Deposit shows the receiving address;
+Withdraw uses native approval; Activity shows local outgoing history and explicit resume.
+iOS wallet access is unavailable. Incoming/external activity is not indexed.
 
 Run `npm run start:demo` for the historical M2–M5 fixture flows described below.
 Those simulated balances/orders are isolated from native wallets.
@@ -204,49 +205,54 @@ See [docs/ACCOUNT.md](docs/ACCOUNT.md) for availability and persistence rules.
 M5 adds native storage/clipboard modules: rebuild an existing development client
 with `npm run ios` or `npm run android` from `mobile/` before testing this version.
 
-## Developer diagnostics
+## Signer migration and developer diagnostics
 
-Normal startup uses real native passkey access in the existing Gizu app and has no UI-preview route, wallet
-harness or signer probe:
+The old Gizu signer is preserved but disconnected from app access, diagnostics and
+native autolinking. `npm start` opens the existing app. Android development wallets
+require native save-and-reopen backup verification before entering Home. Account
+includes backup management; Withdraw and Activity use native approval and history. iOS signing is
+unsupported during this migration. No fallback creates a demo or legacy wallet.
 
-    npm start
+Use `npm run start:demo` explicitly for fixture flows. The UI playground remains:
 
-The diagnostics remain in `src/development/`. Open one explicitly in a development
-build, from `mobile/`:
-
-    npm run debug:wallet -- --port 8086
-    npm run debug:signer -- --port 8085
     npm run debug:ui -- --port 8087
 
-Stop the previous Metro process or open the development-client URL for the selected
-port. Restart Metro when changing entry points. These Node-based commands work on
-Windows and macOS/Linux and set both debug selection and passkey mode. Normal
-`npm start` clears inherited debug settings. The old
-`EXPO_PUBLIC_PASSKEY_MODE=native npm start` command no longer opens the harness.
+Legacy wallet/signer harness source remains for reference, but its launch commands
+and native lookups are disconnected. Old debug selections fail explicitly.
 
-- **wallet:** existing native passkey create/open, Account 0 balance, transfer and
-  local outgoing-history harness.
-- **signer:** native signature probe and restricted batch-transfer diagnostics.
-- **ui:** standalone atomic-component and animation playground.
-
-Debug selection is rejected outside `__DEV__`; no product route or deep link opens
-these screens. This is an entry/navigation boundary, not a claim that diagnostic
-code has been audited out of a release binary. Native authorization remains
-responsible for enforcing signing policy.
-
-Rebuild the native client after signer changes. Use Monad test tokens only.
-The normal app uses native services for access, balance and account identity.
-Existing Deposit/Withdraw and Activity now use native wallet services. For fixture flows,
-launch `npm run start:demo` explicitly.
-
-See [native wallet access](docs/NATIVE_SIGNER.md) for signer scope,
-[the implementation plan](PLAN.md#current-implementation)
-for product integration, and [structural improvements](PLAN.md#structural-improvements).
+Rebuild installed clients with `npm run android` or `npm run ios` to remove the
+old native module; restarting Metro alone cannot remove native registrations.
+Independent retained-core build/test commands remain `npm run signer:build` and
+`npm run signer:test`; see the [retained module guide](modules/gizu-signer/README.md).
+Follow the [migration plan](docs/SIGNER_MIGRATION.md) for the replacement contract
+and remaining implementation.
 
 ## Wallet integration organization
 
 Wallet adapters are grouped in `src/services/wallet/`; pure amounts, proposals and
 public contracts live in `src/domain/wallet/`. Features depend on those interfaces,
-not generated cryptographic bindings. Native RPC, journal and transfer UI sources
-are separated by responsibility. See the [native signer module guide](modules/gizu-signer/README.md)
-for ownership, external dependencies, generated artifacts and rebuild instructions.
+not generated cryptographic bindings. The replacement contract is
+`src/domain/wallet/storedSigner.ts`; the legacy module stays independently retained.
+
+Replacement module verification uses `npm run stored-signer:test` and
+`npm run stored-signer:build`; see its [module guide](modules/gizu-stored-signer/README.md).
+
+For Android testing, rebuild with `npm run android`, then use the normal
+app (`npm start`). Continue with passkey, save the encrypted backup, reopen it and
+confirm the original passkey again. Only successful verification opens Home.
+Cancel before verification and retry: the same wallet must resume backup setup.
+Account offers **Save and verify wallet backup**. Recovery requires both the backup
+file and original passkey. Restore is shown only for absent/unreadable local storage;
+use another installation/device to test it without deleting this wallet.
+
+After rebuilding, fund the new Account 0 with testnet MON only. Use the existing
+Withdraw screen for a small transfer. Read the native review, approve and unlock
+with the wallet's passkey. Activity **Refresh** only reconciles; **Review and resume**
+requires a new native review/passkey prompt. Cancel stops unsigned remaining steps;
+it cannot undo signed/submitted transfers. Pending or nonce-conflicting operations
+block new transfers. Restoring a backup does not restore local transaction history.
+
+Phase-3 guided checks were user-reported successful. Guided phase-4 cancellation, withdrawal, restart and resume checks were also
+user-reported successful. Extended failure paths and second-device restore remain pending. Test restore only where the original
+passkey is available and compare Account 0. The explicit `npm run debug:stored-wallet`
+harness and retained legacy source remain separate from normal entry.

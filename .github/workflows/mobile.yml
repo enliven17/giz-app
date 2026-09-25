@@ -64,5 +64,5 @@ jobs:
         working-directory: mobile
       - run: npx expo prebuild --platform ios
         working-directory: mobile
-      - run: xcodebuild -workspace ios/NexumDev.xcworkspace -scheme NexumDev -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+      - run: xcodebuild -workspace ios/GizuDev.xcworkspace -scheme GizuDev -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
         working-directory: mobile

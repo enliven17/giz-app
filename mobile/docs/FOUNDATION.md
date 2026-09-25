@@ -295,7 +295,7 @@ and share-payload provenance remain intact. No packages or font assets were adde
   network-enabled check passed. No failed automated checks remain.
 
 The simulator still uses the previously installed development binary (displaying
-Nexum Dev in its developer menu); it loaded the current Gizu JavaScript successfully.
+Gizu Dev in its developer menu); it loaded the current Gizu JavaScript successfully.
 A fresh native build is needed to reflect the renamed development identity in that menu.
 
 ## Tab selection motion — 2026-09-23

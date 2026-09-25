@@ -21,7 +21,7 @@ internal fun JSONObject.resumable(): Boolean {
 
 /** Entire journal, including signed bytes, is authenticated and encrypted before any network send. */
 internal class OperationJournal(private val file: WalletFile, private val key: () -> SecretKey,
-  val walletId: String, generation: String) {
+  val walletId: String, generation: String, private val archive: (String, ByteArray) -> Unit) {
   private val aad = "gizu-stored-operations:v1:$walletId:$generation".toByteArray()
   private fun read(): JSONArray {
     if (!file.exists()) return JSONArray()
@@ -39,8 +39,23 @@ internal class OperationJournal(private val file: WalletFile, private val key: (
   fun all(): List<JSONObject> = read().let { a -> (0 until a.length()).map(a::getJSONObject) }
   fun get(id: String): JSONObject = all().single { it.getString("operationId") == id }
   fun create(steps: JSONArray): JSONObject {
-    val entries = read()
-    check(entries.length() < 256 && (0 until entries.length()).none { entries.getJSONObject(it).blocked() })
+    val existing = all()
+    check(existing.none { it.blocked() })
+    val retained = existing.filterNot { op ->
+      op.getBoolean("cancelled") && op.steps().none { it.has("raw") }
+    }.toMutableList()
+    // Leave 1 MiB below the file limit for the new operation's signed records.
+    while (retained.size >= 256 || JSONArray(retained).toString().toByteArray().size > 3 * 1024 * 1024) {
+      val settled = retained.first()
+      check(!settled.unresolved() && !settled.blocked())
+      val clear = JSONObject().put("version",1).put("walletId",walletId)
+        .put("operations",JSONArray().put(settled)).toString().toByteArray()
+      try { archive(settled.getString("operationId"), CryptoEnvelope.encrypt(key(),clear,aad)) }
+      finally { clear.fill(0) }
+      // Archive is committed first. A crash can leave a duplicate, never lost history.
+      retained.removeAt(0)
+    }
+    val entries = JSONArray(retained)
     val operation = JSONObject().put("operationId",UUID.randomUUID().toString()).put("walletId",walletId)
       .put("revision",1).put("cancelled",false).put("steps",steps)
     entries.put(operation); write(entries); return operation

@@ -3,7 +3,9 @@ package io.gizu.storedwallet
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import android.util.AtomicFile
+import android.system.Os
+import android.system.OsConstants
+import java.io.FileOutputStream
 import java.io.File
 import java.security.KeyStore
 import javax.crypto.KeyGenerator
@@ -12,9 +14,19 @@ import javax.crypto.SecretKey
 internal fun walletStore(context: Context) = WalletStore(AndroidWalletFile(context), AndroidWalletKeys())
 internal class AndroidWalletFile(context: Context, name: String = "gizu-stored-wallet-v1.enc", private val limit: Int = 8192) : WalletFile {
   private val base = File(context.noBackupFilesDir, name)
-  private val file = AtomicFile(base)
+  private val pending = File(base.path + ".new")
+  private fun syncDirectory() {
+    val descriptor = Os.open(base.parentFile!!.path, OsConstants.O_RDONLY, 0)
+    try { Os.fsync(descriptor) } finally { Os.close(descriptor) }
+  }
+  private fun recoverLegacyBackup() {
+    val backup = File(base.path + ".bak")
+    if (backup.exists()) { Os.rename(backup.path, base.path); syncDirectory() }
+  }
   override fun exists() = base.exists() || File(base.path + ".bak").exists()
-  override fun read(): ByteArray = file.openRead().use { input ->
+  override fun read(): ByteArray {
+    recoverLegacyBackup()
+    return base.inputStream().use { input ->
     // Bounded before allocation even if local data is corrupt.
     val buffer = ByteArray(limit + 1)
     var used = 0
@@ -25,12 +37,20 @@ internal class AndroidWalletFile(context: Context, name: String = "gizu-stored-w
     }
     require(used <= limit)
     buffer.copyOf(used)
+    }
   }
   override fun write(bytes: ByteArray) {
     require(bytes.size <= limit)
-    val stream = file.startWrite()
-    try { stream.write(bytes); file.finishWrite(stream) }
-    catch (error: Exception) { file.failWrite(stream); throw error }
+    recoverLegacyBackup()
+    commitWalletFile(bytes, object : WalletFileCommit {
+      override fun writeAndSync(bytes: ByteArray) {
+        FileOutputStream(pending).use { stream -> stream.write(bytes); stream.fd.sync() }
+      }
+      override fun replace() { Os.rename(pending.path, base.path) }
+      override fun syncParent() { syncDirectory() }
+      override fun readCommitted() = read()
+      override fun discardPending() { pending.delete() }
+    })
   }
 }
 internal class AndroidWalletKeys : WalletKeys {

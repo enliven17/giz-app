@@ -13,7 +13,8 @@ excluded from app linking. This module is Android-only and development-only.
   unlocked app. Rust derives all 16 public accounts to check core availability.
 - `WalletStore` encrypts a bounded binary record using AES-256-GCM, application-bound
   AAD and an Android Keystore key. Entropy is not encoded into JSON or strings.
-  `AtomicFile` writes live in `noBackupFilesDir`. Missing key/corruption produces
+  Checked file sync, atomic rename, directory sync and read-back commit writes in
+  `noBackupFilesDir`. Legacy AtomicFile backups remain readable. Missing key/corruption produces
   `recoveryRequired`; existing data is never overwritten by creation.
 - The Keystore key does not require user authentication: passkey authorization is
   enforced by native code, not secure hardware. Native memory compromise is outside
@@ -43,7 +44,10 @@ development builds. The app gates entry on `ready`; Account offers backup manage
 Withdraw and Activity use native exact-transfer review, passkey authorization and
 an encrypted operation journal. Signed bytes are saved before broadcast; refresh
 only reconciles. Explicit resume requires fresh authorization and retries saved
-transactions byte-for-byte. Restore starts a new journal generation. The explicit
+transactions byte-for-byte. Unsigned cancellations are compacted; when the active
+journal fills, settled records are encrypted and durably archived before removal.
+Unresolved signed records remain active. Activity shows the active window, not local
+archive files. Restore starts a new journal generation. The explicit
 `npm run debug:stored-wallet` harness remains available, with no legacy fallback.
 Guided phase-4 phone checks were user-reported successful; extended failure-path
 acceptance remains pending.

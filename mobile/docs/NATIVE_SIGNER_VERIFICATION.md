@@ -1,5 +1,19 @@
 # Native signer verification
 
+## 2026-09-25 — Checked persistence and journal retention
+
+- Android arm64 debug build and all 32 native JVM tests passed. Added failure
+  injection for sync/close, rename, directory sync and committed-byte verification;
+  these paths assert no broadcast. Tests also cover cancelled-review compaction,
+  count/byte-based archival, archive failure, active-write failure after archival
+  and preserving unresolved signed records.
+- Writes now use throwing sync/rename operations plus directory sync and read-back.
+  Settled archives are encrypted local files outside the active Activity window.
+- Documentation formatting and diff checks passed. No device install or device
+  filesystem fault injection was performed; device acceptance of these changes
+  remains pending. JavaScript and Rust code were unchanged and their suites were
+  not rerun.
+
 ## 2026-09-25 — Migration phase 4 exact transfers and resume
 
 - Android arm64 debug build and all 27 native JVM tests passed. New coverage

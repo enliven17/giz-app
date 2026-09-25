@@ -18,7 +18,8 @@ class OperationJournalTest {
     override fun write(bytes: ByteArray) { check(!fail); this.bytes=bytes.copyOf() }
   }
   private val key=KeyGenerator.getInstance("AES").apply { init(256) }.generateKey()
-  private fun journal(file: File)=OperationJournal(file,{key},walletId,walletId)
+  private val archives=mutableMapOf<String,ByteArray>()
+  private fun journal(file: File)=OperationJournal(file,{key},walletId,walletId) { id, bytes -> archives[id]=bytes }
   private fun steps(count: Int=1)=JSONArray((0 until count).map { index ->
     JSONObject().put("index",index).put("accountIndex",0).put("from",from).put("to",to).put("valueWei","1000")
       .put("nonce",index.toString()).put("status","planned").put("quote",JSONObject().put("gas","0x5208").put("maxFee","0x1").put("priorityFee","0x0"))
@@ -94,7 +95,7 @@ class OperationJournalTest {
     val file=File();val journal=journal(file);val op=journal.create(steps());val id=op.getString("operationId")
     journal.cancel(id)
     assertThrows(IllegalStateException::class.java) { journal.update(id,1) { it.put("cancelled",false) } }
-    val other=OperationJournal(file,{key},walletId,"7aafcc2e-0891-4e31-a7d4-03780d7b4f13")
+    val other=OperationJournal(file,{key},walletId,"7aafcc2e-0891-4e31-a7d4-03780d7b4f13") { _, _ -> error("Unexpected archive") }
     assertThrows(Exception::class.java) { other.all() }
   }
   @Test fun cancellationAfterDurableSigningPreventsSendButKeepsRetryEvidence() = runBlocking<Unit> {
@@ -118,4 +119,90 @@ class OperationJournalTest {
     for (index in listOf(0.5,16.0,-1.0,"0")) assertThrows(Exception::class.java) { canonicalProposal(walletId,request(index)) }
     assertThrows(Exception::class.java) { canonicalProposal(walletId,request(0.0,1.0)) }
   }
+  @Test fun cancelledUnsignedReviewsDoNotConsumeCapacity() {
+    val journal=journal(File())
+    repeat(260) { journal.cancel(journal.create(steps()).getString("operationId")) }
+    assertEquals(1,journal.all().size)
+    assertTrue(archives.isEmpty())
+    journal.create(steps())
+  }
+  @Test fun archivesOldestSettledBeforeAcceptingMoreOperations() {
+    val file=File(); val journal=journal(file)
+    var first=""
+    repeat(256) { index ->
+      val id=journal.create(steps()).getString("operationId")
+      if (index==0) first=id
+      journal.update(id) { it.steps()[0].put("raw","0x02abcdef").put("transactionHash",hash).put("status","finalized") }
+    }
+    val before=file.bytes!!.copyOf()
+    val failArchive=OperationJournal(file,{key},walletId,walletId) { _, _ -> error("Archive write failed") }
+    assertThrows(IllegalStateException::class.java) { failArchive.create(steps()) }
+    assertArrayEquals(before,file.bytes)
+    file.fail=true
+    assertThrows(IllegalStateException::class.java) { journal.create(steps()) }
+    assertArrayEquals(before,file.bytes)
+    assertTrue(archives.containsKey(first))
+    file.fail=false
+    journal.create(steps())
+    assertEquals(256,journal.all().size)
+    assertFalse(journal.all().any { it.getString("operationId")==first })
+    val archived=CryptoEnvelope.decrypt(key,archives.getValue(first),"gizu-stored-operations:v1:$walletId:$walletId".toByteArray())
+    assertEquals(first,JSONObject(String(archived)).getJSONArray("operations").getJSONObject(0).getString("operationId"))
+  }
+  @Test fun unresolvedCancelledSignatureIsNeverCompacted() = runBlocking<Unit> {
+    val journal=journal(File());val id=journal.create(steps()).getString("operationId")
+    persistAndBroadcast(journal,Rpc(),id,0,signed()) {}
+    journal.cancel(id)
+    assertThrows(IllegalStateException::class.java) { journal.create(steps()) }
+    assertEquals("0x02abcdef",journal.get(id).steps()[0].getString("raw"))
+    assertTrue(archives.isEmpty())
+  }
+
+  @Test fun commitFailuresPreventBroadcastEvenWhenRenameAlreadyHappened() = runBlocking<Unit> {
+    for (failure in listOf("sync","close","rename","directory","readback","silentRename")) {
+      val backing=File()
+      var inject=false
+      val durable=object: WalletFile {
+        override fun exists()=backing.exists()
+        override fun read()=backing.read()
+        override fun write(bytes: ByteArray) {
+          commitWalletFile(bytes,object: WalletFileCommit {
+            override fun writeAndSync(bytes: ByteArray) {
+              if (inject && failure in listOf("sync","close")) error(failure)
+            }
+            override fun replace() {
+              if (inject && failure=="rename") error(failure)
+              if (!(inject && failure=="silentRename")) backing.write(bytes)
+            }
+            override fun syncParent() { if (inject && failure=="directory") error(failure) }
+            override fun readCommitted(): ByteArray {
+              if (inject && failure=="readback") return byteArrayOf()
+              return backing.read()
+            }
+            override fun discardPending() {}
+          })
+        }
+      }
+      val journal=OperationJournal(durable,{key},walletId,walletId) { _, _ -> error("Unexpected archive") }
+      val id=journal.create(steps()).getString("operationId");val rpc=Rpc();inject=true
+      try { persistAndBroadcast(journal,rpc,id,0,signed()) {}; fail("Expected $failure") }
+      catch (_: Exception) { /* Failed storage must never reach network submission. */ }
+      assertTrue(failure,rpc.sent.isEmpty())
+      val saved=journal.get(id).steps()[0]
+      if (failure in listOf("directory","readback")) assertEquals("0x02abcdef",saved.getString("raw"))
+      else assertEquals("planned",saved.getString("status"))
+    }
+  }
+
+  @Test fun archivesSettledHistoryBeforeByteCapacityIsExhausted() {
+    val journal=journal(File());val id=journal.create(steps()).getString("operationId")
+    journal.update(id) {
+      it.steps()[0].put("raw","0x02abcdef").put("transactionHash",hash).put("status","finalized")
+      it.put("padding","x".repeat(3 * 1024 * 1024))
+    }
+    journal.create(steps())
+    assertEquals(1,journal.all().size)
+    assertTrue(archives.containsKey(id))
+  }
+
 }

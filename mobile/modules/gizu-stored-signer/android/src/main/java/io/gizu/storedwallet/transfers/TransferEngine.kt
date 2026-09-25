@@ -10,7 +10,9 @@ import uniffi.gizu_stored_signer_core.*
 internal fun operationJournal(context: Context, record: WalletRecord): OperationJournal {
   check(record.verified)
   return OperationJournal(AndroidWalletFile(context,"gizu-operations-${record.journalId}.enc",4 * 1024 * 1024),
-    { checkNotNull(AndroidWalletKeys().existing()) },record.id,record.journalId)
+    { checkNotNull(AndroidWalletKeys().existing()) },record.id,record.journalId) { id, bytes ->
+      AndroidWalletFile(context,"gizu-operations-${record.journalId}-archive-$id.enc",4 * 1024 * 1024).write(bytes)
+    }
 }
 
 internal fun canonicalProposal(walletId: String, request: Map<String, Any?>): JSONObject {

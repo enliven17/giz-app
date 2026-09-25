@@ -84,7 +84,19 @@ contract recipients/senders and mainnet are rejected. Account 0 remains the app 
 binding format, wallet and journal generation. Atomic writes in `noBackupFilesDir`
 persist signed bytes, hash, nonce, quote and step state **before any broadcast**.
 Raw signed bytes and preparation quotes never cross Expo. Reads are bounded to
-4 MiB and 256 operations; exhaustion fails rather than pruning unresolved evidence.
+4 MiB and 256 active operations. Writes explicitly sync the temporary file, close it,
+rename it, sync the parent directory and verify committed bytes. Any failure prevents
+broadcast; a failure after rename retains the possibly committed record for reconciliation.
+Legacy AtomicFile backups remain readable.
+
+Before creating another operation, unsigned cancelled records are removed. At capacity
+(256 entries or 3 MiB, reserving 1 MiB for new signed records),
+the oldest settled operation is durably archived in a separate encrypted, generation-scoped
+file before removing its active entry. Archive failure leaves the active journal intact;
+a crash between writes may leave a harmless duplicate. Unresolved signed operations
+are never compacted. Activity displays the active window; archive files are retained
+locally for later diagnostics, are not currently browsable in the app, and are not
+included in wallet backups. Archives can accumulate; storage failures fail closed.
 
 Refresh and reopening only reconcile receipts, canonical finalized blocks and
 sender nonces. They never sign, rebroadcast or continue a batch. A missing transaction

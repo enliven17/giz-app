@@ -1,8 +1,14 @@
 # Passkey identity and configuration
 
-The previous native signer is retained but disconnected. The Android stored-wallet
-replacement contract is in [native signer architecture](NATIVE_SIGNER.md); its
-runtime is not implemented yet. Wallet access currently reports unavailable.
+The previous native signer is retained but disconnected. Android development builds
+implement `GizuStoredSigner`: encrypted wallet storage, passkey create/open,
+verified backup/restore, native transfer approval and explicit operation resume.
+Access requires Android API 28+, the installed native module and a compatible
+credential provider. New wallets must complete backup verification before app access.
+iOS wallet access is unsupported; production builds remain blocked.
+See [native signer architecture](NATIVE_SIGNER.md) for the active contract. Wallet
+entropy is randomly generated and encrypted locally; the passkey authorizes access
+and its PRF protects backups. It no longer determines wallet addresses.
 The frozen derivation below documents the retained module only, not the new wallet
 model. App identifiers/domain associations remain valid configuration inputs.
 See [Android signing](ANDROID_SIGNING.md) for development association setup and
@@ -31,10 +37,13 @@ Changing the RP or derivation requires a reviewed recovery/migration strategy.
 
 ## Modes and native validation
 
-The default is `native`, which fails explicitly while the replacement is unavailable.
-`npm run start:demo` explicitly selects mock mode. Both `probe` and `native-probe`
-and the former wallet/signer debug selections are rejected. Only the UI playground
-remains launchable through [README](../README.md).
+`npm start` selects `native` and opens the normal app using the Android replacement.
+Unsupported platforms or missing native modules fail explicitly without a legacy
+or mock fallback. `npm run start:demo` explicitly selects mock mode.
+`npm run debug:stored-wallet` opens the isolated replacement diagnostic;
+`npm run debug:ui` opens the UI playground. Both `probe` and `native-probe`
+and the former wallet/signer debug selections are rejected. See [README](../README.md)
+for launch and rebuild instructions.
 
 Configuration alone does not prove domain ownership, installed signing or provider
 capability. Rebuild native clients after changing

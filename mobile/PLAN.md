@@ -1,6 +1,6 @@
 # Gizu mobile roadmap
 
-Updated 2026-09-24. One active implementation roadmap. Completed work is summarized
+Updated 2026-09-25. One active implementation roadmap. Completed work is summarized
 below; implementation does not imply device/security acceptance. Setup belongs in
 [README](README.md), product behavior in [parity](docs/PARITY.md), native contracts
 in [signer architecture](docs/NATIVE_SIGNER.md), and evidence in
@@ -20,7 +20,16 @@ in [signer architecture](docs/NATIVE_SIGNER.md), and evidence in
 wallet product screen, new wallet tab or mock financial fallback for real sessions.
 See [capabilities and accepted UI decisions](docs/PARITY.md).
 
-## Next work — M6.1e acceptance and integration quality
+## Next work — Android stored-wallet signer migration
+
+Follow the agreed [signer migration plan](docs/SIGNER_MIGRATION.md): replace
+PRF-derived wallets with locally encrypted random entropy, reuse the Rust core,
+require verified onboarding backups and add explicitly authorized operation resume.
+This migration targets Android only and fresh development wallets; iOS signing
+will be unavailable until its replacement is implemented. Implementation has not
+started; the current-state table and native contract still describe existing code.
+
+## Follow-up — M6.1e acceptance and integration quality
 
 - [ ] Verify normal native entry, protected/deep-link routing, Home, Account,
       Deposit/Withdraw and Activity together on supported physical devices.
@@ -61,8 +70,9 @@ pass-through wrappers, a second live ledger or a generic JavaScript signer.
   authoritative service contracts before enabling actions in native mode.
 - Notifications, support, statements, profile/backend authentication and real
   request-access submission: demo/local behavior is not a backend integration.
-- Independent recovery, domain/provider loss and multi-account discovery: separate
-  design and acceptance required before real-funds release.
+- Encrypted backup plus original-passkey recovery is included in the signer
+  migration. Independent recovery, lost-passkey/domain/provider recovery and
+  multi-account discovery require further design and acceptance before real funds.
 - Wider native account/asset/chain scope, ERC-4337 and privacy guarantees: separate
   decisions; no claim that derived accounts are publicly unlinkable.
 - Preserve existing visual design when integrating services. Restore unavailable

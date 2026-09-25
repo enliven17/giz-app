@@ -53,11 +53,9 @@ Custom icons, fonts and launch artwork remain future product work.
 
 ## Commands
 
-Passkey configuration and platform prerequisites are documented in
-[PASSKEY_CONFIGURATION.md](docs/PASSKEY_CONFIGURATION.md). `npm run passkeys:check`
-checks passkey configuration; `npm run passkeys:templates` prepares review files;
-`npm run passkeys:verify-domain` verifies the hosted Apple association after real signing
-metadata is supplied. Nothing is published automatically.
+Passkey identity and manual domain checks are documented in
+[PASSKEY_CONFIGURATION.md](docs/PASSKEY_CONFIGURATION.md). The frontend owns the
+hosted association files; deployment does not happen from mobile scripts.
 The [former P1 probe](docs/NATIVE_SIGNER.md#retired-javascript-probe) has been removed. Native mode uses
 the native signer; raw PRF is never exposed to JavaScript. Rebuild older clients
 to remove the old bridge and install the current signer.

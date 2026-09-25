@@ -34,43 +34,22 @@ development client. `npm run start:demo` explicitly selects mock mode. The retir
 `probe` mode and unknown values are rejected. Developer diagnostics use explicit
 commands in [README](../README.md) and are hidden from normal navigation.
 
-Platform identity validators check configuration syntax, not domain ownership,
-installed signing or provider capability. Rebuild native clients after changing
+Configuration alone does not prove domain ownership, installed signing or provider
+capability. Rebuild native clients after changing
 native code or entitlements. No JavaScript PRF/signing fallback is permitted.
 
-## Apple association file
+## Domain association deployment
 
-Run from `mobile/`:
+The frontend owns `public/.well-known/apple-app-site-association` and
+`public/.well-known/assetlinks.json`. Keep their approved app identities aligned
+with the mobile configuration; preserve existing entries when adding identities.
+Follow the [hosting guide](../../frontend/docs/PASSKEY_HOSTING.md) for deployment
+and manual HTTP/header/content checks. No mobile script generates or publishes them.
 
-```sh
-npm run passkeys:check
-npm run passkeys:templates
-npm run passkeys:verify-domain
-```
-
-`templates` generates only `docs/passkey-association-templates/apple-app-site-association.json`:
-
-```json
-{
-  "webcredentials": {
-    "apps": ["588X2UZY3L.com.example.gizu.dev"]
-  }
-}
-```
-
-Publish it at `https://gizu.io/.well-known/apple-app-site-association` (without the
-`.json` extension). It must return HTTP 200, `application/json`, and no redirect.
-Preserve intended existing entries if the domain already serves an association.
-The template is outside website public directories and is never auto-published.
-
-`verify-domain` fetches and validates **only the Apple file**. It does not generate
-or fetch the separately prepared Android `assetlinks.json`. Historical configuration-stage fetch failure is not current hosting evidence; rerun
-verification when deploying or changing associations.
-
-Expo declares `webcredentials:gizu.io` and the supplied team. Regenerate/rebuild
-the native development client before checking signing and association on a physical
-iPhone. Setting a Team ID is not evidence that a matching provisioning profile or
-Apple Developer app registration already exists.
+For iOS, verify the hosted Apple file includes the configured Team ID and bundle ID.
+For Android, verify the package and installed signing certificate fingerprint.
+Successful HTTP checks do not establish signed-device or credential-provider support.
+Rebuild native clients after changing signing configuration or entitlements.
 
 ## Acceptance
 

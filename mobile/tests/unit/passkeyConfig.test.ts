@@ -1,20 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import {
-  associationFiles,
-  identity,
-  validateAssociationFiles,
-  validateNativeIdentity,
-  validatePasskeyMode,
-} from "../../src/config/passkeys";
-
-// Synthetic signing metadata only: not a registered team or certificate.
-const fixture = {
-  ...identity,
-  appleTeamId: "ABCDE12345",
-  androidSha256Fingerprints: [Array(32).fill("AB").join(":")],
-};
+import { identity, validatePasskeyMode } from "../../src/config/passkeys";
 
 test("freezes shared RP and deterministic account-zero recipe without wallet secrets", () => {
   expect(identity.rpId).toBe("gizu.io");
@@ -42,45 +29,14 @@ test("native modes are explicit and invalid modes cannot silently use demo succe
   expect(validatePasskeyMode("native")).toBe("native");
 });
 
-test("iOS identity rejects placeholders and RP drift but ignores deferred Android metadata", () => {
-  expect(validateNativeIdentity()).toEqual(identity);
-  expect(identity.appleTeamId).toBe("588X2UZY3L");
-  expect(() =>
-    validateNativeIdentity({ ...fixture, appleTeamId: "REPLACE_WITH_APPLE_TEAM_ID" }),
-  ).toThrow("Apple Team ID");
-  expect(() => validateNativeIdentity({ ...fixture, rpId: "other.gizu.io" })).toThrow("frozen");
-  expect(() => validateNativeIdentity({ ...fixture, iosBundleIdentifier: "invalid" })).toThrow(
-    "identifier",
+test("frontend Apple association includes the configured mobile identity", () => {
+  const association = JSON.parse(
+    readFileSync(
+      resolve(__dirname, "../../../frontend/public/.well-known/apple-app-site-association"),
+      "utf8",
+    ),
   );
-  expect(() =>
-    validateNativeIdentity({ ...fixture, androidSha256Fingerprints: [], androidPackage: "" }),
-  ).not.toThrow();
-});
-
-test("native mode selection is independent of mutable identity data", () => {
-  const original = { ...identity };
-  try {
-    Object.assign(identity, fixture);
-    expect(validatePasskeyMode("native")).toBe("native");
-  } finally {
-    Object.assign(identity, original);
-  }
-});
-
-test("iOS association validation requires the exact team and app entry", () => {
-  const files = associationFiles(fixture);
-  expect(() => validateAssociationFiles(files.apple, fixture)).not.toThrow();
-  for (const invalid of [null, {}, { webcredentials: { apps: ["OTHER.app"] } }]) {
-    expect(() => validateAssociationFiles(invalid, fixture)).toThrow("Apple");
-  }
-});
-
-test("checked-in review templates match the public identity configuration", () => {
-  const files = associationFiles();
-  const read = (name: string) =>
-    JSON.parse(
-      readFileSync(resolve(__dirname, "../../docs/passkey-association-templates", name), "utf8"),
-    );
-  expect(read("apple-app-site-association.json")).toEqual(files.apple);
-  expect(files.apple.webcredentials.apps).toEqual(["588X2UZY3L.com.example.gizu.dev"]);
+  expect(association.webcredentials.apps).toContain(
+    `${identity.appleTeamId}.${identity.iosBundleIdentifier}`,
+  );
 });

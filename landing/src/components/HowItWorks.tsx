@@ -21,12 +21,12 @@ const STEPS: Step[] = [
   },
   {
     title: 'Confidential transfer',
-    body: 'Value is routed privately, unlinked from the wallet it came from.',
+    body: 'The same address keeps the value, only now nobody can read what it holds.',
     visual: 'route',
   },
   {
-    title: 'Private investing account',
-    body: 'A separate account holds your positions, derived from the same passkey.',
+    title: 'Anonym invested accounts',
+    body: 'Separate accounts hold your positions, all derived from the same passkey.',
     visual: 'keys',
   },
   {
@@ -41,7 +41,7 @@ const STEPS: Step[] = [
   },
   {
     title: 'Combined with other deposits',
-    body: 'Your deposit joins a batch, so no single entry traces back to one account.',
+    body: 'One deposit is split across anonym invested accounts, so no entry traces back to you.',
     visual: 'batch',
   },
   {
@@ -50,8 +50,8 @@ const STEPS: Step[] = [
     visual: 'vault',
   },
   {
-    title: 'Your encrypted position',
-    body: 'You hold encrypted shares. Only you can read the balance, the yield and the exit.',
+    title: 'Your anonym position',
+    body: 'You hold anonym shares. Only you can read the balance, the yield and the exit.',
     visual: 'shield',
   },
 ]
@@ -104,7 +104,7 @@ export default function HowItWorks() {
         <div className="shell relative pt-24 text-center md:pt-28">
           <p className="eyebrow">How it works</p>
           <h2 className="mx-auto mt-3 max-w-[22ch] text-[clamp(24px,3vw,38px)] font-semibold leading-[1.05] tracking-[-0.025em]">
-            From your wallet to an encrypted position
+            From your wallet to an anonym position
           </h2>
         </div>
 

@@ -7,7 +7,7 @@ const hexToRgb = (hex: string): [number, number, number] => {
   return [parseInt(r[1], 16) / 255, parseInt(r[2], 16) / 255, parseInt(r[3], 16) / 255]
 }
 
-const detailToSteps = (d: string) => (d === 'low' ? 40 : d === 'high' ? 110 : 70)
+const detailToSteps = (d: string) => (d === 'low' ? 36 : d === 'high' ? 84 : 56)
 
 const vertex = `#version 300 es
 in vec2 position;
@@ -62,7 +62,7 @@ float raymarch(vec3 pos, vec3 dir, vec2 freq, vec4 tc) {
   for (int i = 0; i < 128; i++) {
     if (float(i) >= uSteps) break;
     float dscene = plasma(pos + dist * dir, freq, tc);
-    if (abs(dscene) < 0.1) break;
+    if (abs(dscene) < 0.1 + dist * 0.0025) break;
     dist += 0.9 * dscene;
     if (!(abs(dist) < MAX_DIST)) return MAX_DIST;
   }
@@ -111,7 +111,7 @@ void main() {
 
   float alpha = clamp(t, 0.0, 1.0) * uOpacity;
   if (uGrain > 0.5) {
-    float g = hash21(gl_FragCoord.xy + mod(iTime, 64.0) * 11.0);
+    float g = hash21(gl_FragCoord.xy + mod(floor(iTime * 10.0), 64.0) * 11.0);
     alpha += (g - 0.5) * uGrainIntensity;
   }
   alpha = clamp(alpha, 0.0, 1.0);
@@ -179,7 +179,8 @@ export default function GradientWaves({
       alpha: true,
       premultipliedAlpha: true,
       antialias: false,
-      dpr: Math.min(window.devicePixelRatio || 1, 2),
+      dpr: Math.min(window.devicePixelRatio || 1, 1.5),
+      powerPreference: 'high-performance',
     })
 
     const gl = renderer.gl

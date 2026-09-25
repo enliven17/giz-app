@@ -34,10 +34,10 @@ export default function SignOverlay({
         className="pointer-events-none absolute inset-0 h-full w-full"
         speed={1.4}
         color={accent}
-        distance={isDesktop ? 6.5 : 8.5}
+        distance={isDesktop ? 17 : 20}
         spread={isDesktop ? 14 : 11}
-        dotScale={isDesktop ? 1 : 0.85}
-        count={isDesktop ? 190 : 340}
+        dotScale={isDesktop ? 3 : 2.4}
+        count={isDesktop ? 420 : 560}
         burst={state !== 'signing'}
       />
 
